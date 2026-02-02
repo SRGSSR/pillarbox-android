@@ -1,0 +1,377 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>ch.srgssr.pillarbox.cast</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../images/logo-icon.svg">
+<link href="../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-cast/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-cast/main" data-filter=":pillarbox-cast/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageids="pillarbox-cast::ch.srgssr.pillarbox.cast////PointingToDeclaration//698813790">
+  <div class="breadcrumbs"><a href="../index.html">pillarbox-cast</a><span class="delimiter">/</span><span class="current">ch.srgssr.pillarbox.cast</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="580594439%2FClasslikes%2F698813790" anchor-label="CastPlayerConfig" id="580594439%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-cast-player-config/index.html"><span>Cast</span><wbr><span>Player</span><wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="580594439%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-cast-player-config/index.html">CastPlayerConfig</a><span class="token operator">&lt;</span><a href="-cast-player-config/index.html">Builder</a><span class="token operator"> : </span><a href="-pillarbox-cast-player-builder/index.html">PillarboxCastPlayerBuilder</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Defines a factory for creating instances of <a href="-pillarbox-cast-player-builder/index.html">PillarboxCastPlayerBuilder</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1439153369%2FClasslikes%2F698813790" anchor-label="CastPlayerSynchronizer" id="-1439153369%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-cast-player-synchronizer/index.html"><span>Cast</span><wbr><span>Player</span><wbr><span><span>Synchronizer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1439153369%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-cast-player-synchronizer/index.html">CastPlayerSynchronizer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">castContext<span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.cast.framework/CastContext///PointingToDeclaration/">CastContext</span><span class="token punctuation">, </span></span><span class="parameter ">coroutineScope<span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/index.html">CoroutineScope</a><span class="token punctuation">, </span></span><span class="parameter ">castPlayer<span class="token operator">: </span><a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a><span class="token punctuation">, </span></span><span class="parameter ">localPlayer<span class="token operator">: </span><a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player/index.html">PillarboxExoPlayer</a><span class="token punctuation">, </span></span><span class="parameter ">playerSynchronizer<span class="token operator">: </span><a href="-cast-player-synchronizer/-player-synchronizer/index.html">CastPlayerSynchronizer.PlayerSynchronizer</a><span class="token operator"> = </span>DefaultPlayerSynchronizer()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Synchronizes a <a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a> with a <a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player/index.html">PillarboxExoPlayer</a>. It switches the two players when the cast session becomes available</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-108845746%2FClasslikes%2F698813790" anchor-label="CastTrackSelector" id="-108845746%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-cast-track-selector/index.html"><span>Cast</span><wbr><span>Track</span><wbr><span><span>Selector</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-108845746%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-cast-track-selector/index.html">CastTrackSelector</a></div><div class="brief "><p class="paragraph">Cast track selector</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1175395096%2FClasslikes%2F698813790" anchor-label="Default" id="1175395096%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-default/index.html"><span><span>Default</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1175395096%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-default/index.html">Default</a> : <a href="-cast-player-config/index.html">CastPlayerConfig</a><span class="token operator">&lt;</span><a href="-default/-builder/index.html">Default.Builder</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Default configuration for creating a <a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1540878687%2FClasslikes%2F698813790" anchor-label="DefaultCastTrackSelector" id="1540878687%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-default-cast-track-selector/index.html"><span>Default</span><wbr><span>Cast</span><wbr><span>Track</span><wbr><span><span>Selector</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1540878687%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-default-cast-track-selector/index.html">DefaultCastTrackSelector</a> : <a href="-cast-track-selector/index.html">CastTrackSelector</a></div><div class="brief "><p class="paragraph">Default cast track selector Support only <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionOverride.html">TrackSelectionOverride</a> from <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html#overrides()">TrackSelectionParameters.overrides</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1322871617%2FClasslikes%2F698813790" anchor-label="DefaultFormatConverter" id="1322871617%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-default-format-converter/index.html"><span>Default</span><wbr><span>Format</span><wbr><span><span>Converter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1322871617%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-default-format-converter/index.html">DefaultFormatConverter</a> : <a href="-format-converter/index.html">FormatConverter</a></div><div class="brief "><p class="paragraph">A default implementation of <a href="-format-converter/index.html">FormatConverter</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1444169618%2FClasslikes%2F698813790" anchor-label="DefaultTracksConverter" id="1444169618%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-default-tracks-converter/index.html"><span>Default</span><wbr><span>Tracks</span><wbr><span><span>Converter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1444169618%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-default-tracks-converter/index.html">DefaultTracksConverter</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">formatConverter<span class="token operator">: </span><a href="-format-converter/index.html">FormatConverter</a><span class="token operator"> = </span>DefaultFormatConverter()</span></span><span class="token punctuation">)</span> : <a href="-tracks-converter/index.html">TracksConverter</a></div><div class="brief "><p class="paragraph">A default implementation of <a href="-tracks-converter/index.html">TracksConverter</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1951321840%2FClasslikes%2F698813790" anchor-label="FormatConverter" id="1951321840%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-format-converter/index.html"><span>Format</span><wbr><span><span>Converter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1951321840%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-format-converter/index.html">FormatConverter</a></div><div class="brief "><p class="paragraph">Interface responsible for converting between ExoPlayer's <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> and Cast's <span data-unresolved-link="com.google.android.gms.cast/MediaTrack///PointingToDeclaration/">MediaTrack</span> representations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-925080296%2FClasslikes%2F698813790" anchor-label="PillarboxCastPlayer" id="-925080296%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pillarbox-cast-player/index.html"><span>Pillarbox</span><wbr><span>Cast</span><wbr><span><span>Player</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-925080296%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a> : <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/SimpleBasePlayer.html">SimpleBasePlayer</a>, <a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a></div><div class="brief "><p class="paragraph">A <a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> implementation that works with Cast devices.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="874532431%2FClasslikes%2F698813790" anchor-label="PillarboxCastPlayerBuilder" id="874532431%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pillarbox-cast-player-builder/index.html"><span>Pillarbox</span><wbr><span>Cast</span><wbr><span>Player</span><wbr><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="874532431%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-pillarbox-cast-player-builder/index.html">PillarboxCastPlayerBuilder</a></div><div class="brief "><p class="paragraph">A builder class for creating instances of <a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1609036055%2FClasslikes%2F698813790" anchor-label="PillarboxCastUtil" id="1609036055%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pillarbox-cast-util/index.html"><span>Pillarbox</span><wbr><span>Cast</span><wbr><span><span>Util</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1609036055%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-pillarbox-cast-util/index.html">PillarboxCastUtil</a></div><div class="brief "><p class="paragraph">Utils to convert GoogleCast types to Media3 types.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2072619841%2FClasslikes%2F698813790" anchor-label="TracksConverter" id="2072619841%2FClasslikes%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-tracks-converter/index.html"><span>Tracks</span><wbr><span><span>Converter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2072619841%2FClasslikes%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-tracks-converter/index.html">TracksConverter</a></div><div class="brief "><p class="paragraph">Interface responsible for converting between ExoPlayer's <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Tracks.html">Tracks</a> and Cast's <span data-unresolved-link="com.google.android.gms.cast/MediaTrack///PointingToDeclaration/">MediaTrack</span> representations. This is necessary because the Cast framework uses its own data structures for track information.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="606271570%2FFunctions%2F698813790" anchor-label="PillarboxCastPlayer" id="606271570%2FFunctions%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pillarbox-cast-player.html"><span>Pillarbox</span><wbr><span>Cast</span><wbr><span><span>Player</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="606271570%2FFunctions%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="-pillarbox-cast-player.html">Builder</a><span class="token operator"> : </span><a href="-pillarbox-cast-player-builder/index.html">PillarboxCastPlayerBuilder</a><span class="token operator">&gt; </span><a href="-pillarbox-cast-player.html"><span class="token function">PillarboxCastPlayer</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">type<span class="token operator">: </span><a href="-cast-player-config/index.html">CastPlayerConfig</a><span class="token operator">&lt;</span><a href="-pillarbox-cast-player.html">Builder</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">builder<span class="token operator">: </span><a href="-pillarbox-cast-player.html">Builder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a></div><div class="brief "><p class="paragraph">Create a new instance of <a href="-pillarbox-cast-player.html">PillarboxCastPlayer</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="346418779%2FFunctions%2F698813790" anchor-label="getCastContext" id="346418779%2FFunctions%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-cast-context.html"><span>get</span><wbr><span>Cast</span><wbr><span><span>Context</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="346418779%2FFunctions%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="get-cast-context.html"><span class="token function">getCastContext</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.cast.framework/CastContext///PointingToDeclaration/">CastContext</span></div><div class="brief "><p class="paragraph">Retrieves the shared instance of <span data-unresolved-link="com.google.android.gms.cast.framework/CastContext///PointingToDeclaration/">CastContext</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1725168876%2FFunctions%2F698813790" anchor-label="isCastSessionAvailableAsFlow" id="-1725168876%2FFunctions%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-cast-session-available-as-flow.html"><span>is</span><wbr><span>Cast</span><wbr><span>Session</span><wbr><span>Available</span><wbr><span>As</span><wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1725168876%2FFunctions%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-pillarbox-cast-player/index.html">PillarboxCastPlayer</a><span class="token punctuation">.</span><a href="is-cast-session-available-as-flow.html"><span class="token function">isCastSessionAvailableAsFlow</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the availability of a Cast session as a <a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1854516944%2FFunctions%2F698813790" anchor-label="isConnected" id="1854516944%2FFunctions%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-connected.html"><span>is</span><wbr><span><span>Connected</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1854516944%2FFunctions%2F698813790"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.gms.cast.framework/CastContext///PointingToDeclaration/">CastContext</span><span class="token punctuation">.</span><a href="is-connected.html"><span class="token function">isConnected</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

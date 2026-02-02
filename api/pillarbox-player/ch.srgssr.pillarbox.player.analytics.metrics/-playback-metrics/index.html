@@ -1,0 +1,442 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>PlaybackMetrics</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../../images/logo-icon.svg">
+<link href="../../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-player/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-player/main" data-filter=":pillarbox-player/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="pillarbox-player::ch.srgssr.pillarbox.player.analytics.metrics/PlaybackMetrics///PointingToDeclaration//585621692">
+  <div class="breadcrumbs"><a href="../../index.html">pillarbox-player</a><span class="delimiter">/</span><a href="../index.html">ch.srgssr.pillarbox.player.analytics.metrics</a><span class="delimiter">/</span><span class="current">PlaybackMetrics</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Playback</span><wbr><span><span>Metrics</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">PlaybackMetrics</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>bandwidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>indicatedBitrate<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>playbackDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>bufferingDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>stallCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>stallDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>loadDuration<span class="token operator">: </span><a href="-load-duration/index.html">PlaybackMetrics.LoadDuration</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalLoadTime<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalBytesLoaded<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>url<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>videoFormat<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>audioFormat<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>surfaceSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/Size.html">Size</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalDroppedFrames<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/SRGSSR/pillarbox-android/tree/9.0.1/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/analytics/metrics/PlaybackMetrics.kt#L41">source</a>)</span></span></div><p class="paragraph">Represents playback metrics, containing information about the current media stream and playback session.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-930355051%2FConstructors%2F585621692" anchor-label="PlaybackMetrics" id="-930355051%2FConstructors%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-playback-metrics.html"><span>Playback</span><wbr><span><span>Metrics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-930355051%2FConstructors%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">bandwidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">indicatedBitrate<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">playbackDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter ">bufferingDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter ">stallCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">stallDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter ">loadDuration<span class="token operator">: </span><a href="-load-duration/index.html">PlaybackMetrics.LoadDuration</a><span class="token punctuation">, </span></span><span class="parameter ">totalLoadTime<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token punctuation">, </span></span><span class="parameter ">totalBytesLoaded<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">url<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">videoFormat<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">audioFormat<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">surfaceSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/Size.html">Size</a><span class="token punctuation">, </span></span><span class="parameter ">totalDroppedFrames<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="-1825780616%2FClasslikes%2F585621692" anchor-label="LoadDuration" id="-1825780616%2FClasslikes%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-load-duration/index.html"><span>Load</span><wbr><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1825780616%2FClasslikes%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-load-duration/index.html">LoadDuration</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>source<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>manifest<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>asset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>drm<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeToReady<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Represents the timings spent in different stages of the loading process, until the current media started to play.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1254120816%2FProperties%2F585621692" anchor-label="audioFormat" id="-1254120816%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="audio-format.html"><span>audio</span><wbr><span><span>Format</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1254120816%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="audio-format.html">audioFormat</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> of the currently selected audio track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-115685940%2FProperties%2F585621692" anchor-label="bandwidth" id="-115685940%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="bandwidth.html"><span><span>bandwidth</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-115685940%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="bandwidth.html">bandwidth</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">The device-measured network bandwidth, in bits per second.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2054762183%2FProperties%2F585621692" anchor-label="bufferingDuration" id="2054762183%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="buffering-duration.html"><span>buffering</span><wbr><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2054762183%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="buffering-duration.html">bufferingDuration</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">The total duration spent buffering the media.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="91833403%2FProperties%2F585621692" anchor-label="indicatedBitrate" id="91833403%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="indicated-bitrate.html"><span>indicated</span><wbr><span><span>Bitrate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="91833403%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="indicated-bitrate.html">indicatedBitrate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">The bitrate of the video and audio format, in bits per second.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1721293117%2FProperties%2F585621692" anchor-label="loadDuration" id="-1721293117%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="load-duration.html"><span>load</span><wbr><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1721293117%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="load-duration.html">loadDuration</a><span class="token operator">: </span><a href="-load-duration/index.html">PlaybackMetrics.LoadDuration</a></div><div class="brief "><p class="paragraph">The <a href="-load-duration/index.html">LoadDuration</a> containing detailed timings for different stages of media loading.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1370595374%2FProperties%2F585621692" anchor-label="playbackDuration" id="1370595374%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="playback-duration.html"><span>playback</span><wbr><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1370595374%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="playback-duration.html">playbackDuration</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">The total duration spent playing the media.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1866474452%2FProperties%2F585621692" anchor-label="sessionId" id="-1866474452%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="session-id.html"><span>session</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1866474452%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="session-id.html">sessionId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">A unique identifier for the playback session.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-733719634%2FProperties%2F585621692" anchor-label="stallCount" id="-733719634%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stall-count.html"><span>stall</span><wbr><span><span>Count</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-733719634%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="stall-count.html">stallCount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The number of times playback stalled, excluding stalls caused by seeking.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-358330743%2FProperties%2F585621692" anchor-label="stallDuration" id="-358330743%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stall-duration.html"><span>stall</span><wbr><span><span>Duration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-358330743%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="stall-duration.html">stallDuration</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">The total duration of the stalls.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1579259599%2FProperties%2F585621692" anchor-label="surfaceSize" id="1579259599%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="surface-size.html"><span>surface</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1579259599%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="surface-size.html">surfaceSize</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/Size.html">Size</a></div><div class="brief "><p class="paragraph">The size of the surface used for rendering the video. If no surface is connected, this will be <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/Size.html#zero">Size.ZERO</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="86768945%2FProperties%2F585621692" anchor-label="totalBytesLoaded" id="86768945%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="total-bytes-loaded.html"><span>total</span><wbr><span>Bytes</span><wbr><span><span>Loaded</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="86768945%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="total-bytes-loaded.html">totalBytesLoaded</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">The total number of bytes loaded for bandwidth calculation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1311294277%2FProperties%2F585621692" anchor-label="totalDroppedFrames" id="-1311294277%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="total-dropped-frames.html"><span>total</span><wbr><span>Dropped</span><wbr><span><span>Frames</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1311294277%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="total-dropped-frames.html">totalDroppedFrames</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The total number of video frames dropped.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-839174906%2FProperties%2F585621692" anchor-label="totalLoadTime" id="-839174906%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="total-load-time.html"><span>total</span><wbr><span>Load</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-839174906%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="total-load-time.html">totalLoadTime</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">The total time taken to load the media for bandwidth calculation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2091013426%2FProperties%2F585621692" anchor-label="url" id="-2091013426%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="url.html"><span><span>url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2091013426%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="url.html">url</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The last URL loaded by the player.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1961317707%2FProperties%2F585621692" anchor-label="videoFormat" id="1961317707%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="video-format.html"><span>video</span><wbr><span><span>Format</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1961317707%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="video-format.html">videoFormat</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> of the currently selected video track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-444149311%2FProperties%2F585621692" anchor-label="videoSize" id="-444149311%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="video-size.html"><span>video</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-444149311%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="video-size.html">videoSize</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a></div><div class="brief "><p class="paragraph">Represents the video size of <a href="../../../pillarbox-player/ch.srgssr.pillarbox.player.analytics.metrics/-playback-metrics/--root--.html">videoFormat</a>, if applicable. Otherwise <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html#unknown">VideoSize.UNKNOWN</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="-1578325224%2FFunctions%2F585621692" anchor-label="describeContents" id="-1578325224%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../ch.srgssr.pillarbox.player.asset.timeRange/-credit/-closing/index.html#-1578325224%2FFunctions%2F585621692"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../../ch.srgssr.pillarbox.player.asset.timeRange/-credit/-closing/index.html#-1578325224%2FFunctions%2F585621692"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1754457655%2FFunctions%2F585621692" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../ch.srgssr.pillarbox.player.asset.timeRange/-credit/-closing/index.html#-1754457655%2FFunctions%2F585621692"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../../ch.srgssr.pillarbox.player.asset.timeRange/-credit/-closing/index.html#-1754457655%2FFunctions%2F585621692"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

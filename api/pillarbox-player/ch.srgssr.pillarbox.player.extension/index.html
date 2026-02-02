@@ -1,0 +1,872 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>ch.srgssr.pillarbox.player.extension</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../images/logo-icon.svg">
+<link href="../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-player/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-player/main" data-filter=":pillarbox-player/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageids="pillarbox-player::ch.srgssr.pillarbox.player.extension////PointingToDeclaration//585621692">
+  <div class="breadcrumbs"><a href="../index.html">pillarbox-player</a><span class="delimiter">/</span><span class="current">ch.srgssr.pillarbox.player.extension</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1580399826%2FProperties%2F585621692" anchor-label="RATIONAL_ONE" id="-1580399826%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-r-a-t-i-o-n-a-l_-o-n-e.html"><span>RATIONAL_</span><wbr><span>ONE</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1580399826%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="-r-a-t-i-o-n-a-l_-o-n-e.html">RATIONAL_ONE</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/Rational.html">Rational</a></div><div class="brief "><p class="paragraph">Represents the rational number one (1/1).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_PROPERTY">
+        <h2 class="tableheader">Inherited properties</h2>
+        <div class="table"><a data-name="-745177486%2FProperties%2F585621692" anchor-label="displayName" id="-745177486%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="display-name.html"><span>display</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-745177486%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="display-name.html">displayName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The display name for this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="817566280%2FProperties%2F585621692" anchor-label="isAudioTrackDisabled" id="817566280%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-audio-track-disabled.html"><span>is</span><wbr><span>Audio</span><wbr><span>Track</span><wbr><span><span>Disabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="817566280%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="is-audio-track-disabled.html">isAudioTrackDisabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether audio track is disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="317592521%2FProperties%2F585621692" anchor-label="isTextTrackDisabled" id="317592521%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-text-track-disabled.html"><span>is</span><wbr><span>Text</span><wbr><span>Track</span><wbr><span><span>Disabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="317592521%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="is-text-track-disabled.html">isTextTrackDisabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether text track is disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="553880259%2FProperties%2F585621692" anchor-label="isVideoTrackDisabled" id="553880259%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-video-track-disabled.html"><span>is</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Disabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="553880259%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="is-video-track-disabled.html">isVideoTrackDisabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether video track is disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-528086175%2FProperties%2F585621692" anchor-label="videoSize" id="-528086175%2FProperties%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="video-size.html"><span>video</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-528086175%2FProperties%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="video-size.html">videoSize</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a></div><div class="brief "><p class="paragraph">Returns the video size of this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="1305346017%2FFunctions%2F585621692" anchor-label="canGetTracks" id="1305346017%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-get-tracks.html"><span>can</span><wbr><span>Get</span><wbr><span><span>Tracks</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1305346017%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-get-tracks.html"><span class="token function">canGetTracks</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can get the tracks in the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-164860995%2FFunctions%2F585621692" anchor-label="canPlayPause" id="-164860995%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-play-pause.html"><span>can</span><wbr><span>Play</span><wbr><span><span>Pause</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-164860995%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-play-pause.html"><span class="token function">canPlayPause</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can play/pause/resume the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="815045115%2FFunctions%2F585621692" anchor-label="canSeek" id="815045115%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-seek.html"><span>can</span><wbr><span><span>Seek</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="815045115%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-seek.html"><span class="token function">canSeek</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can seek in the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1558781164%2FFunctions%2F585621692" anchor-label="canSeekBack" id="-1558781164%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-seek-back.html"><span>can</span><wbr><span>Seek</span><wbr><span><span>Back</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1558781164%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-seek-back.html"><span class="token function">canSeekBack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can seek back by a fixed increment in the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1882925358%2FFunctions%2F585621692" anchor-label="canSeekForward" id="-1882925358%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-seek-forward.html"><span>can</span><wbr><span>Seek</span><wbr><span><span>Forward</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1882925358%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-seek-forward.html"><span class="token function">canSeekForward</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can seek forward by a fixed increment in the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="13165197%2FFunctions%2F585621692" anchor-label="canSeekToNext" id="13165197%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-seek-to-next.html"><span>can</span><wbr><span>Seek</span><wbr><span>To</span><wbr><span><span>Next</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="13165197%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-seek-to-next.html"><span class="token function">canSeekToNext</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can seek to a later position in the current or next <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-452129143%2FFunctions%2F585621692" anchor-label="canSeekToPrevious" id="-452129143%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-seek-to-previous.html"><span>can</span><wbr><span>Seek</span><wbr><span>To</span><wbr><span><span>Previous</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-452129143%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-seek-to-previous.html"><span class="token function">canSeekToPrevious</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can seek to an earlier position in the current or previous <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1931227073%2FFunctions%2F585621692" anchor-label="canSetRepeatMode" id="-1931227073%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-set-repeat-mode.html"><span>can</span><wbr><span>Set</span><wbr><span>Repeat</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1931227073%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-set-repeat-mode.html"><span class="token function">canSetRepeatMode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can set the repeat mode of the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="22270265%2FFunctions%2F585621692" anchor-label="canSetShuffleMode" id="22270265%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-set-shuffle-mode.html"><span>can</span><wbr><span>Set</span><wbr><span>Shuffle</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="22270265%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-set-shuffle-mode.html"><span class="token function">canSetShuffleMode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can set the shuffle mode of the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="768216114%2FFunctions%2F585621692" anchor-label="canSetTrackSelectionParameters" id="768216114%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-set-track-selection-parameters.html"><span>can</span><wbr><span>Set</span><wbr><span>Track</span><wbr><span>Selection</span><wbr><span><span>Parameters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="768216114%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-set-track-selection-parameters.html"><span class="token function">canSetTrackSelectionParameters</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can set track selection parameters.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-449974001%2FFunctions%2F585621692" anchor-label="canSpeedAndPitch" id="-449974001%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-speed-and-pitch.html"><span>can</span><wbr><span>Speed</span><wbr><span>And</span><wbr><span><span>Pitch</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-449974001%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token punctuation">.</span><a href="can-speed-and-pitch.html"><span class="token function">canSpeedAndPitch</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the player can set the playback speed and pitch of the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1263019504%2FFunctions%2F585621692" anchor-label="computeAspectRatioOrNull" id="1263019504%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="compute-aspect-ratio-or-null.html"><span>compute</span><wbr><span>Aspect</span><wbr><span>Ratio</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1263019504%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a><span class="token punctuation">.</span><a href="compute-aspect-ratio-or-null.html"><span class="token function">computeAspectRatioOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Computes the aspect ratio of the video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1036704889%2FFunctions%2F585621692" anchor-label="containsImageTrack" id="1036704889%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="contains-image-track.html"><span>contains</span><wbr><span>Image</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1036704889%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Tracks.html">Tracks</a><span class="token punctuation">.</span><a href="contains-image-track.html"><span class="token function">containsImageTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Tracks.html">Tracks</a> contains a track of type <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/C.html#track_type_image">image</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1050091733%2FFunctions%2F585621692" anchor-label="currentPositionPercentage" id="-1050091733%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-position-percentage.html"><span>current</span><wbr><span>Position</span><wbr><span><span>Percentage</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1050091733%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="current-position-percentage.html"><span class="token function">currentPositionPercentage</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Returns the current playback position as a percentage of the total duration.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1403504715%2FFunctions%2F585621692" anchor-label="defaultAudioTrack" id="1403504715%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="default-audio-track.html"><span>default</span><wbr><span>Audio</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1403504715%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="default-audio-track.html"><span class="token function">defaultAudioTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Returns a copy of this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> with default settings for audio tracks.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1325627562%2FFunctions%2F585621692" anchor-label="defaultTextTrack" id="1325627562%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="default-text-track.html"><span>default</span><wbr><span>Text</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1325627562%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="default-text-track.html"><span class="token function">defaultTextTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Returns a copy of this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> with default settings for text tracks.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1767906890%2FFunctions%2F585621692" anchor-label="defaultVideoTrack" id="1767906890%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="default-video-track.html"><span>default</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1767906890%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="default-video-track.html"><span class="token function">defaultVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Returns a copy of this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> with default settings for video tracks.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-425700426%2FFunctions%2F585621692" anchor-label="disableAudioTrack" id="-425700426%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disable-audio-track.html"><span>disable</span><wbr><span>Audio</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-425700426%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="disable-audio-track.html"><span class="token function">disableAudioTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with audio track disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2113332963%2FFunctions%2F585621692" anchor-label="disableTextTrack" id="2113332963%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disable-text-track.html"><span>disable</span><wbr><span>Text</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2113332963%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="disable-text-track.html"><span class="token function">disableTextTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with text track disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="416970545%2FFunctions%2F585621692" anchor-label="disableVideoTrack" id="416970545%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disable-video-track.html"><span>disable</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="416970545%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="disable-video-track.html"><span class="token function">disableVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with video track disabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1351370811%2FFunctions%2F585621692" anchor-label="enableAudioTrack" id="-1351370811%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enable-audio-track.html"><span>enable</span><wbr><span>Audio</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1351370811%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="enable-audio-track.html"><span class="token function">enableAudioTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with audio track enabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2083472628%2FFunctions%2F585621692" anchor-label="enableTextTrack" id="2083472628%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enable-text-track.html"><span>enable</span><wbr><span>Text</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2083472628%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="enable-text-track.html"><span class="token function">enableTextTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with text track enabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-508699840%2FFunctions%2F585621692" anchor-label="enableVideoTrack" id="-508699840%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enable-video-track.html"><span>enable</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-508699840%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="enable-video-track.html"><span class="token function">enableVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Creates a new <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a> instance with video track enabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="686152962%2FFunctions%2F585621692" anchor-label="getCurrentMediaItems" id="686152962%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-current-media-items.html"><span>get</span><wbr><span>Current</span><wbr><span>Media</span><wbr><span><span>Items</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="686152962%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-current-media-items.html"><span class="token function">getCurrentMediaItems</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Retrieves a snapshot of the current media items in the player.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-329819499%2FFunctions%2F585621692" anchor-label="getLocale" id="-329819499%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-locale.html"><span>get</span><wbr><span><span>Locale</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-329819499%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="get-locale.html"><span class="token function">getLocale</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Locale.html">Locale</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a <a href="https://developer.android.com/reference/kotlin/java/util/Locale.html">Locale</a> representing the language specified by this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a>'s <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html#language">language</a> property.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1672260833%2FFunctions%2F585621692" anchor-label="getMediaItemTrackerDataOrNull" id="1672260833%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-media-item-tracker-data-or-null.html"><span>get</span><wbr><span>Media</span><wbr><span>Item</span><wbr><span>Tracker</span><wbr><span>Data</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1672260833%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Tracks.html">Tracks</a><span class="token punctuation">.</span><a href="get-media-item-tracker-data-or-null.html"><span class="token function">getMediaItemTrackerDataOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../ch.srgssr.pillarbox.player.tracker/-media-item-tracker-data/index.html">MediaItemTrackerData</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Retrieves the <a href="../ch.srgssr.pillarbox.player.tracker/-media-item-tracker-data/index.html">MediaItemTrackerData</a> associated with this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Tracks.html">Tracks</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1662120177%2FFunctions%2F585621692" anchor-label="getMonitoringDeviceId" id="-1662120177%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-monitoring-device-id.html"><span>get</span><wbr><span>Monitoring</span><wbr><span>Device</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1662120177%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="get-monitoring-device-id.html"><span class="token function">getMonitoringDeviceId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Get a device id that is sent with a <a href="../ch.srgssr.pillarbox.player.monitoring.models/-session/index.html">Session</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="668799832%2FFunctions%2F585621692" anchor-label="getOverridesForTrackType" id="668799832%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-overrides-for-track-type.html"><span>get</span><wbr><span>Overrides</span><wbr><span>For</span><wbr><span>Track</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="668799832%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="get-overrides-for-track-type.html"><span class="token function">getOverridesForTrackType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">trackType<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/C.TrackType.html"><span class="token annotation builtin">C.TrackType</span></a>&nbsp;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackGroup.html">TrackGroup</a><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionOverride.html">TrackSelectionOverride</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Filters the existing track selection overrides and returns only those that apply to the specified track type.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="309927449%2FFunctions%2F585621692" anchor-label="getPlaybackSpeed" id="309927449%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-playback-speed.html"><span>get</span><wbr><span>Playback</span><wbr><span><span>Speed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="309927449%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-playback-speed.html"><span class="token function">getPlaybackSpeed</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Returns the current playback speed of the player.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-782475118%2FFunctions%2F585621692" anchor-label="getUnixTimeMs" id="-782475118%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-unix-time-ms.html"><span>get</span><wbr><span>Unix</span><wbr><span>Time</span><wbr><span><span>Ms</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-782475118%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-unix-time-ms.html"><span class="token function">getUnixTimeMs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">positionMs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span>currentPosition<span class="token punctuation">, </span></span><span class="parameter ">window<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Timeline.Window.html">Timeline.Window</a><span class="token operator"> = </span>Window()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Calculates the unix time corresponding to the given position in the current media item in milliseconds.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2111591886%2FFunctions%2F585621692" anchor-label="hasAccessibilityRoles" id="2111591886%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-accessibility-roles.html"><span>has</span><wbr><span>Accessibility</span><wbr><span><span>Roles</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2111591886%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="has-accessibility-roles.html"><span class="token function">hasAccessibilityRoles</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> has accessibility roles, specifically if it describes video or sound.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="911556691%2FFunctions%2F585621692" anchor-label="hasRole" id="911556691%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-role.html"><span>has</span><wbr><span><span>Role</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="911556691%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="has-role.html"><span class="token function">hasRole</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">role<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/C.RoleFlags.html"><span class="token annotation builtin">C.RoleFlags</span></a>&nbsp;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> has the specified <a href="has-role.html">role</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="529657321%2FFunctions%2F585621692" anchor-label="hasSelection" id="529657321%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-selection.html"><span>has</span><wbr><span><span>Selection</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="529657321%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="has-selection.html"><span class="token function">hasSelection</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">selection<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/C.SelectionFlags.html"><span class="token annotation builtin">C.SelectionFlags</span></a>&nbsp;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> has the specified <a href="has-selection.html">selection flags</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1809094824%2FFunctions%2F585621692" anchor-label="hasTrackOverride" id="1809094824%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-track-override.html"><span>has</span><wbr><span>Track</span><wbr><span><span>Override</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1809094824%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="has-track-override.html"><span class="token function">hasTrackOverride</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">trackType<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/C.TrackType.html"><span class="token annotation builtin">C.TrackType</span></a>&nbsp;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if there is an override for the specified track type.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-38500933%2FFunctions%2F585621692" anchor-label="isAtLiveEdge" id="-38500933%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-at-live-edge.html"><span>is</span><wbr><span>At</span><wbr><span>Live</span><wbr><span><span>Edge</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-38500933%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="is-at-live-edge.html"><span class="token function">isAtLiveEdge</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">positionMs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span>currentPosition<span class="token punctuation">, </span></span><span class="parameter ">window<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Timeline.Window.html">Timeline.Window</a><span class="token operator"> = </span>Window()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the current playback position is at the live edge of a live stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1136440540%2FFunctions%2F585621692" anchor-label="isForced" id="1136440540%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-forced.html"><span>is</span><wbr><span><span>Forced</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1136440540%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="is-forced.html"><span class="token function">isForced</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a> is forced.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1421387040%2FFunctions%2F585621692" anchor-label="roleString" id="-1421387040%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="role-string.html"><span>role</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1421387040%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="role-string.html"><span class="token function">roleString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Returns a string representation of the role flags set for this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1994310211%2FFunctions%2F585621692" anchor-label="seekToUnixTimeMs" id="1994310211%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="seek-to-unix-time-ms.html"><span>seek</span><wbr><span>To</span><wbr><span>Unix</span><wbr><span>Time</span><wbr><span><span>Ms</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1994310211%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="seek-to-unix-time-ms.html"><span class="token function">seekToUnixTimeMs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">unixTimeMs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">window<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Timeline.Window.html">Timeline.Window</a><span class="token operator"> = </span>Window()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Seeks the player to the specified unix time in milliseconds within the current media item's window.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-539722302%2FFunctions%2F585621692" anchor-label="selectionString" id="-539722302%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="selection-string.html"><span>selection</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-539722302%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a><span class="token punctuation">.</span><a href="selection-string.html"><span class="token function">selectionString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Returns a string representation of the selection flags associated with this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Format.html">Format</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-125009632%2FFunctions%2F585621692" anchor-label="setHandleAudioFocus" id="-125009632%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-handle-audio-focus.html"><span>set</span><wbr><span>Handle</span><wbr><span>Audio</span><wbr><span><span>Focus</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-125009632%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="set-handle-audio-focus.html"><span class="token function">setHandleAudioFocus</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">handleAudioFocus<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets whether the player should handle audio focus.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1355494070%2FFunctions%2F585621692" anchor-label="setPreferredAudioRoleFlagsToAccessibilityManagerSettings" id="1355494070%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-preferred-audio-role-flags-to-accessibility-manager-settings.html"><span>set</span><wbr><span>Preferred</span><wbr><span>Audio</span><wbr><span>Role</span><wbr><span>Flags</span><wbr><span>To</span><wbr><span>Accessibility</span><wbr><span>Manager</span><wbr><span><span>Settings</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1355494070%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.Builder.html">TrackSelectionParameters.Builder</a><span class="token punctuation">.</span><a href="set-preferred-audio-role-flags-to-accessibility-manager-settings.html"><span class="token function">setPreferredAudioRoleFlagsToAccessibilityManagerSettings</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.Builder.html">TrackSelectionParameters.Builder</a></div><div class="brief "><p class="paragraph">Sets preferred audio role flags based on <a href="https://developer.android.com/reference/kotlin/android/view/accessibility/AccessibilityManager.html">AccessibilityManager</a> settings.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-92637534%2FFunctions%2F585621692" anchor-label="setTrackOverride" id="-92637534%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-track-override.html"><span>set</span><wbr><span>Track</span><wbr><span><span>Override</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-92637534%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="set-track-override.html"><span class="token function">setTrackOverride</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">override<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionOverride.html">TrackSelectionOverride</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets a track selection override.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a><span class="token punctuation">.</span><a href="set-track-override.html"><span class="token function">setTrackOverride</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">override<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionOverride.html">TrackSelectionOverride</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a></div><div class="brief "><p class="paragraph">Applies a <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionOverride.html">TrackSelectionOverride</a> to the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/TrackSelectionParameters.html">TrackSelectionParameters</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="751248397%2FFunctions%2F585621692" anchor-label="toRational" id="751248397%2FFunctions%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-rational.html"><span>to</span><wbr><span><span>Rational</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="751248397%2FFunctions%2F585621692"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a><span class="token punctuation">.</span><a href="to-rational.html"><span class="token function">toRational</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/Rational.html">Rational</a></div><div class="brief "><p class="paragraph">Converts this <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a> to a <a href="https://developer.android.com/reference/kotlin/android/util/Rational.html">Rational</a> representation, which is particularly useful for scenarios like picture-in-picture.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

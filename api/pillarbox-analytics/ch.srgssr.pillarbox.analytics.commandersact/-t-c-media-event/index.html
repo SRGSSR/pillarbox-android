@@ -1,0 +1,521 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>TCMediaEvent</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../../images/logo-icon.svg">
+<link href="../../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-analytics/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-analytics/main" data-filter=":pillarbox-analytics/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="pillarbox-analytics::ch.srgssr.pillarbox.analytics.commandersact/TCMediaEvent///PointingToDeclaration//-1429263391">
+  <div class="breadcrumbs"><a href="../../index.html">pillarbox-analytics</a><span class="delimiter">/</span><a href="../index.html">ch.srgssr.pillarbox.analytics.commandersact</a><span class="delimiter">/</span><span class="current">TCMediaEvent</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>TCMedia</span><wbr><span><span>Event</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">TCMediaEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>eventType<span class="token operator">: </span><a href="../-media-event-type/index.html">MediaEventType</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>assets<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <span data-unresolved-link="com.tagcommander.lib.serverside.events/TCCustomEvent///PointingToDeclaration/">TCCustomEvent</span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/SRGSSR/pillarbox-android/tree/9.0.1/pillarbox-analytics/src/main/java/ch/srgssr/pillarbox/analytics/commandersact/TCMediaEvent.kt#L21">source</a>)</span></span></div><p class="paragraph">Represents a media event to be sent to Commanders Act. This class extends <code class="lang-kotlin">TCCustomEvent</code> and adds specific properties for media tracking.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="887476046%2FConstructors%2F-1429263391" anchor-label="TCMediaEvent" id="887476046%2FConstructors%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-t-c-media-event.html"><span>TCMedia</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="887476046%2FConstructors%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventType<span class="token operator">: </span><a href="../-media-event-type/index.html">MediaEventType</a><span class="token punctuation">, </span></span><span class="parameter ">assets<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">sourceId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-619971496%2FProperties%2F-1429263391" anchor-label="assets" id="-619971496%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="assets.html"><span><span>assets</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-619971496%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="assets.html">assets</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A map representing additional data associated with the event.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="238419444%2FProperties%2F-1429263391" anchor-label="audioTrackHasAudioDescription" id="238419444%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="audio-track-has-audio-description.html"><span>audio</span><wbr><span>Track</span><wbr><span>Has</span><wbr><span>Audio</span><wbr><span><span>Description</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="238419444%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="audio-track-has-audio-description.html">audioTrackHasAudioDescription</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether the current audio track has an associated audio description.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-635022194%2FProperties%2F-1429263391" anchor-label="audioTrackLanguage" id="-635022194%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="audio-track-language.html"><span>audio</span><wbr><span>Track</span><wbr><span><span>Language</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-635022194%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="audio-track-language.html">audioTrackLanguage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Represents the language of the currently selected audio track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2062874859%2FProperties%2F-1429263391" anchor-label="deviceVolume" id="2062874859%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="device-volume.html"><span>device</span><wbr><span><span>Volume</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2062874859%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="device-volume.html">deviceVolume</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Represents the device's volume level as a percentage.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1817280971%2FProperties%2F-1429263391" anchor-label="eventType" id="1817280971%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="event-type.html"><span>event</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1817280971%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="event-type.html">eventType</a><span class="token operator">: </span><a href="../-media-event-type/index.html">MediaEventType</a></div><div class="brief "><p class="paragraph">The type of media event, defined by the Analytics team using the <a href="../-media-event-type/index.html">MediaEventType</a> enum.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-391451089%2FProperties%2F-1429263391" anchor-label="isSubtitlesOn" id="-391451089%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-subtitles-on.html"><span>is</span><wbr><span>Subtitles</span><wbr><span><span>On</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-391451089%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="is-subtitles-on.html">isSubtitlesOn</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether subtitles are enabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2128451348%2FProperties%2F-1429263391" anchor-label="jsonObject" id="2128451348%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="json-object.html"><span>json</span><wbr><span><span>Object</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2128451348%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="json-object.html">jsonObject</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONObject.html">JSONObject</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1724628302%2FProperties%2F-1429263391" anchor-label="mediaPosition" id="-1724628302%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="media-position.html"><span>media</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1724628302%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="media-position.html">mediaPosition</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a></div><div class="brief "><p class="paragraph">Represents the current playback position.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1906208037%2FProperties%2F-1429263391" anchor-label="sourceId" id="1906208037%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-id.html"><span>source</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1906208037%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="source-id.html">sourceId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">An optional identifier for the source of the event.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="889746931%2FProperties%2F-1429263391" anchor-label="subtitleSelectionLanguage" id="889746931%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="subtitle-selection-language.html"><span>subtitle</span><wbr><span>Selection</span><wbr><span><span>Language</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="889746931%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="subtitle-selection-language.html">subtitleSelectionLanguage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Represents the language of the currently selected subtitle track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="403235882%2FProperties%2F-1429263391" anchor-label="timeShift" id="403235882%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="time-shift.html"><span>time</span><wbr><span><span>Shift</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="403235882%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="time-shift.html">timeShift</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Represents the time shift applied if it is a live stream, <code class="lang-kotlin">null</code> otherwise.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Inherited properties</h2>
+        <div class="table"><a data-name="-719508415%2FProperties%2F-1429263391" anchor-label="additionalProperties" id="-719508415%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-719508415%2FProperties%2F-1429263391"><span>additional</span><wbr><span><span>Properties</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-719508415%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-719508415%2FProperties%2F-1429263391">additionalProperties</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/ConcurrentHashMap.html">ConcurrentHashMap</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-134048387%2FProperties%2F-1429263391" anchor-label="name" id="-134048387%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-134048387%2FProperties%2F-1429263391"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-134048387%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-134048387%2FProperties%2F-1429263391">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1749298258%2FProperties%2F-1429263391" anchor-label="pageName" id="-1749298258%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1749298258%2FProperties%2F-1429263391"><span>page</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1749298258%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#-1749298258%2FProperties%2F-1429263391">pageName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-819523105%2FProperties%2F-1429263391" anchor-label="pageType" id="-819523105%2FProperties%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-819523105%2FProperties%2F-1429263391"><span>page</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-819523105%2FProperties%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#-819523105%2FProperties%2F-1429263391">pageType</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="664237986%2FFunctions%2F-1429263391" anchor-label="getJsonObject" id="664237986%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-json-object.html"><span>get</span><wbr><span>Json</span><wbr><span><span>Object</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="664237986%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-json-object.html"><span class="token function">getJsonObject</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONObject.html">JSONObject</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="-1346721030%2FFunctions%2F-1429263391" anchor-label="addAdditionalParameter" id="-1346721030%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1708979149%2FFunctions%2F-1429263391"><span>add</span><wbr><span>Additional</span><wbr><span><span>Parameter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1346721030%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1708979149%2FFunctions%2F-1429263391"><span class="token function"><strike>addAdditionalParameter</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">store<span class="token operator">: </span><span data-unresolved-link="com.tagcommander.lib.core/TCDynamicStore///PointingToDeclaration/">TCDynamicStore</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#2060131170%2FFunctions%2F-1429263391"><span class="token function"><strike>addAdditionalParameter</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-591712195%2FFunctions%2F-1429263391"><span class="token function"><strike>addAdditionalParameter</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONObject.html">JSONObject</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="668283166%2FFunctions%2F-1429263391" anchor-label="addAdditionalProperty" id="668283166%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-853736818%2FFunctions%2F-1429263391"><span>add</span><wbr><span>Additional</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="668283166%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-853736818%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">store<span class="token operator">: </span><span data-unresolved-link="com.tagcommander.lib.core/TCDynamicStore///PointingToDeclaration/">TCDynamicStore</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1774061426%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/math/BigDecimal.html">BigDecimal</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1013616514%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-760254194%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1458288549%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1647897895%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1277654162%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/org/json/JSONObject.html">JSONObject</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1777588802%2FFunctions%2F-1429263391"><span class="token function">addAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONObject.html">JSONObject</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-783266376%2FFunctions%2F-1429263391" anchor-label="clearAdditionalProperties" id="-783266376%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-783266376%2FFunctions%2F-1429263391"><span>clear</span><wbr><span>Additional</span><wbr><span><span>Properties</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-783266376%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-783266376%2FFunctions%2F-1429263391"><span class="token function">clearAdditionalProperties</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-326310249%2FFunctions%2F-1429263391" anchor-label="getItemListAsJson" id="-326310249%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-326310249%2FFunctions%2F-1429263391"><span>get</span><wbr><span>Item</span><wbr><span>List</span><wbr><span>As</span><wbr><span><span>Json</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-326310249%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-326310249%2FFunctions%2F-1429263391"><span class="token function">getItemListAsJson</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">items<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.tagcommander.lib.serverside.schemas/TCItem///PointingToDeclaration/">TCItem</span><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONArray.html">JSONArray</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1385859006%2FFunctions%2F-1429263391" anchor-label="getListAsJson" id="-1385859006%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1385859006%2FFunctions%2F-1429263391"><span>get</span><wbr><span>List</span><wbr><span>As</span><wbr><span><span>Json</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1385859006%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1385859006%2FFunctions%2F-1429263391"><span class="token function">getListAsJson</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stringList<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/json/JSONArray.html">JSONArray</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="413291241%2FFunctions%2F-1429263391" anchor-label="removeAdditionalProperty" id="413291241%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#413291241%2FFunctions%2F-1429263391"><span>remove</span><wbr><span>Additional</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="413291241%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#413291241%2FFunctions%2F-1429263391"><span class="token function">removeAdditionalProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="12261791%2FFunctions%2F-1429263391" anchor-label="testString" id="12261791%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#12261791%2FFunctions%2F-1429263391"><span>test</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="12261791%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#12261791%2FFunctions%2F-1429263391"><span class="token function">testString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">var<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1957939983%2FFunctions%2F-1429263391" anchor-label="verifyEvent" id="-1957939983%2FFunctions%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1957939983%2FFunctions%2F-1429263391"><span>verify</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1957939983%2FFunctions%2F-1429263391"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1957939983%2FFunctions%2F-1429263391"><span class="token function">verifyEvent</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>pillarbox-analytics</title>
+<link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
+<link href="../styles/style.css" rel="Stylesheet">
+<link href="../styles/main.css" rel="Stylesheet">
+<link href="../styles/prism.css" rel="Stylesheet">
+<link href="../styles/logo-styles.css" rel="Stylesheet">
+<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../scripts/main.js" defer></script>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script>
+<link href="../images/logo-icon.svg">
+<link href="../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-analytics/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-analytics/main" data-filter=":pillarbox-analytics/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" id="content" pageids="pillarbox-analytics::////PointingToDeclaration//-1429263391">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>pillarbox-analytics</span></span></h1>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/main"><p class="paragraph">Provides SRG SSR implementation for <a href="https://www.commandersact.com/">Commanders Act</a> and <a href="https://comscore.com/">ComScore</a> to send page view events and custom events.</p><p class="paragraph"><strong>Note:</strong> custom events are only supported with Commanders Act.</p><h2 class="">Integration</h2><p class="paragraph">To use this module, add the following dependency to your module's <code class="lang-kotlin">build.gradle</code>/<code class="lang-kotlin">build.gradle.kts</code> file:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">implementation("ch.srgssr.pillarbox:pillarbox-analytics:&lt;pillarbox_version&gt;")</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Getting started</h2><h3 class="">Configure analytics</h3><p class="paragraph">Before using any functionality, <a href="ch.srgssr.pillarbox.analytics/-s-r-g-analytics/index.html">SRGAnalytics</a> must be initialized in your <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a>'s <a href="https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate">onCreate()</a> method using either the <a href="ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init-s-r-g-analytics.html">initSRGAnalytics()</a> or the <a href="ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init.html">SRGAnalytics.init()</a> method and providing an <a href="ch.srgssr.pillarbox.analytics/-analytics-config/index.html">AnalyticsConfig</a> instance.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class MyApplication : Application() {<br>    override fun onCreate() {<br>        super.onCreate()<br><br>        val config = AnalyticsConfig(<br>            vendor = AnalyticsConfig.Vendor.SRG,<br>            appSiteName = "Your AppSiteName here",<br>            sourceKey = SourceKey.DEVELOPMENT,<br>            nonLocalizedApplicationName = "Your non-localized AppSiteName here",<br>        )<br><br>        initSRGAnalytics(config)<br>        // or<br>        SRGAnalytics.init(this, config)<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Handle user consent</h3><p class="paragraph">User consent can be configured when initializing analytics in your <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a>'s <a href="https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate">onCreate()</a> method:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val userConsent = UserConsent(<br>    comScore = ComScoreUserConsent.UNKNOWN,<br>    commandersActConsentServices = emptyList(),<br>)<br><br>val config = AnalyticsConfig(<br>    vendor = AnalyticsConfig.Vendor.SRG,<br>    appSiteName = "Your AppSiteName here",<br>    sourceKey = SourceKey.DEVELOPMENT,<br>    nonLocalizedApplicationName = "Your non-localized AppSiteName here",<br>    userConsent = userConsent,<br>)<br><br>initSRGAnalytics(config)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Or it can be updated at any time using the following code snippet:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val userConsent = UserConsent(<br>    comScore = ComScoreUserConsent.DECLINED,<br>    commandersActConsentServices = listOf("service1_id", "service2_id"),<br>)<br><br>SRGAnalytics.setUserConsent(userConsent)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The updated values will be sent with the next analytics event.</p><h3 class="">Send page view</h3><p class="paragraph">To send a page view, use <a href="ch.srgssr.pillarbox.analytics/-s-r-g-analytics/send-page-view.html">SRGAnalytics.sendPageView()</a>. It will send the event only to Commanders Act.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val commandersActPageView = CommandersActPageView(<br>    name = "page_name",<br>    type = "page_type",<br>    levels = listOf("level1", "level2"),<br>)<br><br>SRGAnalytics.sendPageView(<br>    commandersAct = commandersActPageView<br>)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">In the case of a multi-pane view, each pane view can send a page view. It is useful when reusing views from a single pane view inside the multi-pane view. For Android Auto applications, it is not recommended to send page view.</p><h3 class="">Send event</h3><p class="paragraph">Events are application events that the analytics team wants to track. It could be a click event, a user choice, etc...</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val commandersActEvent = CommandersActEvent(name = "event")<br><br>SRGAnalytics.sendEvent(commandersActEvent)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="-262197760%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics" id="-262197760%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.analytics/index.html">ch.srgssr.pillarbox.analytics</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-262197760%2FPackages%2F-1429263391"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div><span class="brief-comment"><a data-name="-262197760%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics" id="-262197760%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+            <p class="paragraph">Top-level entry point for managing analytics in Pillarbox for SRG SSR applications.</p>
+          </span></div>
+      </div>
+    </div>
+<a data-name="-863593655%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics.commandersact" id="-863593655%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.analytics.commandersact/index.html">ch.srgssr.pillarbox.analytics.commandersact</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-863593655%2FPackages%2F-1429263391"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div><span class="brief-comment"><a data-name="-863593655%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics.commandersact" id="-863593655%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+            <p class="paragraph">Commanders Act specific classes.</p>
+          </span></div>
+      </div>
+    </div>
+<a data-name="919811235%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics.comscore" id="919811235%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-analytics/main" data-filterable-set=":pillarbox-analytics/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.analytics.comscore/index.html">ch.srgssr.pillarbox.analytics.comscore</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="919811235%2FPackages%2F-1429263391"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div><span class="brief-comment"><a data-name="919811235%2FPackages%2F-1429263391" anchor-label="ch.srgssr.pillarbox.analytics.comscore" id="919811235%2FPackages%2F-1429263391" data-filterable-set=":pillarbox-analytics/main"></a>
+            <p class="paragraph">ComScore specific classes.</p>
+          </span></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>pillarbox-cast</title>
+<link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
+<link href="../styles/style.css" rel="Stylesheet">
+<link href="../styles/main.css" rel="Stylesheet">
+<link href="../styles/prism.css" rel="Stylesheet">
+<link href="../styles/logo-styles.css" rel="Stylesheet">
+<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../scripts/main.js" defer></script>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script>
+<link href="../images/logo-icon.svg">
+<link href="../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-cast/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-cast/main" data-filter=":pillarbox-cast/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" id="content" pageids="pillarbox-cast::////PointingToDeclaration//698813790">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>pillarbox-cast</span></span></h1>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast/main"><p class="paragraph">Provides a <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> implementation that controls a Cast receiver app.</p><h2 class="">Integration</h2><p class="paragraph">To use this module, add the following dependency to your module's <code class="lang-kotlin">build.gradle</code>/<code class="lang-kotlin">build.gradle.kts</code> file:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">implementation("ch.srgssr.pillarbox:pillarbox-cast:&lt;pillarbox_version&gt;")</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The main goal of this module is to be able to build a user interface that can be used with a <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html">PillarboxExoPlayer</a> or <a href="https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html">PillarboxCastPlayer</a>. Both implementations are based on the <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> interface.</p><h2 class="">Getting started</h2><h3 class="">Setup <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/framework/CastContext">CastContext</a></h3><p class="paragraph">The framework has a global singleton object, the <code class="lang-kotlin">CastContext</code>, that coordinates all the framework's interactions.</p><p class="paragraph">Application must implement the <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/framework/OptionsProvider">OptionsProvider</a> interface to supply options needed to initialize the <code class="lang-kotlin">CastContext</code> singleton.  OptionsProvider provides an instance of <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/framework/CastOptions">CastOptions</a> which contains options that affect the behavior of the framework.  The most important of these is the Web Receiver <strong>application ID</strong>, which is used to filter discovery results and to launch the Web Receiver app when a Cast session is started or the Android TV receiver.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class CastOptionsProvider : OptionsProvider {<br>    override fun getCastOptions(context: Context): CastOptions {<br>        val launchOptions: LaunchOptions = LaunchOptions.Builder()<br>            .setAndroidReceiverCompatible(true) // true if the sender application is compatible with the Android TV receiver.<br>            .build()<br>        return Builder()<br>            .setReceiverApplicationId(RECEIVER_APP_ID)<br>            .setLaunchOptions(launchOptions)<br>            .build()<br>    }<br><br>    override fun getAdditionalSessionProviders(context: Context): List&lt;SessionProvider&gt;? {<br>        return null<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">You must declare the fully qualified name of the implemented <code class="lang-kotlin">OptionsProvider</code> as a metadata field in the AndroidManifest.xml file of the sender app:</p><div class="sample-container"><pre><code class="block lang-xml" theme="idea">&lt;application&gt;<br>    ...<br>    &lt;meta-data<br>        android:name=<br>            "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"<br>        android:value="com.foo.CastOptionsProvider" /&gt;<br>&lt;/application&gt;</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><code class="lang-kotlin">CastContext</code> is lazily initialized when the <code class="lang-kotlin">CastContext.getSharedInstance()</code> is called. Pillarbox provides an extension to easily handle the initialization.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val castContext = context.getCastContext()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Create the player</h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxCastPlayer(context, Default)<br>player.setSessionAvailabilityListener(object : SessionAvailabilityListener {<br>    override fun onCastSessionAvailable() {<br>        // The cast session is connected.<br>        player.setMediaItems(mediaItems)<br>        player.play()<br>        player.prepare()<br>    }<br><br>    override fun onCastSessionUnavailable() {<br>        // The cast session has been disconnected.<br>    }<br><br>})<br>// When the player is not needed anymore.<br>player.release()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The <code class="lang-kotlin">SessionAvailabilityListener</code> can also be created this way:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxCastPlayer(context, Default) {<br>    onCastSessionAvailable {<br>        // The cast session is connected.<br>        setMediaItems(mediaItems)<br>        play()<br>        prepare()<br>    }<br><br>    onCastSessionUnavailable {<br>        // The cast session has been disconnected.<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Configure <a href="https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter">MediaItemConverter</a></h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxCastPlayer(context, Default) {<br>    mediaItemConverter(DefaultMediaItemConverter()) // By default<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Display a Cast button</h3><p class="paragraph">Somewhere in your application, a Cast button has to be displayed to allow the user to connect to a Cast device.</p><p class="paragraph">To do this, you can use either:</p><ul><li><p class="paragraph">The official <a href="https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton">MediaRouteButton</a>, best suited for application using AppCompat and XML <code class="lang-kotlin">View</code>s.</p></li><li><p class="paragraph"><a href="https://srgssr.github.io/MediaMaestro/">MediaMaestro</a>, which works best with Compose.</p></li></ul><h2 class="">Local to remote playback</h2><p class="paragraph"><a href="https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html">CastPlayerSynchronizer</a> provide an easy to use local to remote management that synchronized player state when needed.</p><p class="paragraph">When using <a href="https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html">CastPlayerSynchronizer</a> state transition is handled when it is needed. By default the following states are synchronized:</p><ul><li><p class="paragraph">MediaItems</p></li><li><p class="paragraph">Playback position</p></li><li><p class="paragraph">Repeat mode</p></li><li><p class="paragraph">PlayWhenReady</p></li><li><p class="paragraph">Track selection</p></li></ul><blockquote class="quotation"><p class="paragraph">Track selection restoration does best effort, by default it tries to select the first track that matches the language. So if multiple tracks with the same language are present, it may not choose the one that is actually selected.</p></blockquote><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val localPlayer = PillarboxExoPlayer(context, Default)<br>val castPlayer = PillarboxCastPlayer(context, Default)<br><br>val castSynchronizer = CastPlayerSynchronizer(<br>    castContext = castContext,<br>    coroutineScope = coroutineScope,<br>    castPlayer = castPlayer,<br>    localPlayer = localPlayer,<br>)<br>var currentPlayer: StateFlow&lt;PillarboxPlayer&gt; = castSynchronizer.currentPlayer<br><br>....<br><br>PlayerView(currentPlayer)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The default behavior can be modified by overriding <a href="https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-default-player-synchronizer/index.html">DefaultPlayerSynchronizer</a> or by creating a new <a href="https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html">PlayerSynchronizer</a> implementation.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class CustomPlayerSynchronizer : CastPlayerSynchronizer.DefaultPlayerSynchronizer() {<br><br>    override fun onTracksChanged(<br>        newTracks: Tracks,<br>        selectedAudioTrack: AudioTrack?,<br>        selectedTextTrack: TextTrack?<br>    ): CastPlayerSynchronizer.Selection {<br>        // An example to disable text track<br>        val selection = super.onTracksChanged(newTracks, selectedAudioTrack, selectedTextTrack)<br>        return CastPlayerSynchronizer.Selection(selection.audioTrack, null)<br>    }<br><br>    override fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer) {<br>        super.onPlayerChanged(oldPlayer, newPlayer)<br>        // Update newPlayer with some state and handle the state of the oldPlayer.<br>        newPlayer.prepare()<br>        oldPlayer.stop()<br>        oldPlayer.clearMediaItems()<br>        // Don't call release otherwise the player can't come back after.<br>    }<br>}<br><br>val castSynchronizer = CastPlayerSynchronizer(<br>    castContext = castContext,<br>    coroutineScope = coroutineScope,<br>    castPlayer = castPlayer,<br>    localPlayer = localPlayer,<br>    playerSynchronizer = CustomPlayerSynchronizer()<br>)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Road map</h2><ul><li><p class="paragraph">Handle Pillarbox metadata such as chapters, blocked time range and credits.</p></li></ul><h2 class="">Additional resources</h2><ul><li><p class="paragraph"><a href="https://developers.google.com/cast/docs/android_sender">Google Cast SDK</a></p></li></ul></div></div>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="1080733513%2FPackages%2F698813790" anchor-label="ch.srgssr.pillarbox.cast" id="1080733513%2FPackages%2F698813790" data-filterable-set=":pillarbox-cast/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-cast/main" data-filterable-set=":pillarbox-cast/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.cast/index.html">ch.srgssr.pillarbox.cast</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1080733513%2FPackages%2F698813790"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

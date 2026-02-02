@@ -1,0 +1,474 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>ch.srgssr.pillarbox.ui.extension</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../images/logo-icon.svg">
+<link href="../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-ui/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-ui/main" data-filter=":pillarbox-ui/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="package" id="content" pageids="pillarbox-ui::ch.srgssr.pillarbox.ui.extension////PointingToDeclaration//-609525975">
+  <div class="breadcrumbs"><a href="../index.html">pillarbox-ui</a><span class="delimiter">/</span><span class="current">ch.srgssr.pillarbox.ui.extension</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="-1078905180%2FFunctions%2F-609525975" anchor-label="availableCommandsAsState" id="-1078905180%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="available-commands-as-state.html"><span>available</span><wbr><span>Commands</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1078905180%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="available-commands-as-state.html"><span class="token function">availableCommandsAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.Commands.html">Player.Commands</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getavailablecommands">Player.getAvailableCommands</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2057573371%2FFunctions%2F-609525975" anchor-label="currentBufferedPercentageAsState" id="2057573371%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-buffered-percentage-as-state.html"><span>current</span><wbr><span>Buffered</span><wbr><span>Percentage</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2057573371%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="current-buffered-percentage-as-state.html"><span class="token function">currentBufferedPercentageAsState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateInterval<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator"> = </span>DefaultUpdateInterval</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/FloatState.html">FloatState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getbufferedpercentage">Player.getBufferedPercentage</a> property, adjusted between 0 and 1, as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1477574561%2FFunctions%2F-609525975" anchor-label="currentMediaItemIndexAsState" id="1477574561%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-media-item-index-as-state.html"><span>current</span><wbr><span>Media</span><wbr><span>Item</span><wbr><span>Index</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1477574561%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="current-media-item-index-as-state.html"><span class="token function">currentMediaItemIndexAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/IntState.html">IntState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getcurrentmediaitemindex">Player.getCurrentMediaItemIndex</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="518060033%2FFunctions%2F-609525975" anchor-label="currentMediaMetadataAsState" id="518060033%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-media-metadata-as-state.html"><span>current</span><wbr><span>Media</span><wbr><span>Metadata</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="518060033%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="current-media-metadata-as-state.html"><span class="token function">currentMediaMetadataAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaMetadata.html">MediaMetadata</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getmediametadata">Player.getMediaMetadata</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1131478579%2FFunctions%2F-609525975" anchor-label="currentPositionAsState" id="1131478579%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-position-as-state.html"><span>current</span><wbr><span>Position</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1131478579%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="current-position-as-state.html"><span class="token function">currentPositionAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/LongState.html">LongState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getcurrentposition">Player.getCurrentPosition</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-78280857%2FFunctions%2F-609525975" anchor-label="durationAsState" id="-78280857%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="duration-as-state.html"><span>duration</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-78280857%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="duration-as-state.html"><span class="token function">durationAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/LongState.html">LongState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getduration">Player.getDuration</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="690024079%2FFunctions%2F-609525975" anchor-label="getAspectRatioAsState" id="690024079%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-aspect-ratio-as-state.html"><span>get</span><wbr><span>Aspect</span><wbr><span>Ratio</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="690024079%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-aspect-ratio-as-state.html"><span class="token function">getAspectRatioAsState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">defaultAspectRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/FloatState.html">FloatState</a></div><div class="brief "><p class="paragraph">Observe the aspect ratio of the current <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a> as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1910196376%2FFunctions%2F-609525975" anchor-label="getCurrentChapterAsState" id="1910196376%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-current-chapter-as-state.html"><span>get</span><wbr><span>Current</span><wbr><span>Chapter</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1910196376%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a><span class="token punctuation">.</span><a href="get-current-chapter-as-state.html"><span class="token function">getCurrentChapterAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="../../pillarbox-player/ch.srgssr.pillarbox.player.asset.time-range/-chapter/index.html">Chapter</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the Player.getChapterAtPosition property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1635607837%2FFunctions%2F-609525975" anchor-label="getCurrentMediaItemIndexAsState" id="1635607837%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-current-media-item-index-as-state.html"><span>get</span><wbr><span>Current</span><wbr><span>Media</span><wbr><span>Item</span><wbr><span>Index</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1635607837%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-current-media-item-index-as-state.html"><span class="token function">getCurrentMediaItemIndexAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/IntState.html">IntState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getcurrentmediaitemindex">Player.getCurrentMediaItemIndex</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="86073468%2FFunctions%2F-609525975" anchor-label="getCurrentMediaItemsAsState" id="86073468%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-current-media-items-as-state.html"><span>get</span><wbr><span>Current</span><wbr><span>Media</span><wbr><span>Items</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="86073468%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-current-media-items-as-state.html"><span class="token function">getCurrentMediaItemsAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="../../pillarbox-player/ch.srgssr.pillarbox.player.extension/index.html">Player.getCurrentMediaItems</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1023282661%2FFunctions%2F-609525975" anchor-label="getDeviceInfoAsState" id="-1023282661%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-device-info-as-state.html"><span>get</span><wbr><span>Device</span><wbr><span>Info</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1023282661%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-device-info-as-state.html"><span class="token function">getDeviceInfoAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/DeviceInfo.html">DeviceInfo</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getdeviceinfo">Player.getDeviceInfo</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1924799303%2FFunctions%2F-609525975" anchor-label="getPeriodicallyCurrentMetricsAsState" id="-1924799303%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-periodically-current-metrics-as-state.html"><span>get</span><wbr><span>Periodically</span><wbr><span>Current</span><wbr><span>Metrics</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1924799303%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a><span class="token punctuation">.</span><a href="get-periodically-current-metrics-as-state.html"><span class="token function">getPeriodicallyCurrentMetricsAsState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateInterval<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-duration/index.html">Duration</a><span class="token operator"> = </span>DefaultUpdateInterval</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="../../pillarbox-player/ch.srgssr.pillarbox.player.analytics.metrics/-playback-metrics/index.html">PlaybackMetrics</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="../../pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/get-current-metrics.html">PillarboxPlayer.getCurrentMetrics</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="887012965%2FFunctions%2F-609525975" anchor-label="getVolumeAsState" id="887012965%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-volume-as-state.html"><span>get</span><wbr><span>Volume</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="887012965%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="get-volume-as-state.html"><span class="token function">getVolumeAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/FloatState.html">FloatState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getvolume">Player.getVolume</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2034870465%2FFunctions%2F-609525975" anchor-label="hasMediaItemsAsState" id="-2034870465%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-media-items-as-state.html"><span>has</span><wbr><span>Media</span><wbr><span>Items</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2034870465%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="has-media-items-as-state.html"><span class="token function">hasMediaItemsAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe whether the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a> has any media items.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-289806905%2FFunctions%2F-609525975" anchor-label="isCurrentMediaItemLiveAsState" id="-289806905%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-current-media-item-live-as-state.html"><span>is</span><wbr><span>Current</span><wbr><span>Media</span><wbr><span>Item</span><wbr><span>Live</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-289806905%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="is-current-media-item-live-as-state.html"><span class="token function">isCurrentMediaItemLiveAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#iscurrentmediaitemlive">Player.isCurrentMediaItemLive</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1415023274%2FFunctions%2F-609525975" anchor-label="isDeviceMutedAsState" id="1415023274%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-device-muted-as-state.html"><span>is</span><wbr><span>Device</span><wbr><span>Muted</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1415023274%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="is-device-muted-as-state.html"><span class="token function">isDeviceMutedAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#isdevicemuted">Player.isDeviceMuted</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="266230097%2FFunctions%2F-609525975" anchor-label="isPlayingAsState" id="266230097%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-playing-as-state.html"><span>is</span><wbr><span>Playing</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="266230097%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="is-playing-as-state.html"><span class="token function">isPlayingAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#isplaying">Player.isPlaying</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1535444221%2FFunctions%2F-609525975" anchor-label="mediaItemCountAsState" id="-1535444221%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="media-item-count-as-state.html"><span>media</span><wbr><span>Item</span><wbr><span>Count</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1535444221%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="media-item-count-as-state.html"><span class="token function">mediaItemCountAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/IntState.html">IntState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getmediaitemcount">Player.getMediaItemCount</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-652147575%2FFunctions%2F-609525975" anchor-label="playbackSpeedAsState" id="-652147575%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="playback-speed-as-state.html"><span>playback</span><wbr><span>Speed</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-652147575%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="playback-speed-as-state.html"><span class="token function">playbackSpeedAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/FloatState.html">FloatState</a></div><div class="brief "><p class="paragraph">Observe the <a href="../../pillarbox-player/ch.srgssr.pillarbox.player.extension/index.html">Player.getPlaybackSpeed</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-264108929%2FFunctions%2F-609525975" anchor-label="playbackStateAsState" id="-264108929%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="playback-state-as-state.html"><span>playback</span><wbr><span>State</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-264108929%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="playback-state-as-state.html"><span class="token function">playbackStateAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/IntState.html">IntState</a></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getplaybackstate">Player.getPlaybackState</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="289799406%2FFunctions%2F-609525975" anchor-label="playerErrorAsState" id="289799406%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="player-error-as-state.html"><span>player</span><wbr><span>Error</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="289799406%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="player-error-as-state.html"><span class="token function">playerErrorAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/PlaybackException.html">PlaybackException</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getplayererror">Player.getPlayerError</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1199184480%2FFunctions%2F-609525975" anchor-label="playWhenReadyAsState" id="1199184480%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="play-when-ready-as-state.html"><span>play</span><wbr><span>When</span><wbr><span>Ready</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1199184480%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="play-when-ready-as-state.html"><span class="token function">playWhenReadyAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getplaywhenready">Player.getPlayWhenReady</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1120661721%2FFunctions%2F-609525975" anchor-label="videoSizeAsState" id="1120661721%2FFunctions%2F-609525975" data-filterable-set=":pillarbox-ui/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-ui/main" data-filterable-set=":pillarbox-ui/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="video-size-as-state.html"><span>video</span><wbr><span>Size</span><wbr><span>As</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1120661721%2FFunctions%2F-609525975"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-ui/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html">Player</a><span class="token punctuation">.</span><a href="video-size-as-state.html"><span class="token function">videoSizeAsState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/VideoSize.html">VideoSize</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Observe the <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/Player.html#getvideosize">Player.getVideoSize</a> property as a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

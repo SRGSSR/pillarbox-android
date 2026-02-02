@@ -1,0 +1,159 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>pillarbox-cast-receiver</title>
+<link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
+<link href="../styles/style.css" rel="Stylesheet">
+<link href="../styles/main.css" rel="Stylesheet">
+<link href="../styles/prism.css" rel="Stylesheet">
+<link href="../styles/logo-styles.css" rel="Stylesheet">
+<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../scripts/main.js" defer></script>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script>
+<link href="../images/logo-icon.svg">
+<link href="../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-cast-receiver/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-cast-receiver/main" data-filter=":pillarbox-cast-receiver/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" id="content" pageids="pillarbox-cast-receiver::////PointingToDeclaration//60019786">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>pillarbox-cast-receiver</span></span></h1>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-cast-receiver/main"><p class="paragraph">Provides a <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> implementation to handle GoogleCast TV receiver. Application needs to use <a href="https://android.pillarbox.ch/api/pillarbox-cast-receiver/ch.srgssr.pillarbox.cast.receiver/-pillarbox-cast-receiver-player/index.html">PillarboxCastReceiverPlayer</a> instead of <code class="lang-kotlin">PillarboxExoPlayer</code>.</p><h2 class="">Integration</h2><p class="paragraph">To use this module, add the following dependency to your module's <code class="lang-kotlin">build.gradle</code>/<code class="lang-kotlin">build.gradle.kts</code> file:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">implementation("ch.srgssr.pillarbox:pillarbox-cast-receiver:&lt;pillarbox_version&gt;")</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Configuring Cast support</h2><p class="paragraph">When a launch request is sent out by a sender application, an <i>Intent</i> is created with an application namespace.  Application is responsible for handling it and creating an instance of the <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/tv/CastReceiverContext">CastReceiverContext</a> object when the TV app is launched.  The CastReceiverContext object is needed to interact with Cast while the TV app is running.  This object enables TV applications to accept Cast media messages coming from any connected senders.</p><h3 class="">Android TV Setup</h3><p class="paragraph">Add a new intent filter to the activity that you want to handle the launch intent from your sender app:</p><div class="sample-container"><pre><code class="block lang-xml" theme="idea">&lt;activity android:name="com.example.activity"&gt;<br>  &lt;intent-filter&gt;<br>      &lt;action android:name="com.google.android.gms.cast.tv.action.LAUNCH" /&gt;<br>      &lt;category android:name="android.intent.category.DEFAULT" /&gt;<br>  &lt;/intent-filter&gt;<br>&lt;/activity&gt;</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Application needs to implement a <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/tv/ReceiverOptionsProvider">ReceiverOptionsProvider</a> to provide <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/tv/CastReceiverOptions">CastReceiverOptions</a>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class MyReceiverOptionsProvider : ReceiverOptionsProvider {<br>  override fun getOptions(context: Context?): CastReceiverOptions {<br>    return CastReceiverOptions.Builder(context)<br>            // If you don't set setStatusText, it is pulled automatically from android:label in your Android TV manifest.<br>          .setStatusText("My App")<br>          .build()<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Then specify the <code class="lang-kotlin">ReceiverOptionsProvider</code> in the application <code class="lang-kotlin">AndroidManifest</code>:</p><div class="sample-container"><pre><code class="block lang-xml" theme="idea"> &lt;meta-data<br>    android:name="com.google.android.gms.cast.tv.RECEIVER_OPTIONS_PROVIDER_CLASS_NAME"<br>    android:value="com.example.mysimpleatvapplication.MyReceiverOptionsProvider" /&gt;</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The <code class="lang-kotlin">ReceiverOptionsProvider</code> is used to provide the <code class="lang-kotlin">CastReceiverOptions</code> when <code class="lang-kotlin">CastReceiverContext</code> is initialized.</p><h3 class="">Cast receiver context</h3><p class="paragraph">Initialize the <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/tv/CastReceiverContext">CastReceiverContext</a> when your app is created:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">override fun onCreate() {<br>    CastReceiverContext.initInstance(this)<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Start the <code class="lang-kotlin">CastReceiverContext</code> when your app moves to the foreground:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">CastReceiverContext.getInstance().start()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Call <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/tv/CastReceiverContext#stop()"><code class="lang-kotlin">stop()</code></a> on the <code class="lang-kotlin">CastReceiverContext</code> after the app goes into the background for video apps or apps that don't support background playback:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">// Player has stopped.<br>CastReceiverContext.getInstance().stop()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><blockquote class="quotation"><p class="paragraph">Additionally, if the application does support playing in the background, call <code class="lang-kotlin">stop()</code> on the <code class="lang-kotlin">CastReceiverContext</code> when it stops playing while in the background.</p></blockquote><p class="paragraph">Google Cast strongly recommends you use the <code class="lang-kotlin">LifecycleObserver</code> from the <code class="lang-kotlin">androidx.lifecycle</code> library to manage calling <code class="lang-kotlin">CastReceiverContext.start()</code> and <code class="lang-kotlin">CastReceiverContext.stop()</code>,  especially if your native app has multiple activities. This avoids race conditions when you call <code class="lang-kotlin">start()</code> and <code class="lang-kotlin">stop()</code> from different activities.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">// Create a LifecycleObserver class.<br>class MyLifecycleObserver : DefaultLifecycleObserver {<br>  override fun onStart(owner: LifecycleOwner) {<br>    // App prepares to enter foreground.<br>    CastReceiverContext.getInstance().start()<br>  }<br><br>  override fun onStop(owner: LifecycleOwner) {<br>    // App has moved to the background or has terminated.<br>    CastReceiverContext.getInstance().stop()<br>  }<br>}<br><br>// Add the observer when your application is being created.<br>class MyApplication : Application() {<br>  fun onCreate() {<br>    super.onCreate()<br><br>    // Initialize CastReceiverContext.<br>    CastReceiverContext.initInstance(this /* android.content.Context */)<br><br>    // Register LifecycleObserver<br>    ProcessLifecycleOwner.get().lifecycle.addObserver(<br>        MyLifecycleObserver())<br>  }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Playback</h2><p class="paragraph">Get the <code class="lang-kotlin">CastReceiverContext</code></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val castReceiverContext = CastReceiverContext.getInstance()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Create the <a href="https://android.pillarbox.ch/api/pillarbox-cast-receiver/ch.srgssr.pillarbox.cast.receiver/-pillarbox-cast-receiver-player/index.html">PillarboxCastReceiverPlayer</a> that implements <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> and handles all incoming events from the cast senders.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player : PillarboxPlayer = PillarboxCastReceiverPlayer(<br>    player = PillarboxExoPlayer(this),<br>    mediaItemConverter = SRGMediaItemConverter(), // It should be the same converter that is used by the Android senders.<br>    castReceiverContext = castReceiverContext,<br>)<br><br>val mediaSession = PillarboxMediaSession.Builder(this, player).build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Link the player <code class="lang-kotlin">MediaSession</code> with the <code class="lang-kotlin">CastReceiverContext</code></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">castReceiverContext.mediaManager.setSessionTokenFromPillarboxMediaSession(mediaSession)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Handle the cast intent in the <code class="lang-kotlin">Activity</code> in <code class="lang-kotlin">onNewIntent</code> and in <code class="lang-kotlin">onCreate</code> method after linking the session with the CastReceiver.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">private fun handleIntent(intent: Intent) {<br>    val mediaManager = CastReceiverContext.getInstance().mediaManager<br>    if (mediaManager.onNewIntent(intent)) {<br>        return<br>    } else {<br>        // Cast doesn't handle this intent do the stuff your application have to do.<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Additional resources</h2><ul><li><p class="paragraph"><a href="https://developers.google.com/cast/docs/android_tv_receiver">Google Cast receiver SDK</a></p></li><li><p class="paragraph"><a href="https://developers.google.com/cast/docs/android_sender">Google Cast sender SDK</a></p></li><li><p class="paragraph"><a href="https://developers.google.com/cast/docs/android_tv_receiver/core_features#cast_developer_console_setup">Google Cast console setup</a></p></li></ul></div></div>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="1973913656%2FPackages%2F60019786" anchor-label="ch.srgssr.pillarbox.cast.receiver" id="1973913656%2FPackages%2F60019786" data-filterable-set=":pillarbox-cast-receiver/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-cast-receiver/main" data-filterable-set=":pillarbox-cast-receiver/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.cast.receiver/index.html">ch.srgssr.pillarbox.cast.receiver</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1973913656%2FPackages%2F60019786"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="260084750%2FPackages%2F60019786" anchor-label="ch.srgssr.pillarbox.cast.receiver.extensions" id="260084750%2FPackages%2F60019786" data-filterable-set=":pillarbox-cast-receiver/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-cast-receiver/main" data-filterable-set=":pillarbox-cast-receiver/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.cast.receiver.extensions/index.html">ch.srgssr.pillarbox.cast.receiver.extensions</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="260084750%2FPackages%2F60019786"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

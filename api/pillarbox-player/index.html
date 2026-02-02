@@ -1,0 +1,411 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>pillarbox-player</title>
+<link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
+<link href="../styles/style.css" rel="Stylesheet">
+<link href="../styles/main.css" rel="Stylesheet">
+<link href="../styles/prism.css" rel="Stylesheet">
+<link href="../styles/logo-styles.css" rel="Stylesheet">
+<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../scripts/main.js" defer></script>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script>
+<link href="../images/logo-icon.svg">
+<link href="../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-player/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-player/main" data-filter=":pillarbox-player/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" id="content" pageids="pillarbox-player::////PointingToDeclaration//585621692">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>pillarbox-player</span></span></h1>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/main"><p class="paragraph">Provides <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a>, an AndroidX Media3 <a href="https://developer.android.com/reference/androidx/media3/common/Player">Player</a> implementation for media playback on Android.</p><h2 class="">Integration</h2><p class="paragraph">To use this module, add the following dependency to your module's <code class="lang-kotlin">build.gradle</code>/<code class="lang-kotlin">build.gradle.kts</code> file:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">implementation("ch.srgssr.pillarbox:pillarbox-player:&lt;pillarbox_version&gt;")</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Getting started</h2><h3 class="">Create the player</h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxExoPlayer(context, Default)<br>// Make the player ready to play content<br>player.prepare()<br>// Will start playback when a MediaItem is ready to play<br>player.play() </code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h4 class="">Playback monitoring</h4><p class="paragraph">By default, <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html">PillarboxExoPlayer</a> does not record any monitoring data. You can configure this behaviour when creating the player:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxExoPlayer(context, Default) {<br>    // Disable monitoring recording (default behavior)<br>    disableMonitoring()<br><br>    // Output each monitoring event to Logcat<br>    monitoring(Logcat)<br><br>    // Send each monitoring event to a remote server<br>    monitoring(Remote) {<br>        config(endpointUrl = "https://example.com/monitoring")<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Create a <code class="lang-kotlin">MediaItem</code></h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val mediaUri = "https://example.com/media.mp4"<br>val mediaItem = MediaItem.fromUri(mediaUri)<br><br>player.setMediaItem(mediaItem)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">More information about <a href="https://developer.android.com/reference/androidx/media3/common/MediaItem">MediaItem</a> creation can be found in the <code class="lang-kotlin">MediaItem</code> <a href="https://developer.android.com/media/media3/exoplayer/media-items">documentation</a>.</p><h3 class="">Display a <code class="lang-kotlin">Player</code></h3><p class="paragraph"><a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> can be used with the <a href="https://developer.android.com/reference/android/view/View">View</a>s provided by AndroidX Media3 without any modifications.</p><p class="paragraph">To quickly get started, add the following to your module's <code class="lang-kotlin">build.gradle</code>/<code class="lang-kotlin">build.gradle.kts</code> file:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">implementation("androidx.media3:media3-ui:&lt;androidx_media3_version&gt;")</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Then link your player to a <a href="https://developer.android.com/reference/androidx/media3/ui/PlayerView">PlayerView</a>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@Override<br>fun onCreate(savedInstanceState: Bundle) {<br>    super.onCreate(savedInstanceState)<br><br>    val player = PillarboxExoPlayer(context, Default)<br>    val playerView: PlayerView = findViewById(R.id.player_view)<br>    // A player can only be attached to one View!<br>    playerView.player = player<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">For more detailed information, you can check <a href="https://developer.android.com/media/media3/ui/playerview">AndroidX Media3 UI</a>.</p><p class="paragraph"><strong>Tip:</strong> for integration with Compose, you can use <a href="https://android.pillarbox.ch/api/pillarbox-ui/index.html">pillarbox-ui</a>.</p><h3 class="">Release a <code class="lang-kotlin">Player</code></h3><p class="paragraph">When the player is not needed anymore, you have to release it. This will free resources allocated by the player.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">player.release()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><strong>Warning:</strong> the player can't be used anymore after that.</p><h2 class="">Custom <code class="lang-kotlin">AssetLoader</code></h2><p class="paragraph"><a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset/-asset-loader/index.html">AssetLoader</a> is used to load content that doesn't directly have a playable URL, for example, a resource id or a URI. Its responsibility is to provide a <a href="https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource">MediaSource</a> that:</p><ul><li><p class="paragraph">Is playable by the player;</p></li><li><p class="paragraph">Contains <a href="https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/MediaItemTracking.md">tracking data</a>;</p></li><li><p class="paragraph">Provides optional media metadata.</p></li></ul><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {<br>    override fun canLoadAsset(mediaItem: MediaItem): Boolean {<br>        return mediaItem.localConfigruation?.uri?.scheme == "custom"<br>    }<br><br>    override suspend fun loadAsset(mediaItem: MediaItem): Asset {<br>        val data = service.fetchData(mediaItem.localConfigruation!!.uri)<br>        val trackerData = MutableMediaItemTrackerData()<br>        trackerData[KEY] = FactoryData(CustomMediaItemTracker.Factory(), CustomTrackerData("CustomData"))<br><br>        val mediaMetadata = MediaMetadata.Builder()<br>            .setTitle(data.title)<br>            .setArtworkUri(data.imageUri)<br>            .setChapters(data.chapters)<br>            .setCredits(data.credits)<br>            .build()<br>        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))<br><br>        return Asset(<br>            mediaSource = mediaSource,<br>            trackersData = trackerData.toMediaItemTrackerData(),<br>            mediaMetadata = mediaMetadata,<br>            blockedTimeRanges = emptyList(),<br>        )<br>    }<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Now pass your <code class="lang-kotlin">CustomAssetLoader</code> to your player, so it can understand and play your custom data:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxExoPlayer(context, Default) {<br>    +CustomAssetLoader(context)<br>}<br>player.prepare()<br>player.setMediaItem(MediaItem.fromUri("custom://video:1234"))<br>player.play()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Chapters</h3><p class="paragraph">Chapters represent the temporal segmentation of the playing media.</p><p class="paragraph">A <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset.timeRange/-chapter/index.html">Chapter</a> can be created like that:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val chapter = Chapter(<br>    id = "1",<br>    start = 0L,<br>    end = 12_000L,<br>    mediaMetadata = MediaMetadata.Builder().setTitle("Chapter 1").build(),<br>)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> provides methods to observe and access chapters:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxExoPlayer(context, Default)<br>player.addListener(object : Listener {<br>    override fun onChapterChanged(chapter: Chapter?) {<br>        if (chapter == null) {<br>            // Hide chapter information<br>        } else {<br>            // Display chapter information<br>        }<br>    }<br>})<br><br>val chapters = player.getCurrentChapters()<br>val currentChapter = player.getChapterAtPosition()<br>val chapterAtPosition = player.getChapterAtPosition(10_000L)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Chapters can be added to a <a href="https://developer.android.com/reference/androidx/media3/common/MediaItem">MediaItem</a> via its metadata:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val mediaMetadata = MediaMetadata.Builder()<br>    .setChapters(listOf(chapter))<br>    .build()<br>val mediaItem = MediaItem.Builder()<br>    .setMediaMetadata(mediaMetadata)<br>    .build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h3 class="">Credits</h3><p class="paragraph">Credits represent a point in the player timeline where opening credits or closing credits should be displayed.</p><p class="paragraph">A <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset.timeRange/-credit/index.html">Credit</a> can be created like that:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val openingCredits = Credit.Opening(start = 5_000L, end = 10_000L)<br>val closingCredits = Credit.Closing(start = 20_000L, end = 30_000L)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> provides methods to observe and access credits:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val player = PillarboxExoPlayer(context, Default)<br>player.addListener(object : Listener {<br>    override fun onCreditChanged(credit: Credit?) {<br>        when (credit) {<br>            is Credit.Opening -&gt; Unit // Show "Skip intro" button<br>            is Credit.Closing -&gt; Unit // Show "Skip credits" button<br>            else -&gt; Unot // Hide button<br>        }<br>    }<br>})<br><br>val credits = player.getCurrentCredits()<br>val currentCredit = player.getCreditAtPosition()<br>val creditAtPosition = player.getCreditAtPosition(5_000L)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Chapters can be added to a <a href="https://developer.android.com/reference/androidx/media3/common/MediaItem">MediaItem</a> via its metadata:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val mediaMetadata = MediaMetadata.Builder()<br>    .setCredits(listOf(openingCredits, closingCredits))<br>    .build()<br>val mediaItem = MediaItem.Builder()<br>    .setMediaMetadata(mediaMetadata)<br>    .build()</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">Known issues</h2><ul><li><p class="paragraph">Playing DRM content on two instances of <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html">PillarboxPlayer</a> is not supported on all devices.</p></li><ul><li><p class="paragraph">Known affected devices: Samsung Galaxy A13, Huawei Nova 5i Pro, Huawei P40 Lite.</p></li><li><p class="paragraph">Related issue: <a href="https://github.com/androidx/media/issues/1877">androidx/media#1877</a>.</p></li></ul></ul><h2 class="">Further reading</h2><p class="paragraph">As <a href="https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html">PillarboxExoPlayer</a> extends from <a href="https://developer.android.com/reference/androidx/media3/exoplayer/ExoPlayer">ExoPlayer</a>, all documentation related to ExoPlayer is also valid for Pillarbox. Here are some useful links to get more information about ExoPlayer:</p><ul><li><p class="paragraph"><a href="https://developer.android.com/media/media3/exoplayer/hello-world.html">Getting started with ExoPlayer</a></p></li><li><p class="paragraph"><a href="https://developer.android.com/media/media3/exoplayer/listening-to-player-events">Player events</a></p></li><li><p class="paragraph"><a href="https://developer.android.com/media/media3/exoplayer/media-items">Media items</a></p></li><li><p class="paragraph"><a href="https://developer.android.com/media/media3/exoplayer/playlists">Playlists</a></p></li><li><p class="paragraph"><a href="https://developer.android.com/media/media3/exoplayer/track-selection">Track selection</a></p></li></ul><p class="paragraph">You can check the following pages for a deeper understanding of Pillarbox concepts:</p><ul><li><p class="paragraph"><a href="https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/MediaItemTracking.md">Media item tracking</a></p></li><li><p class="paragraph"><a href="https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/MediaSession.md">Media session</a></p></li></ul></div></div>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="-575713685%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player" id="-575713685%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player/index.html">ch.srgssr.pillarbox.player</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-575713685%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-2055571389%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.analytics" id="-2055571389%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.analytics/index.html">ch.srgssr.pillarbox.player.analytics</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2055571389%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1308151700%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.analytics.extension" id="1308151700%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.analytics.extension/index.html">ch.srgssr.pillarbox.player.analytics.extension</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1308151700%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2065123288%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.analytics.metrics" id="2065123288%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.analytics.metrics/index.html">ch.srgssr.pillarbox.player.analytics.metrics</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2065123288%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1831805779%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.asset" id="-1831805779%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.asset/index.html">ch.srgssr.pillarbox.player.asset</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1831805779%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="332955247%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.asset.timeRange" id="332955247%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.asset.timeRange/index.html">ch.srgssr.pillarbox.player.asset.timeRange</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="332955247%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1716917180%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.extension" id="1716917180%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.extension/index.html">ch.srgssr.pillarbox.player.extension</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1716917180%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-465264849%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.monitoring" id="-465264849%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.monitoring/index.html">ch.srgssr.pillarbox.player.monitoring</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-465264849%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="980677645%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.monitoring.models" id="980677645%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.monitoring.models/index.html">ch.srgssr.pillarbox.player.monitoring.models</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="980677645%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1986736213%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.network" id="-1986736213%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.network/index.html">ch.srgssr.pillarbox.player.network</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1986736213%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1734885586%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.notification" id="1734885586%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.notification/index.html">ch.srgssr.pillarbox.player.notification</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1734885586%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-925841901%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.session" id="-925841901%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.session/index.html">ch.srgssr.pillarbox.player.session</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-925841901%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1206109246%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.source" id="-1206109246%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.source/index.html">ch.srgssr.pillarbox.player.source</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1206109246%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2108470325%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.tracker" id="2108470325%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.tracker/index.html">ch.srgssr.pillarbox.player.tracker</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2108470325%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1361957393%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.tracks" id="-1361957393%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.tracks/index.html">ch.srgssr.pillarbox.player.tracks</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1361957393%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-185310418%2FPackages%2F585621692" anchor-label="ch.srgssr.pillarbox.player.utils" id="-185310418%2FPackages%2F585621692" data-filterable-set=":pillarbox-player/main"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":pillarbox-player/main" data-filterable-set=":pillarbox-player/main">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="ch.srgssr.pillarbox.player.utils/index.html">ch.srgssr.pillarbox.player.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-185310418%2FPackages%2F585621692"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

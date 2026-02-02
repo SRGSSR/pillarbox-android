@@ -1,0 +1,468 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>Chapter</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<link href="../../../images/logo-icon.svg">
+<link href="../../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">9.0.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":pillarbox-core-business/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-core-business/main" data-filter=":pillarbox-core-business/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="pillarbox-core-business::ch.srgssr.pillarbox.core.business.integrationlayer.data/Chapter///PointingToDeclaration//-998704711">
+  <div class="breadcrumbs"><a href="../../index.html">pillarbox-core-business</a><span class="delimiter">/</span><a href="../index.html">ch.srgssr.pillarbox.core.business.integrationlayer.data</a><span class="delimiter">/</span><span class="current">Chapter</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Chapter</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-core/kotlinx.serialization/-serializable/index.html"><span class="token annotation builtin">Serializable</span></a></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Chapter</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>urn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>imageUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>mediaType<span class="token operator">: </span><a href="../-media-type/index.html">MediaType</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="../-type/index.html">Type</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>lead<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>description<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>blockReason<span class="token operator">: </span><a href="../-block-reason/index.html">BlockReason</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fullLengthUrn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fullLengthMarkIn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fullLengthMarkOut<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>listSegment<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-segment/index.html">Segment</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>listResource<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-resource/index.html">Resource</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>comScoreAnalyticsLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>analyticsLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeIntervalList<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-time-interval/index.html">TimeInterval</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>validFrom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>validTo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>spriteSheet<span class="token operator">: </span><a href="../-sprite-sheet/index.html">SpriteSheet</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../-data-with-analytics/index.html">DataWithAnalytics</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/SRGSSR/pillarbox-android/tree/9.0.1/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/integrationlayer/data/Chapter.kt#L35">source</a>)</span></span></div><p class="paragraph">Represents a <a href="index.html">Chapter</a> within a media.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-1648811501%2FConstructors%2F-998704711" anchor-label="Chapter" id="-1648811501%2FConstructors%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-chapter.html"><span><span>Chapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1648811501%2FConstructors%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">urn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">imageUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">mediaType<span class="token operator">: </span><a href="../-media-type/index.html">MediaType</a><span class="token punctuation">, </span></span><span class="parameter ">type<span class="token operator">: </span><a href="../-type/index.html">Type</a><span class="token punctuation">, </span></span><span class="parameter ">lead<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">description<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">blockReason<span class="token operator">: </span><a href="../-block-reason/index.html">BlockReason</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">fullLengthUrn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">fullLengthMarkIn<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">fullLengthMarkOut<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">listSegment<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-segment/index.html">Segment</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">listResource<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-resource/index.html">Resource</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">comScoreAnalyticsLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">analyticsLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">timeIntervalList<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-time-interval/index.html">TimeInterval</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">validFrom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">validTo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">spriteSheet<span class="token operator">: </span><a href="../-sprite-sheet/index.html">SpriteSheet</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1871047691%2FProperties%2F-998704711" anchor-label="analyticsLabels" id="-1871047691%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="analytics-labels.html"><span>analytics</span><wbr><span><span>Labels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1871047691%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-core/kotlinx.serialization/-serial-name/index.html"><span class="token annotation builtin">SerialName</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"analyticsMetadata"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="analytics-labels.html">analyticsLabels</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Labels for Commanders Act analytics.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-826055191%2FProperties%2F-998704711" anchor-label="blockReason" id="-826055191%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="block-reason.html"><span>block</span><wbr><span><span>Reason</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-826055191%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="block-reason.html">blockReason</a><span class="token operator">: </span><a href="../-block-reason/index.html">BlockReason</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Reason for blocking the chapter, if applicable.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1342364582%2FProperties%2F-998704711" anchor-label="comScoreAnalyticsLabels" id="1342364582%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="com-score-analytics-labels.html"><span>com</span><wbr><span>Score</span><wbr><span>Analytics</span><wbr><span><span>Labels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1342364582%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-core/kotlinx.serialization/-serial-name/index.html"><span class="token annotation builtin">SerialName</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"analyticsData"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="com-score-analytics-labels.html">comScoreAnalyticsLabels</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Labels for ComScore analytics.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="641626494%2FProperties%2F-998704711" anchor-label="description" id="641626494%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="description.html"><span><span>description</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="641626494%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="description.html">description</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">A detailed description of the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-895775239%2FProperties%2F-998704711" anchor-label="fullLengthMarkIn" id="-895775239%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="full-length-mark-in.html"><span>full</span><wbr><span>Length</span><wbr><span>Mark</span><wbr><span><span>In</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-895775239%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="full-length-mark-in.html">fullLengthMarkIn</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Start time of the chapter within the full-length media (in milliseconds).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="505957518%2FProperties%2F-998704711" anchor-label="fullLengthMarkOut" id="505957518%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="full-length-mark-out.html"><span>full</span><wbr><span>Length</span><wbr><span>Mark</span><wbr><span><span>Out</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="505957518%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="full-length-mark-out.html">fullLengthMarkOut</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">End time of the chapter within the full-length media (in milliseconds).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1647474850%2FProperties%2F-998704711" anchor-label="fullLengthUrn" id="-1647474850%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="full-length-urn.html"><span>full</span><wbr><span>Length</span><wbr><span><span>Urn</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1647474850%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="full-length-urn.html">fullLengthUrn</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">URN of the full-length media this chapter is a part of.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="496620300%2FProperties%2F-998704711" anchor-label="imageUrl" id="496620300%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="image-url.html"><span>image</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="496620300%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="image-url.html">imageUrl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">URL of an image representing the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2482316%2FProperties%2F-998704711" anchor-label="isFullLengthChapter" id="2482316%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-full-length-chapter.html"><span>is</span><wbr><span>Full</span><wbr><span>Length</span><wbr><span><span>Chapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2482316%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-full-length-chapter.html">isFullLengthChapter</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether this represents a full-length chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1916567484%2FProperties%2F-998704711" anchor-label="lead" id="-1916567484%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="lead.html"><span><span>lead</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1916567484%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="lead.html">lead</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">A short introductory text for the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="230191060%2FProperties%2F-998704711" anchor-label="listResource" id="230191060%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="list-resource.html"><span>list</span><wbr><span><span>Resource</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="230191060%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-core/kotlinx.serialization/-serial-name/index.html"><span class="token annotation builtin">SerialName</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"resourceList"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">val </span><a href="list-resource.html">listResource</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-resource/index.html">Resource</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">List of resources associated with this chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-726315291%2FProperties%2F-998704711" anchor-label="listSegment" id="-726315291%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="list-segment.html"><span>list</span><wbr><span><span>Segment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-726315291%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-core/kotlinx.serialization/-serial-name/index.html"><span class="token annotation builtin">SerialName</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"segmentList"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">val </span><a href="list-segment.html">listSegment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-segment/index.html">Segment</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">List of segments within this chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-264925764%2FProperties%2F-998704711" anchor-label="mediaType" id="-264925764%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="media-type.html"><span>media</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-264925764%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="media-type.html">mediaType</a><span class="token operator">: </span><a href="../-media-type/index.html">MediaType</a></div><div class="brief "><p class="paragraph">The type of media this chapter represents.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-615905888%2FProperties%2F-998704711" anchor-label="spriteSheet" id="-615905888%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="sprite-sheet.html"><span>sprite</span><wbr><span><span>Sheet</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-615905888%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="sprite-sheet.html">spriteSheet</a><span class="token operator">: </span><a href="../-sprite-sheet/index.html">SpriteSheet</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The <a href="../-sprite-sheet/index.html">SpriteSheet</a> information if available.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-549353680%2FProperties%2F-998704711" anchor-label="timeIntervalList" id="-549353680%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="time-interval-list.html"><span>time</span><wbr><span>Interval</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-549353680%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="time-interval-list.html">timeIntervalList</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-time-interval/index.html">TimeInterval</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">List of time intervals relevant to the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1026153374%2FProperties%2F-998704711" anchor-label="title" id="-1026153374%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="title.html"><span><span>title</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1026153374%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="title.html">title</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Title of the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="103843366%2FProperties%2F-998704711" anchor-label="type" id="103843366%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="type.html"><span><span>type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="103843366%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="type.html">type</a><span class="token operator">: </span><a href="../-type/index.html">Type</a></div><div class="brief "><p class="paragraph">The <a href="../-type/index.html">Type</a> of the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1508694697%2FProperties%2F-998704711" anchor-label="urn" id="1508694697%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="urn.html"><span><span>urn</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1508694697%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="urn.html">urn</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Unique identifier for the chapter.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1608538676%2FProperties%2F-998704711" anchor-label="validFrom" id="1608538676%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="valid-from.html"><span>valid</span><wbr><span><span>From</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1608538676%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="valid-from.html">validFrom</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a> when the <a href="index.html">Chapter</a> becomes valid.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="268518595%2FProperties%2F-998704711" anchor-label="validTo" id="268518595%2FProperties%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="valid-to.html"><span>valid</span><wbr><span><span>To</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="268518595%2FProperties%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="valid-to.html">validTo</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-instant/index.html">Instant</a> until when the <a href="index.html">Chapter</a> is valid.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="1917947608%2FFunctions%2F-998704711" anchor-label="getBlockReasonExceptionOrNull" id="1917947608%2FFunctions%2F-998704711" data-filterable-set=":pillarbox-core-business/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":pillarbox-core-business/main" data-filterable-set=":pillarbox-core-business/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../ch.srgssr.pillarbox.core.business.extension/get-block-reason-exception-or-null.html"><span>get</span><wbr><span>Block</span><wbr><span>Reason</span><wbr><span>Exception</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1917947608%2FFunctions%2F-998704711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-core-business/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">Chapter</a><span class="token punctuation">.</span><a href="../../ch.srgssr.pillarbox.core.business.extension/get-block-reason-exception-or-null.html"><span class="token function">getBlockReasonExceptionOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../ch.srgssr.pillarbox.core.business.exception/-block-reason-exception/index.html">BlockReasonException</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Converts the <a href="block-reason.html">Chapter.blockReason</a> into a <a href="../../ch.srgssr.pillarbox.core.business.exception/-block-reason-exception/index.html">BlockReasonException</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© SRG SSR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
