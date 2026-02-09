@@ -13,7 +13,16 @@ import androidx.media3.common.VideoSize
  * @return The aspect ratio as a float, or `null` if it cannot be computed.
  */
 fun VideoSize.computeAspectRatioOrNull(): Float? {
-    return if (height == 0 || width == 0) null else width * this.pixelWidthHeightRatio / height
+    if (height == 0 || width == 0) return null
+    val par = pixelWidthHeightRatio
+    var w = this.width.toFloat()
+    var h = this.height.toFloat()
+    if (par < 1.0) {
+        w *= par
+    } else if (par > 1.0) {
+        h /= par
+    }
+    return w / h
 }
 
 /**
