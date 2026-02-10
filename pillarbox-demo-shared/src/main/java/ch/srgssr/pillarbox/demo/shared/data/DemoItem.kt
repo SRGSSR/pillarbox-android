@@ -76,6 +76,30 @@ sealed class DemoItem(
         }
     }
 
+    data class Standard(
+        val id: String,
+        override val title: String? = null,
+        override val description: String? = null,
+        override val imageUri: String? = null,
+        override val languageTag: String? = null,
+    ) : DemoItem(id, title, description, imageUri, languageTag) {
+
+        override fun toMediaItem(): MediaItem {
+            return MediaItem.Builder()
+                .setMediaId(id)
+                // Currently needed to force the creation of LocalConfiguration.
+                .setUri("https://pillarbox-demo-service/$id")
+                .setMimeType("pillarbox/data") // Again optional, depends on PlayerDataService.canLoad()
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(title)
+                        .setDescription(description)
+                        .build()
+                )
+                .build()
+        }
+    }
+
     /**
      * Represents a media item playable by URN.
      *
