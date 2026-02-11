@@ -15,8 +15,8 @@ import androidx.media3.common.VideoSize
 fun VideoSize.computeAspectRatioOrNull(): Float? {
     if (height == 0 || width == 0) return null
     val par = pixelWidthHeightRatio
-    var w = this.width.toFloat()
-    var h = this.height.toFloat()
+    var w = width.toFloat()
+    var h = height.toFloat()
     if (par < 1.0) {
         w *= par
     } else if (par > 1.0) {
