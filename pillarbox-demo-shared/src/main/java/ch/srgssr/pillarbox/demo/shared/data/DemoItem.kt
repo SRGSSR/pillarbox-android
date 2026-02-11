@@ -88,7 +88,7 @@ sealed class DemoItem(
             return MediaItem.Builder()
                 .setMediaId(id)
                 // Currently needed to force the creation of LocalConfiguration.
-                .setUri("https://pillarbox-demo-service/$id")
+                .setUri("https://pillarbox-backend-apple.onrender.com/media/$id")
                 .setMimeType("pillarbox/data") // Again optional, depends on PlayerDataService.canLoad()
                 .setMediaMetadata(
                     MediaMetadata.Builder()
