@@ -22,7 +22,7 @@ class StandardAssetLoader<CustomData>(
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val mediaInfo = playerDataLoader.load(mediaItem)
+        val mediaInfo = playerDataLoader.load(mediaItem).getOrThrow()
         if (mediaInfo.source == null) throw NoSourceException()
         val playableMediaItem = MediaItem.Builder().apply {
             setUri(mediaInfo.source.url)

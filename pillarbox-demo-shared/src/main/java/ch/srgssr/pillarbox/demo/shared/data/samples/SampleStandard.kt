@@ -10,13 +10,12 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 object SampleStandard {
     @Suppress("UndocumentedPublicProperty")
     val playlist = Playlist(
-        title = "Standard connector",
+        title = "Walid server",
         items = listOf(
-            DemoItem.Standard(id = "pillarbox:video:1", title = "Video1"),
-            DemoItem.Standard(id = "pillarbox:video:2", title = "Video1 with blocked interval"),
-            DemoItem.Standard(id = "pillarbox:video:blocked", title = "Blocked"),
-            DemoItem.Standard(id = "pillarbox:no_source", title = "No source"),
-            DemoItem.Standard(id = "pillarbox:not_found", title = "Not found"),
+            DemoItem.Standard(id = "pillarbox:apple-basic-16-9", title = "Apple basic 16:9"),
+            DemoItem.Standard(id = "pillarbox:bip", title = "Bip bop"),
+            DemoItem.Standard(id = "pillarbox:abe", title = "ABE"),
+            DemoItem.Standard(id = "pillarbox:topmodels", title = "Top models", description = "Content with DRM (faireplay)"),
         )
     )
 }

@@ -15,7 +15,6 @@ class PlayerData<CustomData>(
     val posterUrl: String? = null,
     val source: Source? = null,
     val drm: Drm? = null,
-    val subtitles: Subtitle? = null,
     val chapters: List<Chapter>? = null,
     val timeRanges: List<TimeRange>? = null,
     val customData: CustomData? = null,
@@ -24,23 +23,7 @@ class PlayerData<CustomData>(
     @Serializable
     data class Source(
         val url: String,
-        val type: Type,
         val mimeType: String? = null,
-        val videoFragment: String? = null,
-        val audioFragment: String? = null,
-    ) {
-        enum class Type {
-            VIDEO,
-            AUDIO,
-        }
-    }
-
-    @Serializable
-    data class Subtitle(
-        val label: String,
-        val kind: String,
-        val language: String,
-        val url: String,
     )
 
     @Serializable
@@ -57,7 +40,25 @@ class PlayerData<CustomData>(
         val startTime: Long,
         val endTime: Long,
         val type: String,
-    )
+    ) {
+        fun isBlocked(): Boolean {
+            return type == BLOCKED
+        }
+
+        fun isOpeningCredits(): Boolean {
+            return type == OPENING_CREDITS
+        }
+
+        fun isClosingCredits(): Boolean {
+            return type == CLOSING_CREDITS
+        }
+
+        companion object {
+            const val BLOCKED = "BLOCKED"
+            const val OPENING_CREDITS = "OPENING_CREDITS"
+            const val CLOSING_CREDITS = "CLOSING_CREDITS"
+        }
+    }
 
     @Serializable
     data class Drm(

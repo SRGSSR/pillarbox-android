@@ -9,5 +9,5 @@ import androidx.media3.common.MediaItem
 interface PlayerDataLoader<CustomData> {
     fun canLoad(mediaItem: MediaItem): Boolean
 
-    suspend fun load(mediaItem: MediaItem): PlayerData<CustomData>
+    suspend fun load(mediaItem: MediaItem): Result<PlayerData<CustomData>>
 }

@@ -5,45 +5,42 @@
 package ch.srgssr.pillarbox.demo.shared.source
 
 import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
-import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
+import ch.srgssr.pillarbox.player.network.HttpResultException
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
+import ch.srgssr.pillarbox.player.network.jsonSerializer
 import ch.srgssr.pillarbox.standard.PlayerData
 import ch.srgssr.pillarbox.standard.PlayerDataLoader
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
-class PillarboxDemoService : PlayerDataLoader<CustomData> {
+class PillarboxDemoService(
+    private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
+    private val json: Json = jsonSerializer,
+) : PlayerDataLoader<CustomData> {
 
     override fun canLoad(mediaItem: MediaItem): Boolean {
-        return mediaItem.mediaId.startsWith("pillarbox:")
+        return mediaItem.mediaId.startsWith("pillarbox:") && mediaItem.localConfiguration?.uri != null
     }
 
-    override suspend fun load(mediaItem: MediaItem): PlayerData<CustomData> {
-        val playerData = checkNotNull(datas[mediaItem.mediaId])
-        if (!playerData.customData?.blockingReason.isNullOrBlank()) {
-            throw BlockReasonException.Unknown()
+    @OptIn(ExperimentalSerializationApi::class)
+    override suspend fun load(mediaItem: MediaItem): Result<PlayerData<CustomData>> {
+        val request = Request.Builder()
+            .url(checkNotNull(mediaItem.localConfiguration).uri.toString())
+            .build()
+        return runCatching {
+            okHttpClient.newCall(request)
+                .execute()
+                .use { response ->
+                    if (response.isSuccessful) {
+                        val bodyStream = checkNotNull(response.body).byteStream()
+                        json.decodeFromStream(bodyStream)
+                    } else {
+                        throw HttpResultException(response.code, response.message)
+                    }
+                }
         }
-        return playerData
-    }
-
-    companion object {
-        val datas: Map<String, PlayerData<CustomData>> = mapOf(
-            "pillarbox:no_source" to PlayerData(),
-            "pillarbox:video:1" to PlayerData(
-                identifier = "pillarbox:video:1",
-                source = PlayerData.Source(url = SamplesApple.Advanced_16_9_HEVC_h264.uri, type = PlayerData.Source.Type.VIDEO)
-            ),
-            "pillarbox:video:2" to PlayerData(
-                identifier = "pillarbox:video:2",
-                source = PlayerData.Source(url = SamplesApple.Advanced_16_9_HEVC_h264.uri, type = PlayerData.Source.Type.VIDEO),
-                timeRanges = listOf(
-                    PlayerData.TimeRange(startTime = 0L, endTime = 10.seconds.inWholeMilliseconds, type = "blocked"),
-                    PlayerData.TimeRange(startTime = 20.seconds.inWholeMilliseconds, endTime = 50.seconds.inWholeMilliseconds, type = "blocked"),
-                )
-            ),
-            "pillarbox:video:blocked" to PlayerData(
-                identifier = "pillarbox:video:blocked",
-                customData = CustomData("A reason to block")
-            )
-        )
     }
 }
