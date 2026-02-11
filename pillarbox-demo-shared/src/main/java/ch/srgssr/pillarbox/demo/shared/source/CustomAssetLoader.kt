@@ -45,7 +45,7 @@ private class NotSeekableMediaSource(mediaSource: MediaSource) :
     WrappingMediaSource(mediaSource) {
 
     override fun onChildSourceInfoRefreshed(newTimeline: Timeline) {
-        super.onChildSourceInfoRefreshed(TimelineWithUpdatedMediaItem(NotSeekableContent(newTimeline), mediaItem))
+        super.onChildSourceInfoRefreshed(TimelineWithUpdatedMediaItem.create(NotSeekableContent(newTimeline), mediaItem))
     }
 
     /**
