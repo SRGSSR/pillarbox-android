@@ -25,7 +25,6 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -33,11 +32,12 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration
@@ -359,18 +359,15 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
 /**
  * Collects the aspect ratio of the current video as a [Flow].
  *
- * @param defaultAspectRatio The default aspect ration when the video size is unknown, or the content is not a video.
+ * @param defaultAspectRatio The default aspect ratio when the video size is unknown, or the content is not a video.
  * @return A [Flow] emitting the aspect ratio.
  */
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
-    return combine(
-        getCurrentTracksAsFlow(),
-        videoSizeAsFlow(),
-    ) { currentTracks, videoSize ->
-        currentTracks.getVideoAspectRatioOrNull()
-            ?: videoSize.computeAspectRatioOrNull()
-            ?: defaultAspectRatio
-    }.distinctUntilChanged()
+    return videoSizeAsFlow()
+        .filterNot { it == VideoSize.UNKNOWN }
+        .map { it.computeAspectRatioOrNull() ?: defaultAspectRatio }
+        .onEmpty { emit(defaultAspectRatio) }
+        .distinctUntilChanged()
 }
 
 /**
@@ -562,16 +559,6 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     player.addListener(listener)
     awaitClose {
         player.removeListener(listener)
-    }
-}
-
-private fun Tracks.getVideoAspectRatioOrNull(): Float? {
-    val format = videoTracks.find { it.isSelected }?.format
-
-    return if (format == null || format.height <= 0 || format.width <= 0) {
-        null
-    } else {
-        format.width * format.pixelWidthHeightRatio / format.height.toFloat()
     }
 }
 
