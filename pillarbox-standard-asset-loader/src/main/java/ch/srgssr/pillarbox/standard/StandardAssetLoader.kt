@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.standard
 
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.asset.Asset
@@ -43,12 +42,7 @@ class StandardAssetLoader<CustomData>(
 
     companion object {
         private fun PlayerData.Drm.toDrmConfig(): MediaItem.DrmConfiguration {
-            val drmUUID = when (keySystem) {
-                PlayerData.Drm.KeySystem.WIDEVINE -> C.WIDEVINE_UUID
-                PlayerData.Drm.KeySystem.PLAYREADY -> C.PLAYREADY_UUID
-                PlayerData.Drm.KeySystem.CLEAR_KEY -> C.CLEARKEY_UUID
-            }
-            return MediaItem.DrmConfiguration.Builder(drmUUID)
+            return MediaItem.DrmConfiguration.Builder(keySystem.toUUID())
                 .setLicenseUri(licenseUrl)
                 .setMultiSession(multisession)
                 .build()
