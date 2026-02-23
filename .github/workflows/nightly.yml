@@ -53,7 +53,7 @@ jobs:
       - name: Find the latest tag
         if: ${{ github.event_name != 'workflow_dispatch' }}
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: "WyriHaximus/github-action-get-previous-tag@v2"
         with:
           fallback: 0.0.1-alpha01 # Optional fallback tag to use when no tag can be found
       - name: Setup VERSION_NAME from the latest tag
