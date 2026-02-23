@@ -20,7 +20,6 @@ internal class PillarboxMediaPeriod(
     mediaItemTrackerData: MediaItemTrackerData,
     metadata: PillarboxMetadata,
 ) : MediaPeriod by mediaPeriod {
-
     private val pillarboxTracks = buildList {
         if (mediaItemTrackerData.isNotEmpty()) {
             add(
@@ -47,21 +46,6 @@ internal class PillarboxMediaPeriod(
         }
         // Don't know how to do it, without SpreadOperator!
         return TrackGroupArray(*trackGroupArray, *pillarboxTracks)
-    }
-
-    override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
-        mediaPeriod.prepare(
-            object : MediaPeriod.Callback {
-                override fun onContinueLoadingRequested(source: MediaPeriod) {
-                    callback.onContinueLoadingRequested(this@PillarboxMediaPeriod)
-                }
-
-                override fun onPrepared(mediaPeriod: MediaPeriod) {
-                    callback.onPrepared(this@PillarboxMediaPeriod)
-                }
-            },
-            positionUs
-        )
     }
 
     fun release(mediaSource: MediaSource) {

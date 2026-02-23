@@ -83,7 +83,8 @@ fun ExamplesHome() {
                 DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(context)).createRendererCapabilitiesList()
             )
             downloadHelper.prepare(object : DownloadHelper.Callback {
-                override fun onPrepared(helper: DownloadHelper) {
+
+                override fun onPrepared(helper: DownloadHelper, tracksInfoAvailable: Boolean) {
                     Log.d("DOWNLOAD", "onPrepared")
                     val downloaderRequest = helper.getDownloadRequest(mediaItem.mediaId, null)
                     DownloadService.sendAddDownload(context, PillarboxDownloadService::class.java, downloaderRequest, false)
