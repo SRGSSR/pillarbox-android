@@ -7,6 +7,9 @@ package ch.srgssr.pillarbox.demo.shared.data.samples
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 
+/**
+ * Samples that can be queried from https://pillarbox-backend-apple.onrender.com/media
+ */
 object SampleStandard {
     @Suppress("UndocumentedPublicProperty")
     val playlist = Playlist(

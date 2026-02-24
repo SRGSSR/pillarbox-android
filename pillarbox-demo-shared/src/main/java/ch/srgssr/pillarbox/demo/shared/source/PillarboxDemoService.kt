@@ -16,6 +16,9 @@ import kotlinx.serialization.json.decodeFromStream
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+/**
+ * Pillarbox Demo implementation of [PlayerDataLoader].
+ */
 class PillarboxDemoService(
     private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
     private val json: Json = jsonSerializer,

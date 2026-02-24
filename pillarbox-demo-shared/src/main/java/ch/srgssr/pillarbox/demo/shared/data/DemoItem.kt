@@ -76,6 +76,15 @@ sealed class DemoItem(
         }
     }
 
+    /**
+     * Represents a media item playable by Pillarbox Standard.
+     *
+     * @property id The id of the media.
+     * @property title The title of the media
+     * @property description The optional description of the media.
+     * @property imageUri The optional image URI of the media.
+     * @property languageTag The IETF BCP47 language tag of the title and description.
+     */
     data class Standard(
         val id: String,
         override val title: String? = null,
