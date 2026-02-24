@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.pillarbox.android.library)
-    alias(libs.plugins.pillarbox.android.library.publishing)
+    // Currently we choose to not publish this module
+    //alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
     alias(libs.plugins.kotlin.serialization)
 }
