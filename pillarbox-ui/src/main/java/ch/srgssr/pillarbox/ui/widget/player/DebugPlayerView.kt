@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
  * @param modifier The modifier to use to layout.
  */
 @Composable
-fun DebugPlayerView(modifier: Modifier) {
+fun DebugPlayerView(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
         drawLine(
             color = Color.Green,
