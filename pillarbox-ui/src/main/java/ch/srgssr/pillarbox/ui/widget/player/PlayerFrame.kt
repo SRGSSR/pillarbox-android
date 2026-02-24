@@ -55,7 +55,7 @@ fun PlayerFrame(
                 .background(Color.Black)
         )
     },
-    overlay: @Composable BoxScope.() -> Unit = {},
+    overlay: (@Composable BoxScope.() -> Unit)? = null,
 ) {
     Box(modifier = modifier.clipToBounds()) {
         Box(
@@ -79,7 +79,7 @@ fun PlayerFrame(
             }
             subtitleScope.subtitle()
         }
-        overlay()
+        overlay?.let { it() }
     }
 }
 
