@@ -21,13 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.MediaItem
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
 import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.service.PillarboxDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -39,9 +39,7 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxRenderersFactory
-import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,35 +56,29 @@ fun ExamplesHome() {
     val context = LocalContext.current
     val playlists by examplesViewModel.contents.collectAsState()
 
-    ListStreamView(playlists = playlists, onDownloadClicked = {
+    ListStreamView(playlists = playlists, onDownloadClicked = { demoItem ->
         Log.d("DOWNLOAD", "Start downloading...")
-        val assetLoader = SRGAssetLoader(context)
         val defaultMediaSource = DefaultMediaSourceFactory(DefaultDataSource.Factory(context, OkHttpDataSource.Factory(PillarboxOkHttp())))
-        val mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-            defaultAssetLoader = UrlAssetLoader(defaultMediaSource)
-            addAssetLoader(assetLoader)
-        }
-        val mediaItem = it.toMediaItem()
+        val mediaItem = demoItem.toMediaItem()
         MainScope().launch(Dispatchers.IO) {
             Log.d("DOWNLOAD", "Asset item = ${mediaItem.localConfiguration?.uri}")
-            val asset = assetLoader.loadAsset(mediaItem = mediaItem)
-            val mediaSource = asset.mediaSource
+            val mediaSource = defaultMediaSource.createMediaSource(mediaItem)
             val mediaItemForDownload = mediaSource.mediaItem.buildUpon()
                 .setMediaId(mediaItem.mediaId)
-                .setMediaMetadata(asset.mediaMetadata)
                 .build()
             Log.d("DOWNLOAD", "${mediaItemForDownload.localConfiguration?.uri}")
             val downloadHelper = DownloadHelper(
                 mediaItemForDownload,
                 mediaSource,
-                DownloadHelper.getDefaultTrackSelectorParameters(context),
+                DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS,
                 DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(context)).createRendererCapabilitiesList()
             )
             downloadHelper.prepare(object : DownloadHelper.Callback {
 
                 override fun onPrepared(helper: DownloadHelper, tracksInfoAvailable: Boolean) {
-                    Log.d("DOWNLOAD", "onPrepared")
-                    val downloaderRequest = helper.getDownloadRequest(mediaItem.mediaId, null)
+                    Log.d("DOWNLOAD", "onPrepared $mediaItem")
+                    val downloadId = if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) mediaItem.localConfiguration?.uri.toString() else mediaItem.mediaId
+                    val downloaderRequest = helper.getDownloadRequest(checkNotNull(downloadId), null)
                     DownloadService.sendAddDownload(context, PillarboxDownloadService::class.java, downloaderRequest, false)
                     helper.release()
                 }
@@ -141,7 +133,11 @@ private fun ListStreamView(
                         subtitle = item.description,
                         languageTag = item.languageTag,
                         onClick = { onItemClicked(item) },
-                        secondaryClick = { onDownloadClicked(item) }
+                        secondaryClick = if (item.downloadable) {
+                            { onDownloadClicked(item) }
+                        } else {
+                            null
+                        }
                     )
 
                     if (index < playlist.items.lastIndex) {

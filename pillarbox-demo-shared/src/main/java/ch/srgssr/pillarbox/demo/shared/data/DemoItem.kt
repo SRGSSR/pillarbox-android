@@ -29,6 +29,7 @@ sealed class DemoItem(
     open val description: String?,
     open val imageUri: String?,
     open val languageTag: String? = null,
+    open val downloadable: Boolean = false,
 ) : Serializable {
     /**
      * Represents a media item playable by URL.
@@ -48,6 +49,7 @@ sealed class DemoItem(
         override val description: String? = null,
         override val imageUri: String? = null,
         override val languageTag: String? = null,
+        override val downloadable: Boolean = true,
         val licenseUri: String? = null,
         val multiSession: Boolean = true,
         val licenseRequestHeaders: Map<String, String> = emptyMap(),

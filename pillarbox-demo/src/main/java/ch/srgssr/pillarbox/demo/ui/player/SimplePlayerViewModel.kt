@@ -69,14 +69,12 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
             .setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
 
-        +DownloadLoader(
+        DownloadLoader(
             DefaultMediaSourceFactory(application).setDataSourceFactory(cachedDataSourceFactory),
             PillarboxDownloadService.getDownloadManager(application)
         )
-
-        srgAssetLoader(context = application) {
-            dataSourceFactory(cachedDataSourceFactory)
-        }
+        // Can't do that, we should customize the default urlAssetLoader
+        // +UrlAssetLoader(DefaultMediaSourceFactory(application).setDataSourceFactory(cachedDataSourceFactory))
         +CustomAssetLoader(application)
         +BlockedTimeRangeAssetLoader(application)
         preloadConfiguration(PreloadConfiguration(10.seconds))
@@ -249,12 +247,14 @@ private class DownloadLoader(
 ) : AssetLoader(mediaSourceFactory) {
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
-        val download = downloadManager.downloadIndex.getDownload(mediaItem.mediaId)
+        val downloadId = if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) mediaItem.localConfiguration?.uri.toString() else mediaItem.mediaId
+        val download = downloadManager.downloadIndex.getDownload(downloadId)
         return download != null
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        downloadManager.downloadIndex.getDownload(mediaItem.mediaId)?.let { download ->
+        val downloadId = if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) mediaItem.localConfiguration?.uri.toString() else mediaItem.mediaId
+        downloadManager.downloadIndex.getDownload(downloadId)?.let { download ->
             val mediaItemDownloaded = download.request.toMediaItem()
             Log.d("DOWNLOAD", "loadAsset for ${mediaItemDownloaded.localConfiguration?.uri} ${mediaItem.localConfiguration?.mimeType}")
             return Asset(
