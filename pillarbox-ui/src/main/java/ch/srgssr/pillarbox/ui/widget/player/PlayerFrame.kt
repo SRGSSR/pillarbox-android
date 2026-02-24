@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.ui.widget.player
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -44,27 +43,27 @@ fun PlayerFrame(
     surface: (@Composable BoxScope.() -> Unit)? = null,
     subtitle: @Composable SubtitleBoxScope.() -> Unit = {
         PlayerSubtitle(
-            modifier = Modifier,
             player = player,
         )
     },
     shutter: @Composable BoxScope.() -> Unit = {
         Box(
             Modifier
-                .fillMaxSize()
                 .background(Color.Black)
         )
     },
     overlay: (@Composable BoxScope.() -> Unit)? = null,
 ) {
-    Box(modifier = modifier.clipToBounds()) {
+    Box(modifier = modifier) {
         Box(
-            modifier = Modifier.resizeWithContentScale(contentScale = contentScale, sourceSizeDp = presentationState.videoSizeDp)
+            modifier = Modifier
+                .clipToBounds()
+                .resizeWithContentScale(contentScale = contentScale, sourceSizeDp = presentationState.videoSizeDp)
         ) {
-            PillarboxPlayerSurface(player = player, surfaceType = surfaceType, modifier = Modifier.fillMaxSize())
+            PillarboxPlayerSurface(player = player, surfaceType = surfaceType)
             surface?.invoke(this)
             if (displayDebugView) {
-                DebugPlayerView(Modifier.fillMaxSize())
+                DebugPlayerView()
             }
         }
         if (presentationState.coverSurface) {
