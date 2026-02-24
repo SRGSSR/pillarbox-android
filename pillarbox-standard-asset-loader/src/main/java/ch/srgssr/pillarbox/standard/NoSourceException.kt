@@ -6,4 +6,7 @@ package ch.srgssr.pillarbox.standard
 
 import java.io.IOException
 
+/**
+ * [IOException] when [PlayerData.source] is null.
+ */
 class NoSourceException(message: String = "Source not valid") : IOException(message)

@@ -10,7 +10,15 @@ import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 
-class StandardAssetLoader<CustomData>(
+/**
+ * Standard [AssetLoader] implementation.
+
+ * @param CustomData The type of custom data associated with the [PlayerData].
+ * @param playerDataLoader The [PlayerDataLoader] to use for loading [PlayerData].
+ * @param playerDataMapper The [PlayerDataMapper] to use for mapping [PlayerData] to [Asset].
+ * @param mediaSourceFactory The [MediaSource.Factory] to use for creating [MediaSource].
+ */
+class StandardAssetLoader<CustomData> constructor(
     private val playerDataLoader: PlayerDataLoader<CustomData>,
     private val playerDataMapper: PlayerDataMapper<CustomData>,
     mediaSourceFactory: MediaSource.Factory,

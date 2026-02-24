@@ -15,25 +15,40 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import java.util.UUID
 
+/**
+ * Interface for mapping [PlayerData] to Pillarbox data structure.
+ */
 interface PlayerDataMapper<CustomData> {
 
+    /**
+     * Maps [PlayerData] to [PillarboxMetadata].
+     */
     fun PlayerData<CustomData>.pillarboxMetadata(): PillarboxMetadata
 
+    /**
+     * Maps [PlayerData] to [MediaMetadata].
+     */
     fun PlayerData<CustomData>.mediaMetadata(): MediaMetadata
 
+    /**
+     * Maps [PlayerData] to [MutableMediaItemTrackerData].
+     */
     fun PlayerData<CustomData>.mediaItemTrackerData(mutableMediaItemTrackerData: MutableMediaItemTrackerData)
 
+    /**
+     * Default implementation of [PlayerDataMapper].
+     */
     class Default<CustomData> : PlayerDataMapper<CustomData> {
         override fun PlayerData<CustomData>.pillarboxMetadata(): PillarboxMetadata {
             val chapters = chapters?.let { listChapters ->
-                listChapters.mapIndexed { index, it ->
+                listChapters.mapIndexed { index, chapter ->
                     Chapter(
-                        it.identifier ?: "$index",
-                        it.startTime,
-                        it.endTime,
+                        chapter.identifier ?: "$index",
+                        chapter.startTime,
+                        chapter.endTime,
                         MediaMetadata.Builder().apply {
-                            setTitle(it.title)
-                            setArtworkUri(it.title?.toUri())
+                            setTitle(chapter.title)
+                            setArtworkUri(chapter.title?.toUri())
                         }.build()
                     )
                 }
