@@ -83,7 +83,7 @@ class PillarboxMediaSource internal constructor(
     override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
         refreshSourceInfo(
             PillarboxTimeline(
-                timeline = TimelineWithUpdatedMediaItem(newTimeline, mediaItem),
+                timeline = TimelineWithUpdatedMediaItem.create(newTimeline, mediaItem),
                 seekableLiveConfig = seekableLiveConfig
             )
         )
