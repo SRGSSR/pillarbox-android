@@ -78,7 +78,7 @@ class ComScoreTracker internal constructor(
     private fun handleStart(player: ExoPlayer) {
         streamingAnalytics.notifyChangePlaybackRate(player.getPlaybackSpeed())
         when {
-            player.isPlaying -> {
+            player.isPlaying && !player.currentTimeline.isEmpty -> {
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 notifyPlay(player.currentPosition, window)
             }
@@ -97,6 +97,13 @@ class ComScoreTracker internal constructor(
         notifyPosition(position, window)
         DebugLogger.debug(TAG, "notifyPlay")
         streamingAnalytics.notifyPlay()
+    }
+
+    private fun notifyPlay(eventTime: AnalyticsListener.EventTime) {
+        if (!eventTime.timeline.isEmpty) {
+            eventTime.timeline.getWindow(eventTime.windowIndex, window)
+            notifyPlay(eventTime.eventPlaybackPositionMs, window)
+        }
     }
 
     private fun notifyEnd() {
@@ -196,10 +203,8 @@ class ComScoreTracker internal constructor(
         }
 
         override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
-            val position = eventTime.eventPlaybackPositionMs
-            eventTime.timeline.getWindow(eventTime.windowIndex, window)
             if (isPlaying) {
-                notifyPlay(position, window)
+                notifyPlay(eventTime)
             } else {
                 if (!isBuffering) {
                     notifyPause()
@@ -213,9 +218,7 @@ class ComScoreTracker internal constructor(
                 Log.d(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected ${player.get()?.isPlaying}")
                 isSurfaceConnected = isCurrentSurfaceConnected
                 if (isCurrentSurfaceConnected && player.get()?.isPlaying == true) {
-                    val position = eventTime.eventPlaybackPositionMs
-                    eventTime.timeline.getWindow(eventTime.windowIndex, window)
-                    notifyPlay(position, window)
+                    notifyPlay(eventTime)
                 } else {
                     notifyPause()
                 }
