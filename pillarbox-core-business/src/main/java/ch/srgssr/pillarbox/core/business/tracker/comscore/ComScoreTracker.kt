@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
+import java.lang.ref.WeakReference
 
 /**
  * A [MediaItemTracker] implementation for ComScore analytics.
@@ -43,6 +44,7 @@ class ComScoreTracker internal constructor(
      */
     private var isSurfaceConnected: Boolean = false
     private var isBuffering: Boolean = false
+    private lateinit var player: WeakReference<ExoPlayer>
 
     init {
         streamingAnalytics.setMediaPlayerName(MEDIA_PLAYER_NAME)
@@ -50,6 +52,7 @@ class ComScoreTracker internal constructor(
     }
 
     override fun start(player: ExoPlayer, data: Data) {
+        this.player = WeakReference<ExoPlayer>(player)
         isSurfaceConnected = player.surfaceSize != Size.ZERO
         streamingAnalytics.createPlaybackSession()
         setMetadata(data)
@@ -60,6 +63,7 @@ class ComScoreTracker internal constructor(
     override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(component)
         notifyEnd()
+        this.player.clear()
     }
 
     private fun setMetadata(data: Data) {
@@ -206,9 +210,9 @@ class ComScoreTracker internal constructor(
         override fun onSurfaceSizeChanged(eventTime: AnalyticsListener.EventTime, width: Int, height: Int) {
             val isCurrentSurfaceConnected = Size(width, height) != Size.ZERO
             if (isCurrentSurfaceConnected != isSurfaceConnected) {
-                Log.d(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected")
+                Log.d(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected ${player.get()?.isPlaying}")
                 isSurfaceConnected = isCurrentSurfaceConnected
-                if (isCurrentSurfaceConnected) {
+                if (isCurrentSurfaceConnected && player.get()?.isPlaying == true) {
                     val position = eventTime.eventPlaybackPositionMs
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPlay(position, window)
