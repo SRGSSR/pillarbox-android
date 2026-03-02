@@ -63,7 +63,6 @@ class ComScoreTracker internal constructor(
     override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(component)
         notifyEnd()
-        this.player.clear()
     }
 
     private fun setMetadata(data: Data) {
