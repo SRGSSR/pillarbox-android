@@ -60,13 +60,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
+import ch.srgssr.pillarbox.ui.extension.getUniqueKeyForMediaItemIndex
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -127,13 +127,7 @@ fun PlaylistView(
                         player.prepare()
                     }
                 },
-                key = { index ->
-                    if (player.currentTimeline.isEmpty) {
-                        index
-                    } else {
-                        player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
-                    }
-                },
+                key = player::getUniqueKeyForMediaItemIndex,
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
                 onAddClick = { showAddItemsDialog = true },
