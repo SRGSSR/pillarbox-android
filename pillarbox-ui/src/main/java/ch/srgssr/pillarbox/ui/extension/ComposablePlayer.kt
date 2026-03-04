@@ -22,6 +22,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
+import androidx.media3.common.Timeline.Window
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.DefaultUpdateInterval
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -350,4 +351,16 @@ fun Player.isDeviceMutedAsState(): State<Boolean> {
 @Composable
 fun Player.getDeviceInfoAsState(): State<DeviceInfo> {
     return remember(this) { getDeviceInfoAsFlow() }.collectAsState(deviceInfo)
+}
+
+/**
+ * Returns the unique key for the given media item index.
+ * The returned key is not stable, after media source resolution it may change to a real UID.
+ * It is useful in case of displaying the playlist in a compose function and needs unique key.
+ */
+fun Player.getUniqueKeyForMediaItemIndex(index: Int): Any {
+    if (!isCommandAvailable(Player.COMMAND_GET_TIMELINE) && currentTimeline.isEmpty) return index
+    // Window.uid may be set to 0 for each item from MediaController while the PillarboxMediaSource resolve the MediaItem.
+    val uuid = currentTimeline.getWindow(index, Window()).uid.takeIf { it != 0 }
+    return uuid?.hashCode() ?: index
 }

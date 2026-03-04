@@ -66,6 +66,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
+import ch.srgssr.pillarbox.ui.extension.getUniqueKeyForMediaItemIndex
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -126,13 +127,7 @@ fun PlaylistView(
                         player.prepare()
                     }
                 },
-                key = { index ->
-                    if (player.currentTimeline.isEmpty) {
-                        index
-                    } else {
-                        System.identityHashCode(player.getMediaItemAt(index))
-                    }
-                },
+                key = player::getUniqueKeyForMediaItemIndex,
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
                 onAddClick = { showAddItemsDialog = true },
