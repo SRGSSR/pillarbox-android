@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.standard
 
-import android.net.Uri
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
@@ -77,7 +76,7 @@ interface PlayerDataMapper<CustomData> {
                     setDisplayTitle(it)
                 }
                 subtitle?.let { setSubtitle(it) }
-                posterUrl?.let { setArtworkUri(Uri.parse(it)) }
+                posterUrl?.let { setArtworkUri(it.toUri()) }
             }.build()
         }
 
