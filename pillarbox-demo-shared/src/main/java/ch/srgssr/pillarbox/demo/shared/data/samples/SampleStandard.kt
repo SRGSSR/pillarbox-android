@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 object SampleStandard {
     @Suppress("UndocumentedPublicProperty")
     val playlist = Playlist(
-        title = "Walid server",
+        title = "Vapor standard server",
         items = listOf(
             DemoItem.Standard(id = "pillarbox:apple-basic-16-9", title = "Apple basic 16:9"),
             DemoItem.Standard(id = "pillarbox:bip", title = "Bip bop"),
