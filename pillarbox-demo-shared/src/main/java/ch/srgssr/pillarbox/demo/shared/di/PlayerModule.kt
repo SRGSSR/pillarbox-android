@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.shared.di
 
 import android.content.Context
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
@@ -13,9 +14,12 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
+import ch.srgssr.pillarbox.demo.shared.source.PillarboxDemoMapper
+import ch.srgssr.pillarbox.demo.shared.source.PillarboxDemoService
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PreloadConfiguration
+import ch.srgssr.pillarbox.standard.StandardAssetLoader
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlin.time.Duration.Companion.seconds
@@ -32,6 +36,11 @@ object PlayerModule {
         return PillarboxExoPlayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
+            +StandardAssetLoader(
+                playerDataMapper = PillarboxDemoMapper(),
+                playerDataLoader = PillarboxDemoService(),
+                mediaSourceFactory = DefaultMediaSourceFactory(context),
+            )
             preloadConfiguration(PreloadConfiguration(10.seconds))
         }
     }
