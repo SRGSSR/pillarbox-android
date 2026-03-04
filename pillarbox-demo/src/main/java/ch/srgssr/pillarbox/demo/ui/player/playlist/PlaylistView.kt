@@ -60,7 +60,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -131,7 +130,7 @@ fun PlaylistView(
                     if (player.currentTimeline.isEmpty) {
                         index
                     } else {
-                        player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
+                        System.identityHashCode(player.getMediaItemAt(index))
                     }
                 },
                 onRemoveItem = player::removeMediaItem,
