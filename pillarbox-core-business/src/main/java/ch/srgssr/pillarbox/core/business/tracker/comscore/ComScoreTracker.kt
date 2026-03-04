@@ -99,10 +99,9 @@ class ComScoreTracker internal constructor(
     }
 
     private fun notifyPlay(eventTime: AnalyticsListener.EventTime) {
-        if (!eventTime.timeline.isEmpty) {
-            eventTime.timeline.getWindow(eventTime.windowIndex, window)
-            notifyPlay(eventTime.eventPlaybackPositionMs, window)
-        }
+        if (eventTime.timeline.isEmpty) return
+        eventTime.timeline.getWindow(eventTime.windowIndex, window)
+        notifyPlay(eventTime.eventPlaybackPositionMs, window)
     }
 
     private fun notifyEnd() {
