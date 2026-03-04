@@ -14,14 +14,9 @@ android {
 
 dependencies {
     api(project(":pillarbox-player"))
-
-    implementation(libs.androidx.annotation)
     implementation(libs.androidx.core.ktx)
     api(libs.androidx.media3.common)
-    api(libs.androidx.media3.datasource)
     runtimeOnly(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
     api(libs.okhttp)
 }
