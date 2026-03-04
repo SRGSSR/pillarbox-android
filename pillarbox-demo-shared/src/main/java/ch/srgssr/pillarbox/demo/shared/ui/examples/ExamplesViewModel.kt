@@ -91,7 +91,6 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
         private const val SHOW_URN = "urn:rts:show:tv:532539"
 
         private val examplesPlaylists = listOf(
-            SampleStandard.playlist,
             Playlist(
                 title = "SRG SSR streams (URLs)",
                 languageTag = "en-CH",
@@ -169,6 +168,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 ),
                 languageTag = "en-CH",
             ),
+            SampleStandard.playlist,
         )
     }
 }
