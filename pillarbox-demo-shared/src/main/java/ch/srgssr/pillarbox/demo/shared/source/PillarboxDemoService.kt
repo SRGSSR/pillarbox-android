@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.shared.source
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
-import ch.srgssr.pillarbox.player.network.jsonSerializer
 import ch.srgssr.pillarbox.standard.PlayerData
 import ch.srgssr.pillarbox.standard.PlayerDataLoader
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,10 +18,12 @@ import okhttp3.Request
 /**
  * Pillarbox Demo implementation of [PlayerDataLoader].
  */
-class PillarboxDemoService(
-    private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
-    private val json: Json = jsonSerializer,
-) : PlayerDataLoader<CustomData> {
+class PillarboxDemoService : PlayerDataLoader<CustomData> {
+    private val okHttpClient: OkHttpClient = PillarboxOkHttp()
+    private val json: Json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
 
     override fun canLoad(mediaItem: MediaItem): Boolean {
         return mediaItem.mediaId.startsWith("pillarbox:") && mediaItem.localConfiguration?.uri != null
