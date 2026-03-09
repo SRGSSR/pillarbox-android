@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SampleStandard
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesBBC
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesBitmovin
@@ -167,6 +168,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 ),
                 languageTag = "en-CH",
             ),
+            SampleStandard.playlist,
         )
     }
 }
