@@ -336,6 +336,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleRelease(): ListenableFuture<*> {
+        listeners.release()
         if (isMediaRouter2Available()) {
             mediaRouter?.release()
         }
