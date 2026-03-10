@@ -165,18 +165,22 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        exoPlayer.addListener(listener)
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        exoPlayer.removeListener(listener)
+        listeners.remove(listener)
+    }
+
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.add(listener)
-        }
     }
 
     override fun removeListener(listener: Player.Listener) {
         exoPlayer.removeListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.remove(listener)
-        }
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {

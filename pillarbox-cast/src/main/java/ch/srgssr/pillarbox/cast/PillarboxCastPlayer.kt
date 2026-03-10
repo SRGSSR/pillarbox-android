@@ -27,6 +27,7 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.image.ImageOutput
@@ -125,6 +126,11 @@ class PillarboxCastPlayer internal constructor(
     private val positionSupplier = PosSupplier(0)
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
+
+    private val listeners: ListenerSet<PillarboxPlayer.Listener> = ListenerSet(applicationLooper, Clock.DEFAULT) { listener, flags ->
+        listener.onEvents(this, Player.Events(flags))
+    }
+
     private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
 
     /**
@@ -203,6 +209,16 @@ class PillarboxCastPlayer internal constructor(
     override fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean) = Unit
 
     override fun setImageOutput(imageOutput: ImageOutput?) = Unit
+
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        super.addListener(listener)
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        super.removeListener(listener)
+        listeners.remove(listener)
+    }
 
     /**
      * Returns whether a cast session is available.
@@ -320,6 +336,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleRelease(): ListenableFuture<*> {
+        listeners.release()
         if (isMediaRouter2Available()) {
             mediaRouter?.release()
         }

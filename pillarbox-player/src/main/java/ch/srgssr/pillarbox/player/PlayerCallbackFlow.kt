@@ -562,6 +562,13 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     }
 }
 
+private suspend fun <T> ProducerScope<T>.addPlayerListener(player: PillarboxPlayer, listener: PillarboxPlayer.Listener) {
+    player.addListener(listener)
+    awaitClose {
+        player.removeListener(listener)
+    }
+}
+
 /**
  * The default interval between [Flow] emissions.
  */
