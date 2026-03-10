@@ -176,6 +176,10 @@ interface PillarboxPlayer : Player {
      */
     fun isScrubbingModeEnabled(): Boolean
 
+    fun addListener(listener: Listener)
+
+    fun removeListener(listener: Listener)
+
     companion object {
 
         /**
