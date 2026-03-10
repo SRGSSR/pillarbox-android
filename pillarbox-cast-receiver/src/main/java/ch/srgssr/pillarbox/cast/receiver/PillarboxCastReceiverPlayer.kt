@@ -298,6 +298,10 @@ class PillarboxCastReceiverPlayer(
         player.release()
     }
 
+    override fun getAudioSessionId(): Int {
+        return player.audioSessionId
+    }
+
     override fun getSecondaryRenderer(index: Int): Renderer? {
         return player.getSecondaryRenderer(index)
     }
