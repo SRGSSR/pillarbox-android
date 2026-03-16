@@ -101,7 +101,7 @@ jobs:
         run: ./gradlew buildHealth
       - name: Comment Analysis Report
         if: ${{ github.event_name == 'pull_request' }}
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           path: build/reports/dependency-analysis/build-health-report.txt
           delete: ${{ steps.analyse_dependencies.outcome == 'success' }}
