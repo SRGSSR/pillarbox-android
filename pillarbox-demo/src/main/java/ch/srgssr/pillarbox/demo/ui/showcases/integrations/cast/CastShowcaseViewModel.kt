@@ -6,17 +6,15 @@ package ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.media.maestro.MediaRouteButton
-import ch.srgssr.pillarbox.cast.CastPlayerSynchronizer
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.cast.RemotePlayer
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
  * ViewModel that olds current player and handle local to remote player switch.
@@ -29,25 +27,11 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
     private val castContext = application.getCastContext()
     private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
-    private val castPlayerSynchronizer = CastPlayerSynchronizer(
-        castContext = castContext,
-        coroutineScope = viewModelScope,
-        castPlayer = castPlayer,
-        localPlayer = localPlayer,
-        playerSynchronizer = object : CastPlayerSynchronizer.DefaultPlayerSynchronizer() {
-            override fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer) {
-                super.onPlayerChanged(oldPlayer, newPlayer)
-                newPlayer.prepare()
-                oldPlayer.stop()
-                oldPlayer.clearMediaItems()
-            }
-        }
-    )
 
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer = castPlayerSynchronizer.currentPlayer
+    val currentPlayer = RemotePlayer(localPlayer = localPlayer, remotePlayer = castPlayer)
 
     /**
      * The [MediaRouteSelector] to use on the [MediaRouteButton].
@@ -58,7 +42,6 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
         .build()
 
     override fun onCleared() {
-        castPlayer.release()
-        localPlayer.release()
+        currentPlayer.release()
     }
 }
