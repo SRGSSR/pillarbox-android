@@ -8,9 +8,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
-import ch.srgssr.pillarbox.player.tracks.AudioTrack
-import ch.srgssr.pillarbox.player.tracks.TextTrack
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.textTracks
@@ -32,6 +29,7 @@ import kotlinx.coroutines.flow.stateIn
  * @param localPlayer The [PillarboxExoPlayer] to use when playing locally.
  * @param playerSynchronizer The [PlayerSynchronizer] to customize the synchronization of the two players.
  */
+@Deprecated(message = "Use RemotePlayer instead", replaceWith = ReplaceWith("RemotePlayer", "ch.srgssr.pillarbox.cast"))
 class CastPlayerSynchronizer(
     castContext: CastContext,
     coroutineScope: CoroutineScope,
@@ -78,63 +76,4 @@ class CastPlayerSynchronizer(
 
         playerSynchronizer.onPlayerChanged(oldPlayer, player)
     }
-
-    /**
-     * Interface to configure the state of two players.
-     */
-    interface PlayerSynchronizer {
-
-        /**
-         * @param oldPlayer the [PillarboxPlayer] that will be replaced.
-         * @param newPlayer the [PillarboxPlayer] that will replace the [oldPlayer].
-         */
-        fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer)
-
-        /**
-         * Called when the [Tracks] of the current player are ready to set up the track selection from the previous player.
-         *
-         * @param newTracks the [Tracks] of the player that replace the previous one.
-         * @param selectedAudioTrack the selected [AudioTrack] of previous player, `null` if no audio track is selected.
-         * @param selectedTextTrack the selected [TextTrack] of the previous player, `null` if no text track is selected.
-         */
-        fun onTracksChanged(newTracks: Tracks, selectedAudioTrack: AudioTrack?, selectedTextTrack: TextTrack?): Selection
-    }
-
-    /**
-     * Default implementation of [PlayerSynchronizer].
-     */
-    open class DefaultPlayerSynchronizer : PlayerSynchronizer {
-
-        override fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer) {
-            newPlayer.repeatMode = oldPlayer.repeatMode
-            newPlayer.playWhenReady = oldPlayer.playWhenReady
-            newPlayer.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
-            newPlayer.prepare()
-        }
-
-        override fun onTracksChanged(newTracks: Tracks, selectedAudioTrack: AudioTrack?, selectedTextTrack: TextTrack?): Selection {
-            val newSelectedAudioTrack = selectedAudioTrack?.let { track ->
-                newTracks.audioTracks.firstOrNull {
-                    it.format.language == track.format.language
-                }
-            }
-
-            val newSelectedTextTrack = selectedTextTrack?.let { track ->
-                newTracks.textTracks.firstOrNull {
-                    it.format.language == track.format.language
-                }
-            }
-            return Selection(newSelectedAudioTrack, newSelectedTextTrack)
-        }
-    }
-
-    /**
-     * Data class representing the selection of tracks.
-     * @property audioTrack The [AudioTrack], `null` if no audio track is selected.
-     * @property textTrack The [TextTrack], `null` if no text track is selected.
-     */
-    class Selection(
-        val audioTrack: AudioTrack? = null,
-        val textTrack: TextTrack? = null
-    )
 }
