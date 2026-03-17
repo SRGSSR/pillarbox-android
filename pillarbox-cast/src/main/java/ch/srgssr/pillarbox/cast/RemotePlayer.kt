@@ -57,6 +57,8 @@ class RemotePlayer(
         }
     }
 
+    private val pillarboxPlayerListeners = LinkedHashSet<PillarboxPlayer.Listener>()
+
     init {
         remotePlayer.setSessionAvailabilityListener(sessionListener)
     }
@@ -74,9 +76,13 @@ class RemotePlayer(
     }
 
     override fun addListener(listener: PillarboxPlayer.Listener) {
+        pillarboxPlayerListeners.add(listener)
+        player.addListener(listener)
     }
 
     override fun removeListener(listener: PillarboxPlayer.Listener) {
+        pillarboxPlayerListeners.remove(listener)
+        player.removeListener(listener)
     }
 
     override fun handleRelease(): ListenableFuture<*> {
@@ -119,9 +125,15 @@ class RemotePlayer(
         updateTrackSelection(previousPlayer, newPlayer)
         synchronizer.onPlayerChanged(previousPlayer, newPlayer)
 
+        pillarboxPlayerListeners.toList().forEach {
+            previousPlayer.removeListener(it)
+            newPlayer.addListener(it)
+        }
+
         if (previousPlayer.playbackState != STATE_IDLE) {
             newPlayer.prepare()
         }
+
         previousPlayer.stop()
         player = newPlayer
     }
