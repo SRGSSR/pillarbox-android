@@ -68,8 +68,8 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
             .setUpstreamDataSourceFactory(defaultDataSource)
             .setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-
-        DownloadLoader(
+        // For Url Assets it should be possible to customize the default loader to use  custom DataSource for example CachedDataSource
+        +DownloadLoader(
             DefaultMediaSourceFactory(application).setDataSourceFactory(cachedDataSourceFactory),
             PillarboxDownloadService.getDownloadManager(application)
         )
