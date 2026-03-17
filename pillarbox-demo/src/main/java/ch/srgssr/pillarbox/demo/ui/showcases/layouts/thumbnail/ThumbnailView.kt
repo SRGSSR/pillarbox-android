@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +27,11 @@ import androidx.media3.exoplayer.image.ImageOutput
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.media.maestro.MediaRouteButton
-import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.tracks.isPlaybackTypeRemote
+import ch.srgssr.pillarbox.ui.ImageProgressTrackerState
+import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -60,7 +63,13 @@ private fun PlayerView(
     }
 
     Box(modifier) {
-        val progressTracker = rememberProgressTrackerState(player, coroutineScope, imageOutput)
+        val progressTracker = remember(player) {
+            if (player.isPlaybackTypeRemote()) {
+                SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = false)
+            } else {
+                ImageProgressTrackerState(player = player, coroutineScope = coroutineScope, imageOutput = imageOutput)
+            }
+        }
 
         PlayerView(
             player,
