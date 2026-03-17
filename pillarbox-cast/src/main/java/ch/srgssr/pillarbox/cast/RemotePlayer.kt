@@ -49,11 +49,11 @@ class RemotePlayer(
 
     private val sessionListener = object : SessionAvailabilityListener {
         override fun onCastSessionAvailable() {
-            updateActivePlayer()
+            updateActivePlayer(remotePlayer)
         }
 
         override fun onCastSessionUnavailable() {
-            updateActivePlayer()
+            updateActivePlayer(localPlayer)
         }
     }
 
@@ -112,9 +112,8 @@ class RemotePlayer(
         })
     }
 
-    private fun updateActivePlayer() {
+    private fun updateActivePlayer(newPlayer: PillarboxPlayer) {
         val previousPlayer = player
-        val newPlayer = if (remotePlayer.isCastSessionAvailable()) remotePlayer else localPlayer
         if (newPlayer == previousPlayer) return
 
         updateTrackSelection(previousPlayer, newPlayer)
