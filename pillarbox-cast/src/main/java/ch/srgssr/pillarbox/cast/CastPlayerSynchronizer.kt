@@ -41,7 +41,7 @@ class CastPlayerSynchronizer(
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer = castPlayer.isCastSessionAvailableAsFlow()
+    val currentPlayer = castPlayer.castSessionAvailable
         .map { if (it) castPlayer else localPlayer }
         .distinctUntilChanged()
         .onEach { switchPlayer(it) }
