@@ -18,7 +18,7 @@ object SampleStandard {
             DemoItem.Standard(id = "pillarbox:apple-basic-16-9", title = "Apple basic 16:9"),
             DemoItem.Standard(id = "pillarbox:bip", title = "Bip bop"),
             DemoItem.Standard(id = "pillarbox:abe", title = "ABE"),
-            DemoItem.Standard(id = "pillarbox:topmodels", title = "Top models", description = "Content with DRM (faireplay)"),
+            DemoItem.Standard(id = "pillarbox:topmodels", title = "Top models", description = "Content with DRM (fairPlay) won't work!"),
         )
     )
 }
