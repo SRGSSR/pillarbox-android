@@ -34,7 +34,7 @@ import kotlin.time.Duration.Companion.minutes
 
 @RunWith(AndroidJUnit4::class)
 class PillarboxExoPlayerTest {
-    private lateinit var player: ExoPlayer
+    private lateinit var player: PillarboxExoPlayer
 
     @BeforeTest
     fun setup() {

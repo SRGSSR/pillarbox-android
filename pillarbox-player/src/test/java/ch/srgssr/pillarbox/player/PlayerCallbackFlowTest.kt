@@ -8,7 +8,6 @@ import android.os.Looper
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -27,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(AndroidJUnit4::class)
 class PlayerCallbackFlowTest {
-    private lateinit var player: ExoPlayer
+    private lateinit var player: PillarboxExoPlayer
 
     @BeforeTest
     fun setUp() {
