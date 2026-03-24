@@ -114,7 +114,7 @@ class ComScoreTrackerTest {
     }
 
     @Test
-    fun `stop() should always notifyEnd`() {
+    fun `stop() should notifyEnd only once`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
         val player = mockk<ExoPlayer>(relaxed = true)
@@ -124,7 +124,7 @@ class ComScoreTrackerTest {
         tracker.stop(player = player)
         tracker.stop(player = player)
 
-        verify(exactly = 2) {
+        verify(exactly = 1) {
             streamingAnalytics.notifyEnd()
         }
     }
