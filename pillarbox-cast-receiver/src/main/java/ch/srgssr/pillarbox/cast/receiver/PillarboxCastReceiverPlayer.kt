@@ -131,6 +131,14 @@ class PillarboxCastReceiverPlayer(
         player.setImageOutput(imageOutput)
     }
 
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        player.addListener(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        player.removeListener(listener)
+    }
+
     override fun getCurrentMetrics(): PlaybackMetrics? {
         return player.getCurrentMetrics()
     }
@@ -288,6 +296,10 @@ class PillarboxCastReceiverPlayer(
         castReceiverContext.unregisterEventCallback(eventCallback)
         mediaManager.setSessionCompatToken(null)
         player.release()
+    }
+
+    override fun getAudioSessionId(): Int {
+        return player.audioSessionId
     }
 
     override fun getSecondaryRenderer(index: Int): Renderer? {

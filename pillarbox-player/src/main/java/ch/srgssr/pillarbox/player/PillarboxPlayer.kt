@@ -176,6 +176,20 @@ interface PillarboxPlayer : Player {
      */
     fun isScrubbingModeEnabled(): Boolean
 
+    /**
+     * Register a [Listener] to the player.
+     * It also call [Player.addListener]
+     * @see [Player.addListener]
+     */
+    fun addListener(listener: Listener)
+
+    /**
+     * Unregister a [Listener] from the player.
+     * It also call [Player.removeListener]
+     * @see [Player.removeListener]
+     */
+    fun removeListener(listener: Listener)
+
     companion object {
 
         /**
