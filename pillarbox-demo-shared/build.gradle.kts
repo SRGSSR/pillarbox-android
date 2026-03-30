@@ -19,7 +19,6 @@ dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-player"))
     api(project(":pillarbox-ui"))
-    api(project(":pillarbox-standard-asset-loader"))
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.animation)

@@ -77,39 +77,6 @@ sealed class DemoItem(
     }
 
     /**
-     * Represents a media item playable by Pillarbox Standard.
-     *
-     * @property id The id of the media.
-     * @property title The title of the media
-     * @property description The optional description of the media.
-     * @property imageUri The optional image URI of the media.
-     * @property languageTag The IETF BCP47 language tag of the title and description.
-     */
-    data class Standard(
-        val id: String,
-        override val title: String? = null,
-        override val description: String? = null,
-        override val imageUri: String? = null,
-        override val languageTag: String? = null,
-    ) : DemoItem(id, title, description, imageUri, languageTag) {
-
-        override fun toMediaItem(): MediaItem {
-            return MediaItem.Builder()
-                .setMediaId(id)
-                // Currently needed to force the creation of LocalConfiguration.
-                .setUri("https://pillarbox-backend-apple.onrender.com/media/$id")
-                .setMimeType("pillarbox/data") // Again optional, depends on PlayerDataService.canLoad()
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle(title)
-                        .setDescription(description)
-                        .build()
-                )
-                .build()
-        }
-    }
-
-    /**
      * Represents a media item playable by URN.
      *
      * @property urn The URN of the media.
