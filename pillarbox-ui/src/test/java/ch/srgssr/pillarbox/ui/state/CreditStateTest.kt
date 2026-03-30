@@ -15,6 +15,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.Default
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PlayerStuckDetectionTimeouts
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
@@ -49,6 +50,7 @@ class CreditStateTest {
             clock(FakeClock(true))
             coroutineContext(EmptyCoroutineContext)
             addAssetLoader(CreditAssetLoader(context))
+            playerStuckDetectionTimeouts(PlayerStuckDetectionTimeouts.DisabledForTest)
         }
         player.prepare()
         player.play()

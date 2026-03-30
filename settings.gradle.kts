@@ -75,3 +75,4 @@ include(
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
 )
+include(":pillarbox-standard-asset-loader")

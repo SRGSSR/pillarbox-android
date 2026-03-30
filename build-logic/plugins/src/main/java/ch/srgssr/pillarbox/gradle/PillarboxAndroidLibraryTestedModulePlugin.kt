@@ -8,6 +8,7 @@ import com.android.build.api.dsl.LibraryExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.assign
@@ -45,6 +46,10 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
                     }
                 }
             }
+        }
+
+        tasks.withType<AbstractTestTask>().configureEach {
+            failOnNoDiscoveredTests = false
         }
 
         tasks.withType<Test>().configureEach {
