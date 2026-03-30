@@ -121,6 +121,7 @@ class ComScoreTrackerTest {
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size.ZERO
         every { player.playbackState } returns Player.STATE_READY
+        tracker.start(player = player, data = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
         tracker.stop(player = player)
         tracker.stop(player = player)
 
