@@ -364,8 +364,21 @@ class PillarboxCastPlayer internal constructor(
         queueSetRepeatMode(getCastRepeatMode(repeatMode), null)
     }
 
-    override fun handleSetVolume(volume: Float) = withRemoteClient {
-        setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
+    override fun handleSetVolume(volume: Float, volumeOperationType: Int) = withRemoteClient {
+        super<SimpleBasePlayer>.handleSetVolume(volume, volumeOperationType)
+        when (volumeOperationType) {
+            C.VOLUME_OPERATION_TYPE_SET_VOLUME -> {
+                setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
+            }
+
+            C.VOLUME_OPERATION_TYPE_MUTE -> {
+                setStreamMute(true)
+            }
+
+            C.VOLUME_OPERATION_TYPE_UNMUTE -> {
+                setStreamMute(false)
+            }
+        }
     }
 
     override fun handleSetDeviceVolume(
