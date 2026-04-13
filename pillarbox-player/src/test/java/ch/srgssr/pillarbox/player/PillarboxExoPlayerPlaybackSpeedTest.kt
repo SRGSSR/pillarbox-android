@@ -113,8 +113,8 @@ class PillarboxExoPlayerPlaybackSpeedTest {
     }
 
     private companion object {
-        private const val LIVE_DVR_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
-        private const val LIVE_ONLY_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
+        private const val LIVE_DVR_URL = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
+        private const val LIVE_ONLY_URL = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8?dw=0"
         private const val VOD_URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
     }
 }

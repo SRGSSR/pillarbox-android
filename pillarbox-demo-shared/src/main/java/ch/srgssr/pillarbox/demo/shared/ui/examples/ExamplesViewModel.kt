@@ -97,7 +97,6 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     SamplesSRG.OnDemandHLS,
                     SamplesSRG.ShortOnDemandVideoHLS,
                     SamplesSRG.OnDemandVideoMP4,
-                    SamplesSRG.LiveVideoHLS,
                     SamplesSRG.DvrVideoHLS,
                     SamplesOther.LiveTimestampVideoHLS,
                     SamplesSRG.OnDemandAudioMP3,
@@ -143,7 +142,6 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
             Playlist(
                 title = "Unbuffered streams",
                 items = listOf(
-                    SamplesSRG.LiveVideoHLS,
                     SamplesSRG.LiveAudioMP3,
                 ),
                 languageTag = "en-CH",
