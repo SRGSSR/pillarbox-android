@@ -27,6 +27,7 @@ import io.mockk.Called
 import io.mockk.MockKVerificationScope
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
+import io.mockk.excludeRecords
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
@@ -539,6 +540,61 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
+    fun `not live - player prepared, playing and reach EOF`() {
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO_SHORT))
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifyBufferEvents()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
+    fun `not live - player prepared, playing repeat one`() {
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO_SHORT))
+        player.prepare()
+        player.repeatMode = Player.REPEAT_MODE_ONE
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
+        player.repeatMode = Player.REPEAT_MODE_OFF
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        // We don't check buffers event because when repeating the current item, the buffering may not start.
+        excludeRecords {
+            streamingAnalytics.notifyBufferStart()
+            streamingAnalytics.notifyBufferStop()
+        }
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
     fun `player prepared, playing and released`() {
         player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
@@ -689,5 +745,7 @@ class ComScoreTrackerIntegrationTest {
         private const val URN_LIVE_DVR_VIDEO_RADIO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO_RADIO
         private const val URN_LIVE_DVR_VIDEO_TV = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO_TV
         private const val URN_NOT_LIVE_VIDEO = LocalMediaCompositionWithFallbackService.URN_VOD
+
+        private const val URN_NOT_LIVE_VIDEO_SHORT = LocalMediaCompositionWithFallbackService.URN_VOD_SHORT
     }
 }

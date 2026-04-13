@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.comscore
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
@@ -206,12 +205,20 @@ class ComScoreTracker internal constructor(
             newPosition: Player.PositionInfo,
             reason: Int
         ) {
+            // Check position discontinuity only within the same MediaItem
+            if (!playbackSessionActive || oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
-                    if (!playbackSessionActive || oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
                     notifySeek()
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPosition(newPosition.positionMs, window)
+                }
+
+                Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {
+                    playbackSessionActive = false
+                    if (isSurfaceConnected && player.get()?.isPlaying == true) {
+                        notifyPlay(position = newPosition.positionMs, window)
+                    }
                 }
             }
         }
@@ -221,17 +228,6 @@ class ComScoreTracker internal constructor(
                 eventTime.timeline.getWindow(eventTime.windowIndex, window)
                 if (window.isLive) {
                     notifyLiveInformation(eventTime.eventPlaybackPositionMs, window)
-                }
-            }
-        }
-
-        override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
-            when (reason) {
-                Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT -> {
-                    playbackSessionActive = false
-                    if (isSurfaceConnected && player.get()?.isPlaying == true) {
-                        notifyPlay(eventTime)
-                    }
                 }
             }
         }
