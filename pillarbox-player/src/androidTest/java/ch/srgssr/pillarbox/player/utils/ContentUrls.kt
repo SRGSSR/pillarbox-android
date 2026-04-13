@@ -12,8 +12,8 @@ object ContentUrls {
     const val VOD_MP4 = "https://cdn.prod.swi-services.ch/video-projects/141b30ce-3850-424b-9063-a20d5619d342/localised-videos/ENG/renditions/ENG.mp4"
     const val VOD_DASH_H264 = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
     const val VOD_DASH_H265 = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
-    const val LIVE_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
-    const val LIVE_DVR_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
+    const val LIVE_HLS = "https://stream.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM.m3u8"
+    const val LIVE_DVR_HLS = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
     const val AOD_MP3 =
         "https://download-media.srf.ch/world/audio/Echo_der_Zeit_radio/2025/01/Echo_der_Zeit_radio_AUDI20250119_RS_0069_8a020b8274994bfdbc724cb0c6ed520c.mp3"
     const val AUDIO_LIVE_MP3 = "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"

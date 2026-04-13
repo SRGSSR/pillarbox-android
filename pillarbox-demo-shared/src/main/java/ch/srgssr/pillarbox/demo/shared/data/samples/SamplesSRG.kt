@@ -37,17 +37,9 @@ object SamplesSRG {
         languageTag = "en-CH",
     )
 
-    val LiveVideoHLS = DemoItem.URL(
-        title = "Couleur 3 en vidéo (live)",
-        uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0",
-        description = "Video livestream - HLS",
-        imageUri = "https://img.rts.ch/audio/2010/image/924h3y-25865853.image?w=640&h=640",
-        languageTag = "fr-CH",
-    )
-
     val DvrVideoHLS = DemoItem.URL(
         title = "Couleur 3 en vidéo (DVR)",
-        uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8",
+        uri = "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
         description = "Video livestream with DVR - HLS",
         imageUri = "https://il.srgssr.ch/images/?imageUrl=https%3A%2F%2Fwww.rts.ch%2F2020%2F05%2F18%2F14%2F20%2F11333286.image%2F16x9&format=jpg&width=960",
         languageTag = "fr-CH",
@@ -333,7 +325,6 @@ object SamplesSRG {
             OnDemandHLS,
             ShortOnDemandVideoHLS,
             OnDemandVideoMP4,
-            LiveVideoHLS,
             DvrVideoHLS,
             OnDemandAudioMP3,
             LiveAudioMP3,

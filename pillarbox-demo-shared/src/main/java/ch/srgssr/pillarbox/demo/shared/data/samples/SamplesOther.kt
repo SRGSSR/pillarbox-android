@@ -29,5 +29,17 @@ object SamplesOther {
         languageTag = "de-CH",
     )
 
-    val All = Playlist(title = "Other samples", languageTag = "en-CH", items = listOf(OnDemandVideoUHD, LiveTimestampVideoHLS))
+    val LiveTimestampVideoLowLatencyHLS = DemoItem.URL(
+        title = "Live HLS low latency",
+        uri = "https://stream.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM.m3u8",
+        description = "Video livestream with timestamp low latency",
+        imageUri = "https://images.tagesschau.de/image/89045d82-5cd5-46ad-8f91-73911add30ee/AAABh3YLLz0/AAABibBx2rU/20x9-1280/tagesschau-logo-100.jpg",
+        languageTag = "de-CH",
+    )
+
+    val All = Playlist(
+        title = "Other samples",
+        languageTag = "en-CH",
+        items = listOf(OnDemandVideoUHD, LiveTimestampVideoHLS, LiveTimestampVideoLowLatencyHLS)
+    )
 }
