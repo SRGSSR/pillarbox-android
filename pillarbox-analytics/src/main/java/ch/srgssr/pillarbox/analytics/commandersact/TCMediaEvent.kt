@@ -17,11 +17,13 @@ import kotlin.time.DurationUnit
  * @property eventType The type of media event, defined by the Analytics team using the [MediaEventType] enum.
  * @property assets A map representing additional data associated with the event.
  * @property sourceId An optional identifier for the source of the event.
+ * @property source the [CommandersActSource] of the event.
  */
 class TCMediaEvent(
     val eventType: MediaEventType,
     val assets: Map<String, String>,
-    val sourceId: String? = null
+    val sourceId: String? = null,
+    val source: CommandersActSource? = null,
 ) : TCCustomEvent(eventType.toString()) {
     /**
      * Represents the current playback position.
@@ -57,6 +59,14 @@ class TCMediaEvent(
      * Indicates whether the current audio track has an associated audio description.
      */
     var audioTrackHasAudioDescription: Boolean = false
+
+    init {
+        source?.let {
+            with(it) {
+                setCommandersActSource()
+            }
+        }
+    }
 
     override fun getJsonObject(): JSONObject {
         val jsonObject = super.getJsonObject()
