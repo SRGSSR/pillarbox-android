@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -29,6 +30,7 @@ dependencies {
     implementation(libs.comscore)
     implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
+    implementation(libs.kotlin.parcelize.runtime)
 
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)

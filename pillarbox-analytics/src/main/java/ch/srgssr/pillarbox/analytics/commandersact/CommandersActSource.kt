@@ -4,7 +4,9 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
+import android.os.Parcelable
 import com.tagcommander.lib.serverside.events.base.TCEvent
+import kotlinx.parcelize.Parcelize
 import kotlin.collections.iterator
 
 /**
@@ -16,6 +18,7 @@ import kotlin.collections.iterator
  * @property itemPositionInSection position of the item in the source section.
  * @property labels A map of custom labels to be associated with the page view event. Blank values are ignored and not sent. Defaults to an empty map.
  */
+@Parcelize
 data class CommandersActSource(
     val pageId: String,
     val pageVersion: String? = null,
@@ -24,7 +27,7 @@ data class CommandersActSource(
     val sectionPosition: Int? = null,
     val itemPositionInSection: Int? = null,
     val labels: Map<String, String>? = null,
-) {
+) : Parcelable {
 
     internal fun TCEvent.setCommandersActSource() {
         labels?.let {
