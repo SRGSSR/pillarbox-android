@@ -4,8 +4,11 @@
  */
 package ch.srgssr.pillarbox.core.business
 
+import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource
+import ch.srgssr.pillarbox.core.business.extension.commandersActSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
@@ -84,6 +87,10 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     private var ilLocation: IlLocation? = null
     private var vector: Vector = Vector.MOBILE
 
+    private var mediaMetadata: MediaMetadata = MediaMetadata.EMPTY
+
+    private var commandersActSource: CommandersActSource? = null
+
     init {
         mediaItem.localConfiguration?.let { localConfiguration ->
             val ilUrl = localConfiguration.uri.toIlUrl()
@@ -93,6 +100,8 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
             ilLocation = ilUrl.ilLocation
             vector = ilUrl.vector
         }
+        mediaMetadata = mediaItem.mediaMetadata
+        commandersActSource = mediaItem.commandersActSource
     }
 
     /**
@@ -101,7 +110,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      * @param mediaMetadata The [MediaMetadata] to set on the [MediaItem].
      */
     fun mediaMetadata(mediaMetadata: MediaMetadata) {
-        this.mediaItemBuilder.setMediaMetadata(mediaMetadata)
+        this.mediaMetadata = mediaMetadata
     }
 
     /**
@@ -159,6 +168,15 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
+     * Set the [CommandersActSource] to forward to [ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker].
+     *
+     * @param commandersActSource The [CommandersActSource] to use.
+     */
+    fun commandersActSource(commandersActSource: CommandersActSource) {
+        this.commandersActSource = commandersActSource
+    }
+
+    /**
      * Builds a [MediaItem] based on the provided parameters.
      *
      * It ensures the URN is valid and sets the necessary properties on the [MediaItem].
@@ -168,9 +186,19 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      */
     fun build(): MediaItem {
         val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
-        return mediaItemBuilder.setUri(ilUrl.uri)
+        val mediaMetadataBuilder = mediaMetadata.buildUpon()
+        val extras = mediaMetadata.extras ?: Bundle()
+        extras.putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, commandersActSource)
+        mediaMetadataBuilder.setExtras(extras)
+        return mediaItemBuilder
+            .setUri(ilUrl.uri)
             .setMediaId(ilUrl.urn)
+            .setMediaMetadata(mediaMetadataBuilder.build())
             .setMimeType(MimeTypeSrg)
             .build()
+    }
+
+    companion object {
+        internal const val EXTRAS_KEY_COMMANDERS_ACT_SOURCE = "commandersActSource"
     }
 }
