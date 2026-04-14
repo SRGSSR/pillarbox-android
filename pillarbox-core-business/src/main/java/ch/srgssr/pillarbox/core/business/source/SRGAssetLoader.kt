@@ -220,8 +220,7 @@ class SRGAssetLoader internal constructor(
             resource.analyticsLabels?.let { putAll(it) }
         }
         return if (commandersActData.isNotEmpty()) {
-            // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
-            CommandersActTracker.Data(assets = commandersActData, sourceId = null)
+            CommandersActTracker.Data(assets = commandersActData)
         } else {
             null
         }

@@ -24,9 +24,8 @@ class CommandersActTracker(
      * Represents data to be sent to Commanders Act.
      *
      * @property assets A map of labels to be sent to Commanders Act.
-     * @property sourceId
      */
-    data class Data(val assets: Map<String, String>, val sourceId: String? = null)
+    data class Data(val assets: Map<String, String>)
 
     private var analyticsStreaming: CommandersActStreaming? = null
 
