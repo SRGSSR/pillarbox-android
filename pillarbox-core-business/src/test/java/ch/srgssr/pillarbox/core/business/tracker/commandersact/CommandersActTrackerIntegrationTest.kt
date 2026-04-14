@@ -47,7 +47,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -128,19 +127,16 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
 
         tcMediaEvents[1].let {
             assertEquals(Stop, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
 
         tcMediaEvents[2].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -166,7 +162,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
-        assertNull(tcMediaEvent.sourceId)
     }
 
     @Test
@@ -216,7 +211,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
-        assertNull(tcMediaEvent.sourceId)
     }
 
     @Test
@@ -241,7 +235,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
-        assertNull(tcMediaEvent.sourceId)
     }
 
     @Test
@@ -270,7 +263,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
-        assertNull(tcMediaEvent.sourceId)
     }
 
     @Test
@@ -302,12 +294,10 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Pause, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
         tcMediaEvents[1].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -347,17 +337,14 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
         tcMediaEvents[1].let {
             assertEquals(Pause, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
         tcMediaEvents[2].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -391,14 +378,13 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Stop, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
+
             assertEquals(position.inWholeMinutes, it.mediaPosition.inWholeMinutes)
         }
 
         tcMediaEvents[1].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -432,14 +418,13 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Stop, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
+
             assertEquals(position.inWholeMinutes, it.mediaPosition.inWholeMinutes)
         }
 
         tcMediaEvents[1].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -472,17 +457,14 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
         tcMediaEvents[1].let {
             assertEquals(Seek, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
         tcMediaEvents[2].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -512,7 +494,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
-        assertNull(tcMediaEvent.sourceId)
     }
 
     @Test
@@ -560,19 +541,16 @@ class CommandersActTrackerIntegrationTest {
         tcMediaEvents[0].let {
             assertEquals(Pause, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
 
         tcMediaEvents[1].let {
             assertEquals(Pos, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
 
         tcMediaEvents[2].let {
             assertEquals(Play, it.eventType)
             assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
         }
     }
 
@@ -645,7 +623,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(listOf(Play, Stop, Play, Eof).reversed(), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
-        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     @Test
@@ -687,7 +664,6 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(listOf(Eof, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
-        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     @Test

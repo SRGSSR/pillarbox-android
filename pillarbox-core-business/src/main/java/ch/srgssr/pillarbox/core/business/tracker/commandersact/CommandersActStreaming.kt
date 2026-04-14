@@ -98,7 +98,7 @@ internal class CommandersActStreaming(
     private fun notifyEvent(type: MediaEventType, position: Duration) {
         val totalPlayTime = playtimeTracker.getTotalPlayTime()
         DebugLogger.debug(TAG, "send : $type position = $position totalPlayTime = $totalPlayTime ${window.isLive}")
-        val event = TCMediaEvent(eventType = type, assets = currentData.assets, sourceId = currentData.sourceId)
+        val event = TCMediaEvent(eventType = type, assets = currentData.assets)
         handleTextTrackData(event)
         handleAudioTrack(event)
 

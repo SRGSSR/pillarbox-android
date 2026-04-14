@@ -16,13 +16,11 @@ import kotlin.time.DurationUnit
  *
  * @property eventType The type of media event, defined by the Analytics team using the [MediaEventType] enum.
  * @property assets A map representing additional data associated with the event.
- * @property sourceId An optional identifier for the source of the event.
  * @property source the [CommandersActSource] of the event.
  */
 class TCMediaEvent(
     val eventType: MediaEventType,
     val assets: Map<String, String>,
-    val sourceId: String? = null,
     val source: CommandersActSource? = null,
 ) : TCCustomEvent(eventType.toString()) {
     /**
@@ -73,7 +71,6 @@ class TCMediaEvent(
         for (asset in assets) {
             jsonObject.putIfValid(asset.key, asset.value)
         }
-        jsonObject.putIfValid(KEY_SOURCE_ID, sourceId)
         jsonObject.putIfValid(MEDIA_POSITION, toSeconds(mediaPosition).toString())
         timeShift?.let {
             jsonObject.putIfValid(MEDIA_TIMESHIFT, toSeconds(it).toString())
@@ -111,7 +108,6 @@ class TCMediaEvent(
         private const val MEDIA_AUDIO_TRACK = "media_audio_track"
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
         private const val MEDIA_AUDIO_DESCRIPTION_ON = "media_audiodescription_on"
-        private const val KEY_SOURCE_ID = "source_id"
 
         private fun toSeconds(duration: Duration): Long {
             return duration.toDouble(DurationUnit.SECONDS).roundToLong()
