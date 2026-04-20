@@ -34,7 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
     private val player: ExoPlayer,
-    private val currentData: CommandersActTracker.Data,
+    val currentData: CommandersActTracker.Data,
     coroutineContext: CoroutineContext,
 ) : AnalyticsListener {
 
