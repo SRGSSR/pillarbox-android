@@ -42,7 +42,9 @@ internal class CommandersActSrg(
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
         tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, navigationDevice)
+
         setConsentServices(config.userConsent.commandersActConsentServices)
+        setProfileIdentifier(config.profileIdentifier)
     }
 
     constructor(
