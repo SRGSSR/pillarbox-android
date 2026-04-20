@@ -59,6 +59,19 @@ class CommandersActSrgTest {
     }
 
     @Test
+    fun `set profile identifier with non null data`() {
+        val userId = "user_id"
+        commandersAct.setProfileIdentifier(userId)
+        assertEquals(userId, commandersAct.getPermanentDataLabel("profile_id"))
+    }
+
+    @Test
+    fun `set profile identifier with null data`() {
+        commandersAct.setProfileIdentifier(null)
+        assertNull(commandersAct.getPermanentDataLabel("profile_id"))
+    }
+
+    @Test
     fun `sendEvent() with CommandersActEvent`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
         val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")

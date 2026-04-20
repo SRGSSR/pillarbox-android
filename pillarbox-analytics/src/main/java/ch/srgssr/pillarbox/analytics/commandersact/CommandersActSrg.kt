@@ -96,6 +96,12 @@ internal class CommandersActSrg(
         tcServerSide.addPermanentData(CommandersActLabels.CONSENT_SERVICES.label, consentServices.joinToString(","))
     }
 
+    override fun setProfileIdentifier(profileIdentifier: String?) {
+        profileIdentifier?.let {
+            tcServerSide.addPermanentData(CommandersActLabels.PROFILE_ID.label, it)
+        } ?: tcServerSide.removePermanentData(CommandersActLabels.PROFILE_ID.label)
+    }
+
     /**
      * Override application name if [AnalyticsConfig.nonLocalizedApplicationName] is not empty.
      * Useful for application that localized their application name and want to have same name for analytics.
