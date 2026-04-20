@@ -169,6 +169,8 @@ jobs:
         run: ./github/workflows/actions/delete_package.sh ${{ env.REPO_OWNER }} "ch.srgssr.pillarbox.pillarbox-analytics" ${{ env.VERSION_NAME }} || true
       - name: Delete 'pillarbox-cast' from GitHub Packages
         run: ./github/workflows/actions/delete_package.sh ${{ env.REPO_OWNER }} "ch.srgssr.pillarbox.pillarbox-cast" ${{ env.VERSION_NAME }} || true
+      - name: Delete 'pillarbox-cast-receiver' from GitHub Packages
+        run: ./github/workflows/actions/delete_package.sh ${{ env.REPO_OWNER }} "ch.srgssr.pillarbox.pillarbox-cast-receiver" ${{ env.VERSION_NAME }} || true
       - name: Delete 'pillarbox-core-business' from GitHub Packages
         run: ./github/workflows/actions/delete_package.sh ${{ env.REPO_OWNER }} "ch.srgssr.pillarbox.pillarbox-core-business" ${{ env.VERSION_NAME }} || true
       - name: Delete 'pillarbox-core-business-cast' from GitHub Packages
