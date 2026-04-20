@@ -187,9 +187,22 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     fun build(): MediaItem {
         val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
         val mediaMetadataBuilder = mediaMetadata.buildUpon()
-        val extras = mediaMetadata.extras ?: Bundle()
-        extras.putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, commandersActSource)
-        mediaMetadataBuilder.setExtras(extras)
+        val extras = mediaMetadata.extras
+        if (extras == null) {
+            commandersActSource?.let {
+                val newExtras = Bundle().apply {
+                    putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, commandersActSource)
+                }
+                mediaMetadataBuilder.setExtras(newExtras)
+            }
+        } else {
+            extras.remove(EXTRAS_KEY_COMMANDERS_ACT_SOURCE)
+            commandersActSource?.let {
+                extras.putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, it)
+            }
+            mediaMetadataBuilder.setExtras(extras)
+        }
+
         return mediaItemBuilder
             .setUri(ilUrl.uri)
             .setMediaId(ilUrl.urn)
