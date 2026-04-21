@@ -306,6 +306,13 @@ class PillarboxCastReceiverPlayer(
         return player.getSecondaryRenderer(index)
     }
 
+    override fun isRemoteReceiver(): Boolean {
+        // TODO check that senders count suffice
+        Log.d(TAG, "ConnectedSenders: ${castReceiverContext.senders.size}")
+        Log.d(TAG, "    Senders : ${castReceiverContext.senders.map { "${it.senderId} : ${it.userAgent}" }}")
+        return castReceiverContext.senders.isNotEmpty()
+    }
+
     private inner class EventCallback : CastReceiverContext.EventCallback() {
 
         override fun onSenderConnected(senderInfo: SenderInfo) {

@@ -11,12 +11,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.Player.PositionInfo
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.Tracks
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
-    private val player: ExoPlayer,
+    private val player: PillarboxExoPlayer,
     var currentData: CommandersActTracker.Data,
     coroutineContext: CoroutineContext,
 ) : AnalyticsListener {
@@ -116,6 +116,7 @@ internal class CommandersActStreaming(
         }
 
         event.mediaPosition = if (window.isLive) totalPlayTime else position
+        event.googleCast = player.isRemoteReceiver()
         commandersAct.sendTcMediaEvent(event)
     }
 

@@ -190,6 +190,8 @@ interface PillarboxPlayer : Player {
      */
     fun removeListener(listener: Listener)
 
+    fun isRemoteReceiver() = false
+
     companion object {
 
         /**
