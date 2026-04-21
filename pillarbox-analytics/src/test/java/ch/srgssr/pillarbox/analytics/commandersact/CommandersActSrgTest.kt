@@ -130,7 +130,8 @@ class CommandersActSrgTest {
 
     @Test
     fun `initial consent services`() {
-        assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertEquals("", commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.PROFILE_ID.label))
     }
 
     @Test
