@@ -17,7 +17,7 @@ internal class LoadingTimes(
     var asset: Duration? = null,
     var drm: Duration? = null,
 ) {
-    private var bufferingStartTime: Long = 0L
+    private var bufferingStartTime: Long? = null
     var timeToReady: Duration? = null
         private set
 
@@ -30,7 +30,7 @@ internal class LoadingTimes(
                 bufferingStartTime = timeProvider()
             }
             if (field == Player.STATE_BUFFERING && value == Player.STATE_READY) {
-                timeToReady = (timeProvider() - bufferingStartTime).milliseconds
+                timeToReady = bufferingStartTime?.let { (timeProvider() - it).milliseconds }
             }
             field = value
             if (field == Player.STATE_READY) {
