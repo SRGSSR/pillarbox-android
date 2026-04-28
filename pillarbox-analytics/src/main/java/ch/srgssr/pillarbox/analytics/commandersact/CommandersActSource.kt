@@ -22,7 +22,7 @@ import kotlin.collections.iterator
 data class CommandersActSource(
     val pageId: String,
     val pageVersion: String? = null,
-    val sectionId: String,
+    val sectionId: String? = null,
     val sectionVersion: String? = null,
     val sectionPosition: Int? = null,
     val itemPositionInSection: Int? = null,
