@@ -21,7 +21,7 @@ import kotlin.time.DurationUnit
 class TCMediaEvent(
     val eventType: MediaEventType,
     val assets: Map<String, String>,
-    val sourceId: String? = null
+    val sourceId: String? = null,
 ) : TCCustomEvent(eventType.toString()) {
     /**
      * Represents the current playback position.
@@ -58,6 +58,12 @@ class TCMediaEvent(
      */
     var audioTrackHasAudioDescription: Boolean = false
 
+    /**
+     * Tell if the player is considered as a GoogleCast receiver.
+     * GoogleCast senders should not update this value.
+     */
+    var googleCast: Boolean = false
+
     override fun getJsonObject(): JSONObject {
         val jsonObject = super.getJsonObject()
         for (asset in assets) {
@@ -81,7 +87,7 @@ class TCMediaEvent(
             jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it.uppercase())
         }
         jsonObject.putIfValid(MEDIA_AUDIO_DESCRIPTION_ON, audioTrackHasAudioDescription.toString())
-
+        jsonObject.putIfValid(MEDIA_GOOGLE_CAST, googleCast.toString())
         return jsonObject
     }
 
@@ -102,6 +108,7 @@ class TCMediaEvent(
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
         private const val MEDIA_AUDIO_DESCRIPTION_ON = "media_audiodescription_on"
         private const val KEY_SOURCE_ID = "source_id"
+        private const val MEDIA_GOOGLE_CAST = "media_google_cast"
 
         private fun toSeconds(duration: Duration): Long {
             return duration.toDouble(DurationUnit.SECONDS).roundToLong()
