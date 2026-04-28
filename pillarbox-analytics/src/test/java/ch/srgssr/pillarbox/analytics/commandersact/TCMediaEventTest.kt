@@ -17,6 +17,7 @@ class TCMediaEventTest {
         val tcEvent = TCMediaEvent(
             eventType = MediaEventType.Play,
             assets = emptyMap(),
+            source = null,
         )
         val json = tcEvent.jsonObject
 
@@ -35,6 +36,36 @@ class TCMediaEventTest {
         assertEquals("Pillarbox", json.getString("media_player_display"))
         assertEquals("false", json.getString("media_subtitles_on"))
         assertEquals("false", json.getString("media_audiodescription_on"))
+        assertFalse(json.has(CommandersActLabels.PAGE_ID.label))
+        assertFalse(json.has(CommandersActLabels.SECTION_ID.label))
+    }
+
+    @Test
+    fun `convert event to JSONObject with Source`() {
+        val tcEvent = TCMediaEvent(
+            eventType = MediaEventType.Play,
+            assets = emptyMap(),
+            source = CommandersActSource(pageId = "page_id_value", sectionId = "section_id_value")
+        )
+        val json = tcEvent.jsonObject
+
+        assertEquals(9, json.length())
+
+        // Properties set by TCEvent
+        assertEquals("play", json.getString("event_name"))
+        assertNotNull(json.optJSONObject("context"))
+        assertNotNull(json.getJSONObject("context").getString("event_id"))
+        assertFalse(json.has("page_type"))
+        assertFalse(json.has("page_name"))
+
+        // Properties set by TCMediaEvent
+        assertEquals("0", json.getString("media_position"))
+        assertEquals(BuildConfig.VERSION_NAME, json.getString("media_player_version"))
+        assertEquals("Pillarbox", json.getString("media_player_display"))
+        assertEquals("false", json.getString("media_subtitles_on"))
+        assertEquals("false", json.getString("media_audiodescription_on"))
+        assertEquals("page_id_value", json.getString("page_id"))
+        assertEquals("section_id_value", json.getString("section_id"))
     }
 
     @Test
@@ -47,7 +78,6 @@ class TCMediaEventTest {
                 "key3" to "value3",
                 "key4" to " ",
             ),
-            sourceId = "sourceId",
         ).apply {
             mediaPosition = 2.5.minutes
             timeShift = 1.minutes
@@ -59,7 +89,7 @@ class TCMediaEventTest {
         }
         val json = tcEvent.jsonObject
 
-        assertEquals(14, json.length())
+        assertEquals(13, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -71,7 +101,6 @@ class TCMediaEventTest {
         // Properties set by TCMediaEvent
         assertEquals("value1", json.getString("key1"))
         assertEquals("value3", json.getString("key3"))
-        assertEquals("sourceId", json.getString("source_id"))
         assertEquals("150", json.getString("media_position"))
         assertEquals("60", json.getString("media_timeshift"))
         assertEquals("0.5", json.getString("media_volume"))

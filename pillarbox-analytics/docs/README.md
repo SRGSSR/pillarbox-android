@@ -25,6 +25,7 @@ Before using any functionality, [SRGAnalytics][ch.srgssr.pillarbox.analytics.SRG
 
 ```kotlin
 class MyApplication : Application() {
+    
     override fun onCreate() {
         super.onCreate()
 
@@ -42,7 +43,7 @@ class MyApplication : Application() {
 }
 ```
 
-### Handle user consent
+### Handle user consent and profile identifier
 
 User consent can be configured when initializing analytics in your [Application][android.app.Application]'s
 [onCreate()][android.app.Application.onCreate] method:
@@ -59,6 +60,7 @@ val config = AnalyticsConfig(
     sourceKey = SourceKey.DEVELOPMENT,
     nonLocalizedApplicationName = "Your non-localized AppSiteName here",
     userConsent = userConsent,
+    profileIdentifier = "id",
 )
 
 initSRGAnalytics(config)
@@ -73,6 +75,18 @@ val userConsent = UserConsent(
 )
 
 SRGAnalytics.setUserConsent(userConsent)
+```
+
+for _profileIdentifier_ with:
+
+```kotlin
+SRGAnalytics.setProfileIdentifier("NewProfileIdentifier")
+```
+
+and to remove _profileIdentifier_ with:
+
+```kotlin
+SRGAnalytics.setProfileIdentifier(null)
 ```
 
 The updated values will be sent with the next analytics event.
@@ -121,9 +135,15 @@ Commanders Act specific classes.
 ComScore specific classes.
 
 [android.app.Application]: https://developer.android.com/reference/kotlin/android/app/Application.html
+
 [android.app.Application.onCreate]: https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate
+
 [ch.srgssr.pillarbox.analytics.AnalyticsConfig]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-analytics-config/index.html
+
 [ch.srgssr.pillarbox.analytics.SRGAnalytics]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/index.html
+
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.init]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init.html
+
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init-s-r-g-analytics.html
+
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/send-page-view.html
