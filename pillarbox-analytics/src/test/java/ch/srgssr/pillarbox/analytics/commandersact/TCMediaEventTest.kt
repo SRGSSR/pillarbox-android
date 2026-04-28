@@ -35,7 +35,7 @@ class TCMediaEventTest {
         assertEquals("Pillarbox", json.getString("media_player_display"))
         assertEquals("false", json.getString("media_subtitles_on"))
         assertEquals("false", json.getString("media_audiodescription_on"))
-        assertFalse(json.getBoolean("media_google_cast"))
+        assertEquals("false", json.getString("media_google_cast"))
     }
 
     @Test
@@ -82,6 +82,6 @@ class TCMediaEventTest {
         assertEquals("GERMAN", json.getString("media_subtitle_selection"))
         assertEquals("FRENCH", json.getString("media_audio_track"))
         assertEquals("true", json.getString("media_audiodescription_on"))
-        assertFalse(json.getBoolean("media_google_cast"))
+        assertEquals("false", json.getString("media_google_cast"))
     }
 }

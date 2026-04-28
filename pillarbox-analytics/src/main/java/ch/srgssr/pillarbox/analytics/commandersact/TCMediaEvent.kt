@@ -87,7 +87,7 @@ class TCMediaEvent(
             jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it.uppercase())
         }
         jsonObject.putIfValid(MEDIA_AUDIO_DESCRIPTION_ON, audioTrackHasAudioDescription.toString())
-        jsonObject.put(MEDIA_GOOGLE_CAST, googleCast)
+        jsonObject.putIfValid(MEDIA_GOOGLE_CAST, googleCast.toString())
         return jsonObject
     }
 
