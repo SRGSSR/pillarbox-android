@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.extension.commandersActSource
 import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
@@ -145,7 +146,7 @@ class SRGAssetLoader internal constructor(
         getComScoreData(result, chapter, resource)?.let {
             trackerData[ComScoreTracker::class.java] = FactoryData(comscoreTrackerFactory, it)
         }
-        getCommandersActData(result, chapter, resource)?.let {
+        getCommandersActData(mediaItem, result, chapter, resource)?.let {
             trackerData[CommandersActTracker::class.java] = FactoryData(commanderActTrackerFactory, it)
         }
         customTrackerData?.invoke(trackerData, resource, chapter, result)
@@ -210,6 +211,7 @@ class SRGAssetLoader internal constructor(
      * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
      */
     private fun getCommandersActData(
+        mediaItem: MediaItem,
         mediaComposition: MediaComposition,
         chapter: Chapter,
         resource: Resource
@@ -220,8 +222,7 @@ class SRGAssetLoader internal constructor(
             resource.analyticsLabels?.let { putAll(it) }
         }
         return if (commandersActData.isNotEmpty()) {
-            // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
-            CommandersActTracker.Data(assets = commandersActData, sourceId = null)
+            CommandersActTracker.Data(assets = commandersActData, source = mediaItem.commandersActSource)
         } else {
             null
         }

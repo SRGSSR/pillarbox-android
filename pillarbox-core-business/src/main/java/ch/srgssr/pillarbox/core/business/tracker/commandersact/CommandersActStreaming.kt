@@ -34,7 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
     private val player: ExoPlayer,
-    var currentData: CommandersActTracker.Data,
+    val currentData: CommandersActTracker.Data,
     coroutineContext: CoroutineContext,
 ) : AnalyticsListener {
 
@@ -98,7 +98,7 @@ internal class CommandersActStreaming(
     private fun notifyEvent(type: MediaEventType, position: Duration) {
         val totalPlayTime = playtimeTracker.getTotalPlayTime()
         DebugLogger.debug(TAG, "send : $type position = $position totalPlayTime = $totalPlayTime ${window.isLive}")
-        val event = TCMediaEvent(eventType = type, assets = currentData.assets, sourceId = currentData.sourceId)
+        val event = TCMediaEvent(eventType = type, assets = currentData.assets, source = currentData.source)
         handleTextTrackData(event)
         handleAudioTrack(event)
 

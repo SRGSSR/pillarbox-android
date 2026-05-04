@@ -45,6 +45,7 @@ import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
  * }
  * ```
  */
+@Suppress("TooManyFunctions")
 object SRGAnalytics {
     private var instance: Analytics? = null
 
@@ -183,6 +184,13 @@ object SRGAnalytics {
     }
 
     /**
+     * @param profileIdentifier An identifier for the app user, if any.
+     */
+    fun setProfileIdentifier(profileIdentifier: String?) {
+        instance?.setProfileIdentifier(profileIdentifier)
+    }
+
+    /**
      * Initializes the [SRGAnalytics] instance.
      *
      * This method should be called only once, typically in your [Application]'s [onCreate()][Application.onCreate] method. It initializes the
@@ -235,6 +243,10 @@ object SRGAnalytics {
         fun setUserConsent(userConsent: UserConsent) {
             comScore.setUserConsent(userConsent.comScore)
             commandersAct.setConsentServices(userConsent.commandersActConsentServices)
+        }
+
+        fun setProfileIdentifier(profileIdentifier: String?) {
+            commandersAct.setProfileIdentifier(profileIdentifier)
         }
     }
 }
