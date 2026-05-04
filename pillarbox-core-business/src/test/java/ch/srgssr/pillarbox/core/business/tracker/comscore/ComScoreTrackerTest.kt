@@ -6,9 +6,9 @@ package ch.srgssr.pillarbox.core.business.tracker.comscore
 
 import androidx.media3.common.Player
 import androidx.media3.common.util.Size
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.BuildConfig
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import com.comscore.Analytics
 import com.comscore.streaming.StreamingAnalytics
 import io.mockk.clearAllMocks
@@ -51,7 +51,7 @@ class ComScoreTrackerTest {
     fun `start() does not call notify play or buffer start when player can't play`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
+        val player = mockk<PillarboxExoPlayer>(relaxed = true)
         every { player.isPlaying } returns false
         every { player.surfaceSize } returns Size(100, 200)
         every { player.playbackState } returns Player.STATE_IDLE
@@ -72,7 +72,7 @@ class ComScoreTrackerTest {
     fun `start() call notifyBufferStart`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
+        val player = mockk<PillarboxExoPlayer>(relaxed = true)
         every { player.isPlaying } returns false
         every { player.surfaceSize } returns Size(130, 200)
         every { player.playbackState } returns Player.STATE_BUFFERING
@@ -87,7 +87,7 @@ class ComScoreTrackerTest {
     fun `start() call notifyPlay`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
+        val player = mockk<PillarboxExoPlayer>(relaxed = true)
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size(300, 200)
         every { player.playbackState } returns Player.STATE_READY
@@ -102,7 +102,7 @@ class ComScoreTrackerTest {
     fun `start() should not call notifyPlay when not connected to a surface`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
+        val player = mockk<PillarboxExoPlayer>(relaxed = true)
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size.ZERO
         every { player.playbackState } returns Player.STATE_READY
@@ -117,7 +117,7 @@ class ComScoreTrackerTest {
     fun `stop() should notifyEnd only once`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
         val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
+        val player = mockk<PillarboxExoPlayer>(relaxed = true)
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size.ZERO
         every { player.playbackState } returns Player.STATE_READY

@@ -21,7 +21,7 @@ class TCMediaEventTest {
         )
         val json = tcEvent.jsonObject
 
-        assertEquals(7, json.length())
+        assertEquals(8, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -38,6 +38,7 @@ class TCMediaEventTest {
         assertEquals("false", json.getString("media_audiodescription_on"))
         assertFalse(json.has(CommandersActLabels.PAGE_ID.label))
         assertFalse(json.has(CommandersActLabels.SECTION_ID.label))
+        assertEquals("false", json.getString("media_google_cast"))
     }
 
     @Test
@@ -49,7 +50,7 @@ class TCMediaEventTest {
         )
         val json = tcEvent.jsonObject
 
-        assertEquals(9, json.length())
+        assertEquals(10, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -66,6 +67,7 @@ class TCMediaEventTest {
         assertEquals("false", json.getString("media_audiodescription_on"))
         assertEquals("page_id_value", json.getString("page_id"))
         assertEquals("section_id_value", json.getString("section_id"))
+        assertEquals("false", json.getString("media_google_cast"))
     }
 
     @Test
@@ -89,7 +91,7 @@ class TCMediaEventTest {
         }
         val json = tcEvent.jsonObject
 
-        assertEquals(13, json.length())
+        assertEquals(14, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -110,5 +112,6 @@ class TCMediaEventTest {
         assertEquals("GERMAN", json.getString("media_subtitle_selection"))
         assertEquals("FRENCH", json.getString("media_audio_track"))
         assertEquals("true", json.getString("media_audiodescription_on"))
+        assertEquals("false", json.getString("media_google_cast"))
     }
 }

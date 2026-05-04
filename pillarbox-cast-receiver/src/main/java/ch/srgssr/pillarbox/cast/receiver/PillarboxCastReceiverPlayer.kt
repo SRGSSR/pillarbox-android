@@ -117,6 +117,7 @@ class PillarboxCastReceiverPlayer(
         if (BuildConfig.DEBUG) {
             mediaManager.setMediaStatusInterceptor(LogMediaStatusInterceptor)
         }
+        player.setRemoteReceiver(hasSenders())
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {
@@ -306,18 +307,25 @@ class PillarboxCastReceiverPlayer(
         return player.getSecondaryRenderer(index)
     }
 
+    private fun hasSenders(): Boolean {
+        return castReceiverContext.senders.isNotEmpty()
+    }
+
     private inner class EventCallback : CastReceiverContext.EventCallback() {
 
         override fun onSenderConnected(senderInfo: SenderInfo) {
             Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+            player.setRemoteReceiver(hasSenders())
         }
 
         override fun onSenderDisconnected(senderInfo: SenderDisconnectedEventInfo) {
             Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+            player.setRemoteReceiver(hasSenders())
         }
 
         override fun onStopApplication() {
             Log.d(TAG, "onStopApplication #sender = ${castReceiverContext.senders.size}")
+            player.setRemoteReceiver(false)
         }
     }
 

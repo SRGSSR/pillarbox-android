@@ -4,16 +4,16 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import androidx.media3.exoplayer.ExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 
 class FakeMediaItemTracker : MediaItemTracker<FakeMediaItemTracker.Data> {
     data class Data(val id: String)
 
-    override fun start(player: ExoPlayer, data: Data) {
+    override fun start(player: PillarboxExoPlayer, data: Data) {
         println("start $data")
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         // Nothing
         println("stop")
     }
