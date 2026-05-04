@@ -58,6 +58,12 @@ class TCMediaEvent(
      */
     var audioTrackHasAudioDescription: Boolean = false
 
+    /**
+     * Tell if the player is considered as a GoogleCast receiver.
+     * GoogleCast senders should not update this value.
+     */
+    var googleCast: Boolean = false
+
     init {
         source?.let {
             with(it) {
@@ -88,7 +94,7 @@ class TCMediaEvent(
             jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it.uppercase())
         }
         jsonObject.putIfValid(MEDIA_AUDIO_DESCRIPTION_ON, audioTrackHasAudioDescription.toString())
-
+        jsonObject.putIfValid(MEDIA_GOOGLE_CAST, googleCast.toString())
         return jsonObject
     }
 
@@ -108,6 +114,7 @@ class TCMediaEvent(
         private const val MEDIA_AUDIO_TRACK = "media_audio_track"
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
         private const val MEDIA_AUDIO_DESCRIPTION_ON = "media_audiodescription_on"
+        private const val MEDIA_GOOGLE_CAST = "media_google_cast"
 
         private fun toSeconds(duration: Duration): Long {
             return duration.toDouble(DurationUnit.SECONDS).roundToLong()
