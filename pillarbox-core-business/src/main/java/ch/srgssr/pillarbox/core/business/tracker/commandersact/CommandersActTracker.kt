@@ -4,8 +4,9 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
-import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import kotlin.coroutines.CoroutineContext
 
@@ -24,13 +25,13 @@ class CommandersActTracker(
      * Represents data to be sent to Commanders Act.
      *
      * @property assets A map of labels to be sent to Commanders Act.
-     * @property sourceId
+     * @property source The [CommandersActSource] to be sent to Commanders Act.
      */
-    data class Data(val assets: Map<String, String>, val sourceId: String? = null)
+    data class Data(val assets: Map<String, String>, val source: CommandersActSource? = null)
 
     private var analyticsStreaming: CommandersActStreaming? = null
 
-    override fun start(player: ExoPlayer, data: Data) {
+    override fun start(player: PillarboxExoPlayer, data: Data) {
         commandersAct.enableRunningInBackground()
         analyticsStreaming = CommandersActStreaming(
             player = player,
@@ -42,7 +43,7 @@ class CommandersActTracker(
         }
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         analyticsStreaming?.let {
             player.removeAnalyticsListener(it)
             it.stop()

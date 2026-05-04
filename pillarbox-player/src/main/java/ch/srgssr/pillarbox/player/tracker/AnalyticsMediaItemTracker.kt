@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
@@ -108,11 +107,11 @@ internal class AnalyticsMediaItemTracker(
 internal class DelegateMediaItemTracker<T>(private val factoryData: FactoryData<T>) : MediaItemTracker<Unit> {
     val tracker: MediaItemTracker<T> = factoryData.factory.create()
 
-    override fun start(player: ExoPlayer, data: Unit) {
+    override fun start(player: PillarboxExoPlayer, data: Unit) {
         tracker.start(player, factoryData.data)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         tracker.stop(player)
     }
 }

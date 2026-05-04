@@ -115,6 +115,8 @@ class PillarboxExoPlayer internal constructor(
     private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyBlockedTimeRangeChanged)
     private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyChapterChanged, this::notifyCreditChanged)
 
+    private var remoteReceiver = false
+
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
             if (value != field) {
@@ -241,6 +243,18 @@ class PillarboxExoPlayer internal constructor(
 
     override fun getSecondaryRenderer(index: Int): Renderer? {
         return exoPlayer.getSecondaryRenderer(index)
+    }
+
+    override fun isRemoteReceiver(): Boolean {
+        return remoteReceiver
+    }
+
+    /**
+     * Set this player is working as a remote receiver.
+     * Should only be called by a cast receiver and never be call manually.
+     */
+    fun setRemoteReceiver(isRemoteReceiver: Boolean) {
+        remoteReceiver = isRemoteReceiver
     }
 
     private inner class ComponentListener : Player.Listener {
