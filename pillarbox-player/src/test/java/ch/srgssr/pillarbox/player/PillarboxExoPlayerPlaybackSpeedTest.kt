@@ -13,6 +13,7 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
+import ch.srgssr.pillarbox.player.utils.StringUtil
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -47,12 +48,13 @@ class PillarboxExoPlayerPlaybackSpeedTest {
         player.setPlaybackSpeed(2f)
         assertEquals(1f, player.getPlaybackSpeed())
 
-        player.seekTo(0)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_POSITION_DISCONTINUITY) {
+            player.seekTo(0)
+        }
 
-        player.setPlaybackSpeed(2f)
-        assertEquals(2f, player.getPlaybackSpeed())
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_IS_LOADING_CHANGED)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(2f)
+        }
         assertEquals(2f, player.getPlaybackSpeed())
     }
 
@@ -84,12 +86,15 @@ class PillarboxExoPlayerPlaybackSpeedTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         val speed = 2f
-        player.setPlaybackSpeed(speed)
-        TestPillarboxRunHelper.runUntilEvents(player)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(speed)
+        }
+        println("state = ${StringUtil.playerStateString(player.playbackState)} @ ${player.getPlaybackSpeed()}")
         assertEquals(speed, player.getPlaybackSpeed())
 
-        player.setPlaybackSpeed(1f)
-        TestPillarboxRunHelper.runUntilEvents(player)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(1f)
+        }
         assertEquals(1f, player.getPlaybackSpeed())
     }
 
