@@ -13,13 +13,13 @@ import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeTimeline
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import io.mockk.Called
 import io.mockk.clearAllMocks
 import io.mockk.clearMocks
@@ -102,7 +102,6 @@ class CommandersActStreamingTest {
                 assets = mapOf(
                     "key1" to "value1",
                 ),
-                sourceId = "source_id",
             ),
             coroutineContext = EmptyCoroutineContext,
         )
@@ -116,7 +115,6 @@ class CommandersActStreamingTest {
         val tcMediaEventPlay = tcMediaEventSlot.captured
         assertEquals(MediaEventType.Play, tcMediaEventPlay.eventType)
         assertEquals(commandersActStreaming.currentData.assets, tcMediaEventPlay.assets)
-        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEventPlay.sourceId)
         assertFalse(tcMediaEventPlay.isSubtitlesOn)
         assertNull(tcMediaEventPlay.subtitleSelectionLanguage)
         assertEquals(C.LANGUAGE_UNDETERMINED, tcMediaEventPlay.audioTrackLanguage)
@@ -133,7 +131,6 @@ class CommandersActStreamingTest {
         val tcMediaEventStop = tcMediaEventSlot.captured
         assertEquals(MediaEventType.Eof, tcMediaEventStop.eventType)
         assertEquals(commandersActStreaming.currentData.assets, tcMediaEventStop.assets)
-        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEventStop.sourceId)
         assertFalse(tcMediaEventStop.isSubtitlesOn)
         assertNull(tcMediaEventStop.subtitleSelectionLanguage)
         assertEquals(C.LANGUAGE_UNDETERMINED, tcMediaEventStop.audioTrackLanguage)
@@ -172,7 +169,7 @@ class CommandersActStreamingTest {
                 assets = mapOf(
                     "key1" to "value1",
                 ),
-                sourceId = "source_id",
+
             ),
             coroutineContext = EmptyCoroutineContext,
         )
@@ -186,7 +183,6 @@ class CommandersActStreamingTest {
         val tcMediaEvent = tcMediaEventSlot.captured
         assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
         assertEquals(commandersActStreaming.currentData.assets, tcMediaEvent.assets)
-        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEvent.sourceId)
         assertTrue(tcMediaEvent.isSubtitlesOn)
         assertEquals("fr", tcMediaEvent.subtitleSelectionLanguage)
         assertEquals("en", tcMediaEvent.audioTrackLanguage)
@@ -203,7 +199,6 @@ class CommandersActStreamingTest {
         val tcMediaEventStop = tcMediaEventSlot.captured
         assertEquals(MediaEventType.Stop, tcMediaEventStop.eventType)
         assertEquals(commandersActStreaming.currentData.assets, tcMediaEventStop.assets)
-        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEventStop.sourceId)
         assertTrue(tcMediaEvent.isSubtitlesOn)
         assertEquals("fr", tcMediaEvent.subtitleSelectionLanguage)
         assertEquals("en", tcMediaEvent.audioTrackLanguage)
@@ -244,7 +239,7 @@ class CommandersActStreamingTest {
                 assets = mapOf(
                     "key1" to "value1",
                 ),
-                sourceId = "source_id",
+
             ),
             coroutineContext = EmptyCoroutineContext,
         )
@@ -258,7 +253,6 @@ class CommandersActStreamingTest {
         val tcMediaEvent = tcMediaEventSlot.captured
         assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
         assertEquals(commandersActStreaming.currentData.assets, tcMediaEvent.assets)
-        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEvent.sourceId)
         assertTrue(tcMediaEvent.isSubtitlesOn)
         assertEquals("fr", tcMediaEvent.subtitleSelectionLanguage)
         assertEquals("en", tcMediaEvent.audioTrackLanguage)
@@ -280,8 +274,8 @@ class CommandersActStreamingTest {
         @IntRange(from = 0) deviceVolume: Int = 0,
         duration: Long = 0L,
         currentTracks: Tracks = Tracks.EMPTY, // groups, audio
-    ): ExoPlayer {
-        return mockk<ExoPlayer> {
+    ): PillarboxExoPlayer {
+        return mockk<PillarboxExoPlayer> {
             val player = this
             val looper = ApplicationProvider.getApplicationContext<Context>().mainLooper
             val timelineWindowDefinition = FakeTimeline.TimelineWindowDefinition.Builder()
@@ -303,6 +297,7 @@ class CommandersActStreamingTest {
             every { player.applicationLooper } returns looper
             every { player.currentTimeline } returns FakeTimeline(timelineWindowDefinition)
             every { player.currentMediaItemIndex } returns 0
+            every { player.isRemoteReceiver() } returns false
         }
     }
 

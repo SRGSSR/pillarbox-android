@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.tracker
 
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 
@@ -15,11 +15,11 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 class SRGEventLoggerTracker : MediaItemTracker<Unit> {
     private val eventLogger = PillarboxEventLogger(TAG)
 
-    override fun start(player: ExoPlayer, data: Unit) {
+    override fun start(player: PillarboxExoPlayer, data: Unit) {
         player.addAnalyticsListener(eventLogger)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         player.removeAnalyticsListener(eventLogger)
     }
 

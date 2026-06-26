@@ -12,12 +12,14 @@ import com.tagcommander.lib.serverside.events.TCCustomEvent
  * @property name The name of the event. Must not be blank.
  * @property labels A map of custom labels associated with the event. Defaults to an empty map. Please discuss the expected values for your
  * application with your measurement team.
+ * @property source The [CommandersActSource] of this event.
  *
  * @throws IllegalArgumentException If [name] is blank.
  */
 data class CommandersActEvent(
     val name: String,
     val labels: Map<String, String> = emptyMap(),
+    val source: CommandersActSource? = null,
 ) {
     init {
         require(name.isNotBlank()) { "Name can't be blank!" }
@@ -32,6 +34,11 @@ data class CommandersActEvent(
         val event = TCCustomEvent(name)
         for (customEntry in labels) {
             event.addAdditionalParameterIfNotBlank(customEntry.key, customEntry.value)
+        }
+        source?.let {
+            with(it) {
+                event.setCommandersActSource()
+            }
         }
         return event
     }

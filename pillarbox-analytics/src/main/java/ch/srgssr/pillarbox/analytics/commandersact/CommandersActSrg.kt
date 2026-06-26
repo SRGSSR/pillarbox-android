@@ -42,6 +42,9 @@ internal class CommandersActSrg(
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
         tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, navigationDevice)
+
+        setConsentServices(config.userConsent.commandersActConsentServices)
+        setProfileIdentifier(config.profileIdentifier)
     }
 
     constructor(
@@ -94,6 +97,12 @@ internal class CommandersActSrg(
 
     override fun setConsentServices(consentServices: List<String>) {
         tcServerSide.addPermanentData(CommandersActLabels.CONSENT_SERVICES.label, consentServices.joinToString(","))
+    }
+
+    override fun setProfileIdentifier(profileIdentifier: String?) {
+        profileIdentifier?.let {
+            tcServerSide.addPermanentData(CommandersActLabels.PROFILE_ID.label, it)
+        } ?: tcServerSide.removePermanentData(CommandersActLabels.PROFILE_ID.label)
     }
 
     /**

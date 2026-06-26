@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 /**
  * Pillarbox [Player] interface extension.
  */
-@Suppress("ComplexInterface")
+@Suppress("ComplexInterface", "TooManyFunctions")
 interface PillarboxPlayer : Player {
 
     /**
@@ -189,6 +189,12 @@ interface PillarboxPlayer : Player {
      * @see [Player.removeListener]
      */
     fun removeListener(listener: Listener)
+
+    /**
+     * A player is considered as running as receiver when at least one remote sender is connected.
+     * @return if this player is running as a remote receiver.
+     */
+    fun isRemoteReceiver() = false
 
     companion object {
 

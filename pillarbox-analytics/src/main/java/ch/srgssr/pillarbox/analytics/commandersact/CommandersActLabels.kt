@@ -26,5 +26,13 @@ enum class CommandersActLabels(val label: String) {
     CONTENT_BU_OWNER("content_bu_owner"),
 
     // User consent
-    CONSENT_SERVICES("consent_services")
+    CONSENT_SERVICES("consent_services"),
+
+    SECTION_ID("section_id"),
+    SECTION_VERSION("section_version"),
+    SECTION_POSITION_IN_PAGE("section_position_in_page"),
+    PAGE_ID("page_id"),
+    PAGE_VERSION("page_version"),
+    ITEM_POSITION_IN_SECTION("item_position_in section"),
+    PROFILE_ID("profile_id")
 }

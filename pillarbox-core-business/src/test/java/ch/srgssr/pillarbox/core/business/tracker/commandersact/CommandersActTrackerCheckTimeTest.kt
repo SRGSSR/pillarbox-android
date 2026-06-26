@@ -143,7 +143,6 @@ class CommandersActTrackerCheckTimeTest {
 
         assertEquals(listOf(Pause, Pos, Uptime, Pos, Pos, Uptime, Pos, Uptime, Pos, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
-        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     @Test
@@ -193,7 +192,6 @@ class CommandersActTrackerCheckTimeTest {
 
         assertEquals(listOf(Stop, Pos, Uptime, Pos, Play, Seek, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
-        assertTrue(tcMediaEvents.all { it.sourceId == null })
 
         val timeShift = (player.duration.milliseconds - seekPosition).inWholeSeconds
         val actualTimeShift = tcMediaEvents.first {
@@ -255,7 +253,6 @@ class CommandersActTrackerCheckTimeTest {
 
         assertEquals(listOf(Pause, Pos, Pos, Pos, Pos, Pos, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
-        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     companion object {

@@ -8,9 +8,9 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.Size
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.BuildConfig
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -38,12 +38,12 @@ class ComScoreTracker internal constructor(
     private lateinit var latestData: Data
 
     /**
-     * A surface is connected to the player when its [ExoPlayer.getSurfaceSize] is different from [Size.ZERO].
+     * A surface is connected to the player when its [PillarboxExoPlayer.getSurfaceSize] is different from [Size.ZERO].
      * When used with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN]. When not connected the size is [Size.ZERO].
      */
     private var isSurfaceConnected: Boolean = false
     private var isBuffering: Boolean = false
-    private lateinit var player: WeakReference<ExoPlayer>
+    private lateinit var player: WeakReference<PillarboxExoPlayer>
     private lateinit var data: Data
 
     private var playbackSessionActive = false
@@ -63,15 +63,15 @@ class ComScoreTracker internal constructor(
         streamingAnalytics.setMediaPlayerVersion(BuildConfig.VERSION_NAME)
     }
 
-    override fun start(player: ExoPlayer, data: Data) {
-        this.player = WeakReference<ExoPlayer>(player)
+    override fun start(player: PillarboxExoPlayer, data: Data) {
+        this.player = WeakReference<PillarboxExoPlayer>(player)
         this.data = data
         isSurfaceConnected = player.surfaceSize != Size.ZERO
         handleStart(player)
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         player.removeAnalyticsListener(component)
         playbackSessionActive = false
         isSurfaceConnected = false
@@ -91,7 +91,7 @@ class ComScoreTracker internal constructor(
         latestData = data
     }
 
-    private fun handleStart(player: ExoPlayer) {
+    private fun handleStart(player: PillarboxExoPlayer) {
         playbackSessionActive = true
         streamingAnalytics.notifyChangePlaybackRate(player.getPlaybackSpeed())
         when {

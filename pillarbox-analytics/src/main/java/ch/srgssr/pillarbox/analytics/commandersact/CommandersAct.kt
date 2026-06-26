@@ -69,6 +69,11 @@ interface CommandersAct {
      * @param consentServices The list of consent services granted by the user.
      */
     fun setConsentServices(consentServices: List<String>)
+
+    /**
+     * @param profileIdentifier An identifier for the app user, if any.
+     */
+    fun setProfileIdentifier(profileIdentifier: String?)
 }
 
 internal object NoOpCommandersAct : CommandersAct {
@@ -86,4 +91,6 @@ internal object NoOpCommandersAct : CommandersAct {
     override fun getPermanentDataLabel(label: String): String? = null
 
     override fun setConsentServices(consentServices: List<String>) = Unit
+
+    override fun setProfileIdentifier(profileIdentifier: String?) = Unit
 }

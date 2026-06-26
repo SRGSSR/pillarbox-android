@@ -126,4 +126,34 @@ class CommandersActPageViewTest {
         assertEquals(pageView.name, tcPageView.pageName)
         assertEquals(pageView.type, tcPageView.pageType)
     }
+
+    @Test
+    fun `convert page view with levels and labels and source to TCPageViewEvent`() {
+        val pageView = CommandersActPageView(
+            name = "name",
+            type = "type",
+            levels = listOf("level1", "level2"),
+            labels = mapOf(
+                "key1" to "value1",
+                "key2" to "",
+                "key3" to "value3",
+                "key4" to " ",
+            ),
+            source = CommandersActSource(pageId = "page_id_value", sectionId = "section_id_value")
+        )
+        val tcPageView = pageView.toTCPageViewEvent(vendor = Vendor.SRF)
+        val expectedProperties = mapOf<String, Any>(
+            "key1" to "value1",
+            "key3" to "value3",
+            "navigation_level_1" to "level1",
+            "navigation_level_2" to "level2",
+            "content_bu_owner" to "SRF",
+            "page_id" to "page_id_value",
+            "section_id" to "section_id_value"
+        )
+
+        assertEquals(expectedProperties, tcPageView.additionalProperties)
+        assertEquals(pageView.name, tcPageView.pageName)
+        assertEquals(pageView.type, tcPageView.pageType)
+    }
 }
