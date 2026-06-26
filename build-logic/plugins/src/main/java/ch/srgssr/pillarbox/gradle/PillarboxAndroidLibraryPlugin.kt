@@ -12,7 +12,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
-/**ø
+/**
  * Custom Gradle plugin to configure an Android library module for Pillarbox.
  */
 class PillarboxAndroidLibraryPlugin : Plugin<Project> {

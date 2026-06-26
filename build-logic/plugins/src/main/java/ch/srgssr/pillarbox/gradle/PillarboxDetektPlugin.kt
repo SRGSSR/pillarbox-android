@@ -4,17 +4,12 @@
  */
 package ch.srgssr.pillarbox.gradle
 
-import ch.srgssr.pillarbox.gradle.internal.AppConfig
 import ch.srgssr.pillarbox.gradle.internal.libs
-import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
 
 /**
  * Custom Gradle plugin to configure Detekt for Pillarbox.
