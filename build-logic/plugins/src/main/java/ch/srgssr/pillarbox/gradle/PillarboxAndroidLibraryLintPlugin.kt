@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.gradle
 
-import ch.srgssr.pillarbox.gradle.internal.configureAndroidLintModule
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -18,7 +17,7 @@ class PillarboxAndroidLibraryLintPlugin : Plugin<Project> {
         pluginManager.apply("com.android.library")
 
         extensions.configure<LibraryExtension> {
-            configureAndroidLintModule(this)
+            //configureAndroidLintModule(this)
         }
     }
 }

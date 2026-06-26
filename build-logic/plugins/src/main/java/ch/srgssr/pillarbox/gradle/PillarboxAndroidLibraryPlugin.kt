@@ -5,24 +5,35 @@
 package ch.srgssr.pillarbox.gradle
 
 import ch.srgssr.pillarbox.gradle.internal.AppConfig
-import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
-/**
+/**ø
  * Custom Gradle plugin to configure an Android library module for Pillarbox.
  */
 class PillarboxAndroidLibraryPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
-        pluginManager.apply("org.jetbrains.kotlin.android")
 
         extensions.configure<LibraryExtension> {
-            configureAndroidModule(this)
+            //configureAndroidModule(this)
+            namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
+            compileSdk = AppConfig.compileSdk
+
+            compileOptions {
+                sourceCompatibility = AppConfig.javaVersion
+                targetCompatibility = AppConfig.javaVersion
+            }
+
+            buildFeatures {
+                resValues = false
+                shaders = false
+            }
+            //configureAndroidModule(this)
             defaultConfig {
                 minSdk = AppConfig.libraryMinSdk
                 consumerProguardFiles("consumer-rules.pro")

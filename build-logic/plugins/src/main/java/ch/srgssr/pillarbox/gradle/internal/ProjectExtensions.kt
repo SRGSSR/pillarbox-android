@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
+/*internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
     namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
     compileSdk = AppConfig.compileSdk
 
@@ -28,7 +28,7 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
         resValues = false
         shaders = false
     }
-}
+}*/
 
 internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
@@ -40,6 +40,7 @@ internal fun Project.configureKotlinModule() {
     }
 }
 
+/*
 internal fun Project.configureAndroidLintModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
     lint {
         abortOnError = true
@@ -49,4 +50,4 @@ internal fun Project.configureAndroidLintModule(extension: CommonExtension<*, *,
         sarifOutput = rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
         disable.add("LogConditional")
     }
-}
+}*/
