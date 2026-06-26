@@ -5,13 +5,23 @@
 package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
+import java.io.File
 
-internal fun CommonExtension.configureJava(){
-    compileOptions.sourceCompatibility = AppConfig.javaVersion
-    compileOptions.targetCompatibility = AppConfig.javaVersion
+internal fun CommonExtension.configureJava() = with(compileOptions) {
+    sourceCompatibility = AppConfig.javaVersion
+    targetCompatibility = AppConfig.javaVersion
 }
 
-internal fun CommonExtension.configureBuildFeatures(){
-    buildFeatures.resValues = false
-    buildFeatures.shaders = false
+internal fun CommonExtension.configureBuildFeatures() = with(buildFeatures) {
+    resValues = false
+    shaders = false
+}
+
+internal fun CommonExtension.configureLint(sarifOutputDir: File?) = with(lint) {
+    abortOnError = true
+    checkAllWarnings = true
+    checkDependencies = true
+    sarifReport = true
+    sarifOutput = sarifOutput
+    disable.add("LogConditional")
 }

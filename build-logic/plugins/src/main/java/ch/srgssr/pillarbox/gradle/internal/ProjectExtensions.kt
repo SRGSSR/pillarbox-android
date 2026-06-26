@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.CompileOptions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -35,14 +34,9 @@ internal fun Project.configureKotlinModule() {
     }
 }
 
-/*
-internal fun Project.configureAndroidLintModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
-    lint {
-        abortOnError = true
-        checkAllWarnings = true
-        checkDependencies = true
-        sarifReport = true
-        sarifOutput = rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
-        disable.add("LogConditional")
-    }
-}*/
+
+internal fun Project.configureAndroidLintModule(extension: CommonExtension) = with(extension) {
+    configureLint(
+        rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
+    )
+}

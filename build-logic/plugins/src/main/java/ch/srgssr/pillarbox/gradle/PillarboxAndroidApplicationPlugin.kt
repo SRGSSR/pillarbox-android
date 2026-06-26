@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.gradle
 
 import ch.srgssr.pillarbox.gradle.internal.AppConfig
 import ch.srgssr.pillarbox.gradle.internal.VersionConfig
+import ch.srgssr.pillarbox.gradle.internal.configureAndroidLintModule
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import ch.srgssr.pillarbox.gradle.internal.libs
@@ -26,7 +27,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
         extensions.configure<ApplicationExtension> {
-            //configureAndroidLintModule(this)
+            configureAndroidLintModule(this)
             configureAndroidModule(this)
 
             compileOptions {
