@@ -19,6 +19,7 @@ class PillarboxAndroidLibraryPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
+        pluginManager.apply("ch.srgssr.pillarbox.gradle.detekt")
 
         extensions.configure<LibraryExtension> {
             configureAndroidModule(this)

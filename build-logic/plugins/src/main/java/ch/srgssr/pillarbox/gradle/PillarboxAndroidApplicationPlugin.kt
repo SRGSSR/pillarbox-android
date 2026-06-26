@@ -25,6 +25,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
         pluginManager.apply("com.android.application")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+        pluginManager.apply("ch.srgssr.pillarbox.gradle.detekt")
 
         extensions.configure<ApplicationExtension> {
             configureAndroidLintModule(this)
