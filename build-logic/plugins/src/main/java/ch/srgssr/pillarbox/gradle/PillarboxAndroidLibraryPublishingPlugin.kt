@@ -24,7 +24,7 @@ import java.net.URI
  */
 class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        /*pluginManager.apply("com.android.library")
+        pluginManager.apply("com.android.library")
         pluginManager.apply("org.gradle.maven-publish")
         pluginManager.apply("org.jetbrains.dokka")
         pluginManager.apply("org.jetbrains.dokka-javadoc")
@@ -145,7 +145,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         }
 
         extensions.configure<DokkaExtension> {
-            dokkaSourceSets.getByName("main") {
+            dokkaSourceSets.findByName("main")?.apply{
                 includes.from("docs/README.md")
 
                 externalDocumentationLinks.register("kotlinx.coroutines") {
@@ -166,6 +166,6 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     remoteUrl.set(URI("https://github.com/SRGSSR/pillarbox-android/tree/$version/${target.name}/src"))
                 }
             }
-        }*/
+        }
     }
 }
