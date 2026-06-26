@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.gradle
 
 import ch.srgssr.pillarbox.gradle.internal.AppConfig
+import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
@@ -20,20 +21,7 @@ class PillarboxAndroidLibraryPlugin : Plugin<Project> {
         pluginManager.apply("com.autonomousapps.dependency-analysis")
 
         extensions.configure<LibraryExtension> {
-            //configureAndroidModule(this)
-            namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
-            compileSdk = AppConfig.compileSdk
-
-            compileOptions {
-                sourceCompatibility = AppConfig.javaVersion
-                targetCompatibility = AppConfig.javaVersion
-            }
-
-            buildFeatures {
-                resValues = false
-                shaders = false
-            }
-            //configureAndroidModule(this)
+            configureAndroidModule(this)
             defaultConfig {
                 minSdk = AppConfig.libraryMinSdk
                 consumerProguardFiles("consumer-rules.pro")

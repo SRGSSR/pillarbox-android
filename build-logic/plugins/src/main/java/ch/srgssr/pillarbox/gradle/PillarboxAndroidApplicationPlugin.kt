@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.gradle
 
 import ch.srgssr.pillarbox.gradle.internal.AppConfig
 import ch.srgssr.pillarbox.gradle.internal.VersionConfig
+import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import ch.srgssr.pillarbox.gradle.internal.libs
 import com.android.build.api.dsl.ApplicationExtension
@@ -26,20 +27,12 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
         extensions.configure<ApplicationExtension> {
             //configureAndroidLintModule(this)
-            //configureAndroidModule(this)
-            namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
-            compileSdk = AppConfig.compileSdk
+            configureAndroidModule(this)
 
             compileOptions {
-                sourceCompatibility = AppConfig.javaVersion
                 targetCompatibility = AppConfig.javaVersion
             }
 
-            buildFeatures {
-                resValues = false
-                shaders = false
-            }
-            //configureAndroidModule(this)
             configureKotlinModule()
 
             defaultConfig{

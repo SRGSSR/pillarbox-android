@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.CompileOptions
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -15,20 +16,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-/*internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
+
+internal fun Project.configureAndroidModule(extension: CommonExtension) = with(extension) {
     namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
     compileSdk = AppConfig.compileSdk
 
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-
-    buildFeatures {
-        resValues = false
-        shaders = false
-    }
-}*/
+    configureJava()
+    configureBuildFeatures()
+}
 
 internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
