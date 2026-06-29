@@ -22,6 +22,6 @@ internal fun CommonExtension.configureLint(sarifOutputDir: File?) = with(lint) {
     checkAllWarnings = true
     checkDependencies = true
     sarifReport = true
-    sarifOutput = sarifOutput
+    sarifOutput = sarifOutputDir
     disable.add("LogConditional")
 }
