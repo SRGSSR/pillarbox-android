@@ -15,19 +15,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
+
+internal fun Project.configureAndroidModule(extension: CommonExtension) = with(extension) {
     namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
     compileSdk = AppConfig.compileSdk
 
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-
-    buildFeatures {
-        resValues = false
-        shaders = false
-    }
+    configureJava()
+    configureBuildFeatures()
 }
 
 internal fun Project.configureKotlinModule() {
@@ -40,13 +34,9 @@ internal fun Project.configureKotlinModule() {
     }
 }
 
-internal fun Project.configureAndroidLintModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
-    lint {
-        abortOnError = true
-        checkAllWarnings = true
-        checkDependencies = true
-        sarifReport = true
-        sarifOutput = rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
-        disable.add("LogConditional")
-    }
+
+internal fun Project.configureAndroidLintModule(extension: CommonExtension) = with(extension) {
+    configureLint(
+        rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
+    )
 }

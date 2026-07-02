@@ -25,7 +25,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -73,7 +73,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.CAR, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -97,7 +97,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.DESKTOP, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -121,7 +121,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -145,7 +145,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -169,7 +169,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -193,7 +193,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TV, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -217,7 +217,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertNull(qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -264,7 +264,7 @@ class SessionTest {
         private const val ASSET_URL = "https://rts-vod-amd.akamaized.net/ww/12345/3037738d-fe91-32e3-93f2-4dbb62a0f9bd/master.m3u8"
         private const val MEDIA_ID = "urn:rts:video:12345"
         private const val METADATA_URL = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY"
-        private const val MIN_ANDROID_VERSION = "6.0.1"
+        private const val MIN_ANDROID_VERSION = "16"
         private const val OPERATING_SYSTEM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_PLATFORM = "Android"
