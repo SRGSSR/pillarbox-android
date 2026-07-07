@@ -159,6 +159,7 @@ class SRGAssetLoader internal constructor(
         val mediaSource = chapter.spriteSheet?.let {
             MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
+        val ilHost = mediaItem.localConfiguration!!.uri.toIlUrl().host
         return Asset(
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
@@ -167,7 +168,7 @@ class SRGAssetLoader internal constructor(
             }.build(),
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
-                chapters = ChapterAdapter.getChapters(result),
+                chapters = ChapterAdapter.getChapters(result, ilHost),
                 credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
             ),
         )

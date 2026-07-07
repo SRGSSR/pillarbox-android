@@ -45,4 +45,40 @@ class ImageScalingServiceTest {
 
         assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960", scaledImageUrl)
     }
+
+    @Test
+    fun getScaledImageUrlPlayPlusProduction() {
+        val host = IlHost.PLAY_PLUS_PRODUCTION
+        val imageUrl = "https://www.rts.ch/2022/10/06/17/32/13444418.image/4x5"
+
+        val imageScalingService = ImageScalingService(host)
+        val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
+        val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
+
+        assertEquals("https://img.playplus.ch?src=$encodedImageUrl&imwidth=1080", scaledImageUrl)
+    }
+
+    @Test
+    fun getScaledImageUrlPlayPlusIntegration() {
+        val host = IlHost.PLAY_PLUS_INTEGRATION
+        val imageUrl = "https://www.rts.ch/2022/10/06/17/32/13444418.image/4x5"
+
+        val imageScalingService = ImageScalingService(host)
+        val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
+        val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
+
+        assertEquals("https://img.playplus.ch?src=$encodedImageUrl&imwidth=1080", scaledImageUrl)
+    }
+
+    @Test
+    fun getScaledImageUrlPlayPlusDevelopment() {
+        val host = IlHost.PLAY_PLUS_DEVELOPMENT
+        val imageUrl = "https://www.rts.ch/2022/10/06/17/32/13444418.image/4x5"
+
+        val imageScalingService = ImageScalingService(host)
+        val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
+        val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
+
+        assertEquals("https://img.playplus.ch?src=$encodedImageUrl&imwidth=1080", scaledImageUrl)
+    }
 }
