@@ -53,7 +53,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 @PillarboxDsl
 @Suppress("FunctionName")
 fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
-    require(urn.isValidMediaUrn()) { "URN $urn is not valid." }
+    require(urn.isValidMediaUrn()) { "$urn is not valid URN." }
     return SRGMediaItemBuilder(MediaItem.Builder().setMediaId(urn).build()).apply(block).build()
 }
 
