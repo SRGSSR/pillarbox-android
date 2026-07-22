@@ -1,8 +1,9 @@
 [versions]
-android-gradle-plugin = "8.13.2"
+android-gradle-plugin = "9.2.1"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"
 androidx-compose = "2026.04.01"
+androidx-collection-jvm = "1.6.0"
 androidx-core = "1.18.0"
 androidx-datastore = "1.2.1"
 androidx-lifecycle = "2.10.0"
@@ -16,10 +17,10 @@ androidx-test-runner = "1.7.0"
 androidx-tv-material = "1.1.0-rc01"
 coil = "3.4.0"
 comscore = "6.13.0"
-dependency-analysis-gradle-plugin = "3.10.0"
+dependency-analysis-gradle-plugin = "3.16.0"
 desugar_jdk_libs = "2.1.5"
 detekt = "1.23.8"
-dokka = "2.1.0"
+dokka = "2.2.0"
 guava = "33.3.1-android"
 json = "20251224"
 junit = "4.13.2"
@@ -80,6 +81,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-kover-gradle = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kotlinx-kover" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
@@ -145,6 +147,7 @@ androidx-compose-material-icons-extended = { module = "androidx.compose.material
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-annotation = { module = "androidx.compose.runtime:runtime-annotation" }
 androidx-compose-runtime-saveable = { module = "androidx.compose.runtime:runtime-saveable" }
+androidx-collection-jvm = { group = "androidx.collection", name = "collection-jvm", version.ref = "androidx-collection-jvm" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
@@ -156,7 +159,6 @@ dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analys
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

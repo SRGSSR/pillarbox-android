@@ -1,3 +1,6 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+
 /*
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
@@ -7,15 +10,38 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose.compiler) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.detekt)
+    alias(libs.plugins.detekt) apply false
     alias(libs.plugins.dependency.analysis.gradle.plugin)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
     alias(libs.plugins.kotlinx.kover)
-    alias(libs.plugins.pillarbox.detekt)
+    alias(libs.plugins.pillarbox.detekt) apply false
+}
+
+val detektReportMerge = tasks.register<ReportMergeTask>("detektReportMerge") {
+    description = "Sarif report merge task"
+    output.set(rootProject.layout.buildDirectory.file("reports/detekt/pillarbox-android.sarif"))
+}
+
+subprojects {
+    val detektTasks = tasks.withType<Detekt>()
+    detektTasks.configureEach {
+        reports {
+            html.required.set(true)
+            md.required.set(false)
+            sarif.required.set(true)
+            txt.required.set(false)
+            xml.required.set(false)
+        }
+
+        finalizedBy(detektReportMerge)
+    }
+
+    detektReportMerge.configure {
+        input.from(detektTasks.map { it.sarifReportFile })
+    }
 }
 
 allprojects {
