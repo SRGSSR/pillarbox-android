@@ -20,11 +20,11 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'temurin'
       - name: Submit dependency graph
-        uses: gradle/actions/dependency-submission@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+        uses: gradle/actions/dependency-submission@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
