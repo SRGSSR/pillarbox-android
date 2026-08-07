@@ -11,6 +11,7 @@ package ch.srgssr.pillarbox.analytics.commandersact
  */
 @Suppress("UndocumentedPublicProperty")
 enum class CommandersActLabels(val label: String) {
+
     // Event keys
     EVENT_VALUE("event_value"),
     EVENT_TYPE("event_type"),
@@ -34,5 +35,5 @@ enum class CommandersActLabels(val label: String) {
     PAGE_ID("page_id"),
     PAGE_VERSION("page_version"),
     ITEM_POSITION_IN_SECTION("item_position_in section"),
-    PROFILE_ID("profile_id")
+    PROFILE_ID("profile_id"),
 }
