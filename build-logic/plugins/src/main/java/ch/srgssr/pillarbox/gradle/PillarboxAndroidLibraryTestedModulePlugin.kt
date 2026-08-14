@@ -26,10 +26,6 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
         rootProject.dependencies.add("kover", project(path))
 
         extensions.configure<LibraryExtension> {
-            defaultConfig {
-                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            }
-
             testOptions {
                 unitTests {
                     isIncludeAndroidResources = true

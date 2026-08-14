@@ -39,6 +39,7 @@ dependencies {
     }
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
     testRuntimeOnly(libs.robolectric)

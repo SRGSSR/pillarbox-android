@@ -86,7 +86,6 @@ class MetricsCollectorTest {
     fun `playback item transition`() {
         player.setMediaItems(listOf(VOD1, VOD2))
 
-        TestPlayerRunHelper.advance(player).untilMediaItemIndex(1)
         TestPlayerRunHelper.advance(player).untilState(Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.

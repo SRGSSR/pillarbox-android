@@ -8,7 +8,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.net.URLEncoder
 
 /**
- * Service used to get a scaled image URL. This only works for SRG images.
+ * Service used to get a scaled image URL. This only works for SRG and PlayPlus images.
  *
  * @param ilHost Base URL of the service.
  */
@@ -20,7 +20,14 @@ internal class ImageScalingService(
         imageUrl: String,
     ): String {
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8.name())
+        return when (ilHost) {
+            IlHost.PROD, IlHost.STAGE, IlHost.TEST -> {
+                "${ilHost.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960"
+            }
 
-        return "${ilHost.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960"
+            else -> {
+                "https://img.playplus.ch?src=$encodedImageUrl&imwidth=1080"
+            }
+        }
     }
 }

@@ -24,12 +24,17 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
-        pluginManager.apply("org.jetbrains.kotlin.android")
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+        pluginManager.apply("ch.srgssr.pillarbox.gradle.detekt")
 
         extensions.configure<ApplicationExtension> {
             configureAndroidLintModule(this)
             configureAndroidModule(this)
+
+            compileOptions {
+                targetCompatibility = AppConfig.javaVersion
+            }
+
             configureKotlinModule()
 
             defaultConfig{

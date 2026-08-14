@@ -8,7 +8,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.SourceKey
+import ch.srgssr.pillarbox.analytics.commandersact.TestUtils
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import io.mockk.clearAllMocks
@@ -25,11 +25,7 @@ import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
 class ComScoreSrgTest {
-    private val config = AnalyticsConfig(
-        vendor = AnalyticsConfig.Vendor.SRG,
-        appSiteName = "pillarbox-test-android",
-        sourceKey = SourceKey.DEVELOPMENT
-    )
+    private val config = TestUtils.analyticsConfig
 
     private lateinit var context: Context
 
