@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":pillarbox-player/release":[],":pillarbox-ui/release":[],":pillarbox-analytics/release":[],":pillarbox-core-business-cast/release":[],":pillarbox-cast/release":[],":pillarbox-core-business/release":[],":pillarbox-cast-receiver/release":[]}'
