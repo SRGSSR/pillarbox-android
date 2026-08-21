@@ -206,12 +206,6 @@ object SamplesSRG {
         title = "Video urls",
         items = listOf(
             DemoItem.URL(
-                title = "Le R. - Légumes trop chers",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8",
-                description = "Playlist item 1",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
                 title = "Le R. - Production de légumes bio",
                 uri = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8",
                 description = "Playlist item 2",
@@ -229,30 +223,6 @@ object SamplesSRG {
                 description = "Playlist item 4",
                 languageTag = "fr-CH",
             ),
-            DemoItem.URL(
-                title = "Le R. - Femme, vie, liberté",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444352/32145dc0-b5f8-3a14-ae11-5fc6e33aaaa4/master.m3u8",
-                description = "Playlist item 5",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Attaque en Thaïlande",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444409/23f808a4-b14a-3d3e-b2ed-fa1279f6cf01/master.m3u8",
-                description = "Playlist item 6",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Douches et vestiaires non genrés",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444371/3f26467f-cd97-35f4-916f-ba3927445920/master.m3u8",
-                description = "Playlist item 7",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Prends soin de toi, des autres et à demain",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444428/857d97ef-0b8e-306e-bf79-3b13e8c901e4/master.m3u8",
-                description = "Playlist item 8",
-                languageTag = "fr-CH",
-            )
         ),
         languageTag = "en-CH",
     )
