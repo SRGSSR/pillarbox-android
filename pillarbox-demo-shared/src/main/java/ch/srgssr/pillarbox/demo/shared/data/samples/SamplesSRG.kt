@@ -236,54 +236,6 @@ object SamplesSRG {
             Tataki_4,
             Tataki_5,
             Tataki_6,
-            DemoItem.URN(
-                title = "Le R. - Légumes trop chers",
-                urn = "urn:rts:video:13444390",
-                description = "Playlist item 1",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Production de légumes bio",
-                urn = "urn:rts:video:13444333",
-                description = "Playlist item 2",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Endométriose",
-                urn = "urn:rts:video:13444466",
-                description = "Playlist item 3",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Prix Nobel de littérature 2022",
-                urn = "urn:rts:video:13444447",
-                description = "Playlist item 4",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Femme, vie, liberté",
-                urn = "urn:rts:video:13444352",
-                description = "Playlist item 5",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Attaque en Thailande",
-                urn = "urn:rts:video:13444409",
-                description = "Playlist item 6",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Douches et vestinaires non genrés",
-                urn = "urn:rts:video:13444371",
-                description = "Playlist item 7",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Prend soin de toi des autres et à demain",
-                urn = "urn:rts:video:13444428",
-                description = "Playlist item 8",
-                languageTag = "fr-CH",
-            )
         ),
         languageTag = "en-CH",
     )

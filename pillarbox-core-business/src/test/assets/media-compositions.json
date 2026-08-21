@@ -479,7 +479,7 @@
                 },
                 "resourceList": [
                     {
-                        "url": "https://rts-vod-amd.akamaized.net/ww/13444428/857d97ef-0b8e-306e-bf79-3b13e8c901e4/master.m3u8",
+                        "url": "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8",
                         "quality": "HD",
                         "protocol": "HLS",
                         "encoding": "H264",
