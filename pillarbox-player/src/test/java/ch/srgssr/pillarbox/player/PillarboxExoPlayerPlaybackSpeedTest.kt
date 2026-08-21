@@ -13,7 +13,6 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
-import ch.srgssr.pillarbox.player.utils.StringUtil
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -89,7 +88,6 @@ class PillarboxExoPlayerPlaybackSpeedTest {
         TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
             setPlaybackSpeed(speed)
         }
-        println("state = ${StringUtil.playerStateString(player.playbackState)} @ ${player.getPlaybackSpeed()}")
         assertEquals(speed, player.getPlaybackSpeed())
 
         TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
