@@ -113,6 +113,7 @@ open class PillarboxMediaSession internal constructor() {
          *
          * @param callback
          * @return this builder for convenience.
+         * @see MediaSession.Builder.setBitmapLoader
          */
         fun setCallback(callback: Callback): Builder {
             this.callback = callback
