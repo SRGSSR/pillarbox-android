@@ -206,12 +206,6 @@ object SamplesSRG {
         title = "Video urls",
         items = listOf(
             DemoItem.URL(
-                title = "Le R. - Production de légumes bio",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8",
-                description = "Playlist item 2",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
                 title = "Le R. - Endométriose",
                 uri = "https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8",
                 description = "Playlist item 3",
