@@ -153,6 +153,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
          *
          * @param bitmapLoader The [BitmapLoader] to use.
          * @return this builder for convenience.
+         *  @see MediaLibrarySession.Builder.setBitmapLoader
          */
         fun setBitmapLoader(bitmapLoader: BitmapLoader): Builder {
             this.bitmapLoader = bitmapLoader
