@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.source
 import androidx.media3.common.Format
 import androidx.media3.common.StreamKey
 import androidx.media3.common.TrackGroup
+import androidx.media3.common.util.ExperimentalApi
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
@@ -69,6 +70,11 @@ internal class PillarboxMediaPeriod(
 
     override fun getStreamKeys(trackSelections: List<ExoTrackSelection>): List<StreamKey> {
         return mediaPeriod.getStreamKeys(trackSelections)
+    }
+
+    @ExperimentalApi
+    override fun setUsesStreamPrerollFlags() {
+        mediaPeriod.setUsesStreamPrerollFlags()
     }
 
     override fun setEndPositionUs(endPositionUs: Long): Long {
