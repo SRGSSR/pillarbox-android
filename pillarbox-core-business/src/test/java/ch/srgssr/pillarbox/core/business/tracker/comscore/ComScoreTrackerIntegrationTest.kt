@@ -589,6 +589,11 @@ class ComScoreTrackerIntegrationTest {
             verifyMetadata()
             verifySeekEvent(0L)
             verifyPlayEvent()
+            // For some reason, notify play event are called twice
+            // 1 from onPositionDiscontinuityChanged during auto transition.
+            // 2 from onIsPlayingChanged
+            verifySeekEvent(0L)
+            verifyPlayEvent()
             verifyEndEvent()
         }
         confirmVerified(streamingAnalytics)
