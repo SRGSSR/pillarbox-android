@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import androidx.annotation.IntRange
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.util.BitmapLoader
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
@@ -123,6 +124,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
     ) {
         private var pendingIntent: PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(service)
         private var id: String? = null
+        private var bitmapLoader: BitmapLoader? = null
 
         /**
          * Set session activity
@@ -147,6 +149,17 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
         }
 
         /**
+         * Set bitmapLoader
+         *
+         * @param bitmapLoader The [BitmapLoader] to use.
+         * @return this builder for convenience.
+         */
+        fun setBitmapLoader(bitmapLoader: BitmapLoader): Builder {
+            this.bitmapLoader = bitmapLoader
+            return this
+        }
+
+        /**
          * Build
          *
          * @return a new [PillarboxMediaLibrarySession]
@@ -158,6 +171,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             val mediaSession = mediaSessionBuilder.apply {
                 id?.let { setId(it) }
                 pendingIntent?.let { setSessionActivity(it) }
+                bitmapLoader?.let { setBitmapLoader(it) }
             }.build()
             pillarboxMediaSession.setMediaSession(mediaSession)
             return pillarboxMediaSession
