@@ -95,7 +95,6 @@ class MonitoringTest {
         val qoeTimings1 = player.monitoring.getCurrentQoETimings()
         val qosTimings1 = player.monitoring.getCurrentQoSTimings()
 
-        TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings2 = player.monitoring.getCurrentQoETimings()
