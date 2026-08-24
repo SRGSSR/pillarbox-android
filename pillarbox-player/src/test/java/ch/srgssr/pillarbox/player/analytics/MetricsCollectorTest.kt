@@ -114,6 +114,6 @@ class MetricsCollectorTest {
         private val VOD1 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444447/c1d17174-ad2f-31c2-a084-846a9247fd35/master.m3u8")
 
         // 18sec
-        private val VOD2 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8")
+        private val VOD2 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8")
     }
 }
