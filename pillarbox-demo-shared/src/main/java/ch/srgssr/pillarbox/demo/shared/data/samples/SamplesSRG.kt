@@ -201,6 +201,18 @@ object SamplesSRG {
         urn = "urn:rts:video:13752646",
         languageTag = "fr-CH",
     )
+    val Tataki_7 = DemoItem.URN(
+        title = "La banane la plus chère du monde",
+        description = "Tataki 7",
+        urn = "urn:rts:video:15429800",
+        languageTag = "fr-CH",
+    )
+    val Tataki_8 = DemoItem.URN(
+        title = "La trend Chill Guy",
+        description = "Tataki 8",
+        urn = "urn:rts:video:15429899",
+        languageTag = "fr-CH",
+    )
 
     val StoryVideoUrls = Playlist(
         title = "Video urls",
@@ -230,6 +242,8 @@ object SamplesSRG {
             Tataki_4,
             Tataki_5,
             Tataki_6,
+            Tataki_7,
+            Tataki_8
         ),
         languageTag = "en-CH",
     )
