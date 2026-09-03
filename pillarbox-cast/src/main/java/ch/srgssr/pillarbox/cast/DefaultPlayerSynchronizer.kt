@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.cast
 
-import android.util.Log
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
@@ -19,8 +18,6 @@ import ch.srgssr.pillarbox.player.tracks.textTracks
 open class DefaultPlayerSynchronizer : PlayerSynchronizer {
 
     override fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer) {
-        Log.d("Coucou", "onPlayerChanged $oldPlayer -> $newPlayer")
-        Log.d("Coucou", "items = ${oldPlayer.getCurrentMediaItems().map { it.mediaMetadata.title }}")
         newPlayer.repeatMode = oldPlayer.repeatMode
         newPlayer.playWhenReady = oldPlayer.playWhenReady
         newPlayer.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
