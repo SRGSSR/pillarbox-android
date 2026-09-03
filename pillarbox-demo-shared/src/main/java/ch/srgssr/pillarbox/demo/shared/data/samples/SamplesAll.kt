@@ -13,8 +13,7 @@ object SamplesAll {
     @Suppress("UndocumentedPublicProperty")
     val playlist = Playlist(
         title = "All samples",
-        items = SamplesSRG.StreamUrls.items +
-            SamplesSRG.StreamUrns.items +
+        items = SamplesSRG.StreamUrns.items +
             SamplesDASHIF.All.items +
             SamplesGoogle.All.items +
             SamplesApple.All.items +
