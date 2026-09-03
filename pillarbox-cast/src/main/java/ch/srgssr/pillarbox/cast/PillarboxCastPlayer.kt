@@ -583,6 +583,10 @@ class PillarboxCastPlayer internal constructor(
         _castSessionAvailable.value = isSessionAvailable
     }
 
+    /**
+     * @return `true` when a cast session is available
+     * @see castSessionAvailable
+     */
     fun isCastSessionAvailable(): Boolean {
         return castSessionAvailable.value
     }

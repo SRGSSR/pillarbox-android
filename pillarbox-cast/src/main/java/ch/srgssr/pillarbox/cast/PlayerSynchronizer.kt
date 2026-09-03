@@ -25,12 +25,18 @@ interface PlayerSynchronizer {
      *
      * @param newTracks the [androidx.media3.common.Tracks] of the player that replace the previous one.
      * @param selectedAudioTrack the selected [ch.srgssr.pillarbox.player.tracks.AudioTrack] of previous player, `null` if no audio track is selected.
-     * @param selectedTextTrack the selected [ch.srgssr.pillarbox.player.tracks.TextTrack] of the previous player, `null` if no text track is selected.
+     * @param selectedTextTrack the selected [ch.srgssr.pillarbox.player.tracks.TextTrack] of the previous player,`null` if no text track is selected.
      */
     fun onTracksChanged(newTracks: Tracks, selectedAudioTrack: AudioTrack?, selectedTextTrack: TextTrack?): Selection
 
+    /**
+     * A selection of tracks
+     *
+     * @property audioTrack The Audio track selected.
+     * @property textTrack The Text track selected.
+     */
     class Selection(
         val audioTrack: AudioTrack? = null,
-        val textTrack: TextTrack? = null
+        val textTrack: TextTrack? = null,
     )
 }
