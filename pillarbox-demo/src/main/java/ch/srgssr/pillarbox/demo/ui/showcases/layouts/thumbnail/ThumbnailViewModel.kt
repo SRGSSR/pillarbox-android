@@ -11,17 +11,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.cast.RemotePlayer
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.session.PillarboxMediaController
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import coil3.imageLoader
@@ -39,7 +38,7 @@ import kotlinx.coroutines.launch
  *
  * @param application The [Application].
  */
-class ThumbnailViewModel(application: Application) : AndroidViewModel(application), ImageOutput, SessionAvailabilityListener {
+class ThumbnailViewModel(application: Application) : AndroidViewModel(application), ImageOutput {
     private val imageLoader = application.imageLoader
     private val mediaSession: PillarboxMediaSession
 
@@ -59,7 +58,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
-    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(application).apply { setSessionAvailabilityListener(this@ThumbnailViewModel) }
+    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(application)
 
     /**
      * Thumbnail
@@ -74,7 +73,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     init {
-        mediaSession = PillarboxMediaSession.Builder(application, localPlayer)
+        mediaSession = PillarboxMediaSession.Builder(application, RemotePlayer(localPlayer = localPlayer, remotePlayer = castPlayer))
             .setId("ThumbnailMediaSession")
             .build()
 
@@ -95,27 +94,12 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    override fun onCastSessionAvailable() {
-        localPlayer.stop()
-        castPlayer.setMediaItems(localPlayer.getCurrentMediaItems(), localPlayer.currentMediaItemIndex, localPlayer.currentPosition)
-        castPlayer.prepare()
-        castPlayer.play()
-        mediaSession.player = castPlayer
-    }
-
-    override fun onCastSessionUnavailable() {
-        localPlayer.seekTo(castPlayer.currentMediaItemIndex, castPlayer.currentPosition)
-        castPlayer.stop()
-        localPlayer.prepare()
-        localPlayer.play()
-        mediaSession.player = localPlayer
-    }
-
     override fun onCleared() {
         player?.release()
-        mediaSession.release()
-        localPlayer.release()
-        castPlayer.release()
+        mediaSession.apply {
+            player.release()
+            release()
+        }
     }
 
     override fun onImageAvailable(presentationTimeUs: Long, bitmap: Bitmap) {

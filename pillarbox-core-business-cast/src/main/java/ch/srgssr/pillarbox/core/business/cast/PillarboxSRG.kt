@@ -24,23 +24,6 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
  * - SRG Cast [MediaItemConverter]: integrates an [SRGMediaItemConverter] for handling SRG-specific media item to Cast item conversion. If not
  * explicitly configured, a default instance is created.
  *
- * **Custom configuration**
- *
- * ```kotlin
- * val customSrgCastPlayer = PillarboxCastPlayer(context) {
- *     mediaItemConverter(SRGMediaItemConverter())
- *     onCastSessionAvailable {
- *          setMediaItems(listItems)
- *          play()
- *     }
- *     onCastSessionUnavailable {
- *          goBackToLocalPlayerBack()
- *     }
- * }
- * ```
- *
- * The same can be achieved by using [PillarboxCastPlayer.setSessionAvailabilityListener].
- *
  * @param context The [Context] of the application.
  * @param builder An optional lambda with a receiver of type [SRG.Builder] allowing customization of the player's configuration.
  *
