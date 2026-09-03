@@ -13,6 +13,7 @@ import ch.srgssr.pillarbox.player.BuildConfig
 import ch.srgssr.pillarbox.player.extension.getMonitoringDeviceId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.Locale
 
 /**
  * Represents a monitoring session, which encapsulates information about the device, current media, player, and performance metrics.
@@ -39,6 +40,7 @@ data class Session(
         name = PLAYER_NAME,
         platform = PLATFORM_NAME,
         version = PLAYER_VERSION,
+        language = Locale.getDefault().language
     ),
     @SerialName("qoe_timings") val qoeTimings: Timings.QoE = Timings.QoE(),
     @SerialName("qos_timings") val qosTimings: Timings.QoS = Timings.QoS(),
@@ -114,12 +116,14 @@ data class Session(
      * @property name The name of the player.
      * @property platform The platform the player is using.
      * @property version The version of the player.
+     * @property language The language is the one as seen by the player.
      */
     @Serializable
     data class Player(
         val name: String,
         val platform: String,
         val version: String,
+        val language: String
     )
 
     /**
