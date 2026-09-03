@@ -58,7 +58,7 @@ class MetricsCollectorTest {
 
     @Test
     fun `single item playback`() {
-        player.setMediaItem(VOD1)
+        player.setMediaItem(MediaItem.fromUri(VOD1))
         TestPlayerRunHelper.advance(player).untilState(Player.STATE_READY)
         println("${StringUtil.playerStateString(player.playbackState)} Tracks = ${player.currentTracks.tracks}")
         TestPlayerRunHelper.advance(player).untilState(Player.STATE_ENDED)
@@ -89,7 +89,7 @@ class MetricsCollectorTest {
 
     @Test
     fun `playback item transition`() {
-        player.setMediaItems(listOf(VOD1, VOD2))
+        player.setMediaItems(listOf(VOD1, VOD2).map { MediaItem.fromUri(it) })
 
         TestPlayerRunHelper.advance(player).untilState(Player.STATE_ENDED)
 
@@ -110,10 +110,7 @@ class MetricsCollectorTest {
     }
 
     private companion object {
-        // 17sec
-        private val VOD1 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444447/c1d17174-ad2f-31c2-a084-846a9247fd35/master.m3u8")
-
-        // 18sec
-        private val VOD2 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8")
+        private const val VOD1 = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
+        private const val VOD2 = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
     }
 }
