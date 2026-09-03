@@ -71,7 +71,7 @@ repositories {
 #### Create a Personal access token
 
 1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
-2. Click on `Generate new token (classic)`.
+2. Click on `Generate new token`.
 3. Provide a note for the token, and change the expiration (if needed).
 4. Make sure that at least the `read:packages` scope is selected.
 5. Click on `Generate token`.
