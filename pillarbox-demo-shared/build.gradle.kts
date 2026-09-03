@@ -36,7 +36,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.core.ktx)
     api(libs.androidx.datastore.core)
     api(libs.androidx.datastore.preferences)
     api(libs.androidx.datastore.preferences.core)

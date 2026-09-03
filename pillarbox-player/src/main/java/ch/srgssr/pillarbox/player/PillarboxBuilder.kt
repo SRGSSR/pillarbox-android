@@ -328,10 +328,10 @@ object Default : PlayerConfig<Default.Builder> {
  * @property stuckPlayingNotEndingTimeoutMs to configure [ExoPlayer.Builder.setStuckPlayingNotEndingTimeoutMs].
  */
 data class PlayerStuckDetectionTimeouts(
-    val stuckPlayingDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_PLAYING_DETECTION_TIMEOUT_MS,
-    val stuckSuppressedDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_SUPPRESSED_DETECTION_TIMEOUT_MS,
-    val stuckBufferingDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_BUFFERING_DETECTION_TIMEOUT_MS,
-    val stuckPlayingNotEndingTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_PLAYING_NOT_ENDING_TIMEOUT_MS,
+    val stuckPlayingDetectionTimeoutMs: Int = ExoPlayer.Builder.DEFAULT_STUCK_PLAYING_DETECTION_TIMEOUT_MS,
+    val stuckSuppressedDetectionTimeoutMs: Int = ExoPlayer.Builder.DEFAULT_STUCK_SUPPRESSED_DETECTION_TIMEOUT_MS,
+    val stuckBufferingDetectionTimeoutMs: Int = ExoPlayer.Builder.DEFAULT_STUCK_BUFFERING_DETECTION_TIMEOUT_MS,
+    val stuckPlayingNotEndingTimeoutMs: Int = ExoPlayer.Builder.DEFAULT_STUCK_PLAYING_NOT_ENDING_TIMEOUT_MS,
 ) {
     companion object {
         /**
