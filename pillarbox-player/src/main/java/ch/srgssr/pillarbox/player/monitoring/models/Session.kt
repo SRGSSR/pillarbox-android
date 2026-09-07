@@ -40,7 +40,7 @@ data class Session(
         name = PLAYER_NAME,
         platform = PLATFORM_NAME,
         version = PLAYER_VERSION,
-        language = Locale.getDefault().language
+        language = Locale.getDefault().language,
     ),
     @SerialName("qoe_timings") val qoeTimings: Timings.QoE = Timings.QoE(),
     @SerialName("qos_timings") val qosTimings: Timings.QoS = Timings.QoS(),
@@ -123,7 +123,7 @@ data class Session(
         val name: String,
         val platform: String,
         val version: String,
-        val language: String
+        val language: String,
     )
 
     /**
