@@ -60,7 +60,33 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     /**
      * Set player to use with this Service.
      * @param player [PillarboxPlayer] to link to this service.
-     * @param callback The [PillarboxMediaLibrarySession.Callback]
+     * @param callback The [PillarboxMediaLibrarySession.Callback].
+     * @param builder The [PillarboxMediaLibrarySession.Builder].
+     */
+    fun setPlayer(
+        player: PillarboxPlayer,
+        callback: PillarboxMediaLibrarySession.Callback,
+        builder: PillarboxMediaLibrarySession.Builder.() -> Unit,
+    ) {
+        if (this.mediaSession == null) {
+            player.setHandleAudioFocus(true)
+            mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback)
+                .apply {
+                    sessionActivity()?.let {
+                        setSessionActivity(it)
+                    }
+                }
+                .apply(builder)
+                .build()
+        } else {
+            mediaSession?.player = player
+        }
+    }
+
+    /**
+     * Set player to use with this Service.
+     * @param player [PillarboxPlayer] to link to this service.
+     * @param callback The [PillarboxMediaLibrarySession.Callback].
      * @param sessionId The ID. Must be unique among all sessions per package.
      */
     fun setPlayer(
@@ -68,18 +94,10 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
         callback: PillarboxMediaLibrarySession.Callback,
         sessionId: String? = null,
     ) {
-        if (this.mediaSession == null) {
-            player.setHandleAudioFocus(true)
-            mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback).apply {
-                sessionActivity()?.let {
-                    setSessionActivity(it)
-                }
-                sessionId?.let {
-                    setId(it)
-                }
-            }.build()
-        } else {
-            mediaSession?.player = player
+        setPlayer(player, callback) {
+            sessionId?.let {
+                setId(it)
+            }
         }
     }
 
