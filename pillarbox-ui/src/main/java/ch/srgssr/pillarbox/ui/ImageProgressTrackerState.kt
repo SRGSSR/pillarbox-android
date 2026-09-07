@@ -9,6 +9,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.containsImageTrack
+import ch.srgssr.pillarbox.player.tracks.isPlaybackTypeLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -34,7 +35,7 @@ class ImageProgressTrackerState(
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
 
     override fun onChanged(progress: Duration) {
-        if (player.deviceInfo.playbackType != DeviceInfo.PLAYBACK_TYPE_REMOTE && !startChanging) {
+        if (player.isPlaybackTypeLocal() && !startChanging) {
             storedTrackSelectionParameters = player.trackSelectionParameters
             val imageAvailable = player.isImageOutputAvailable && player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP
             if (imageAvailable) {
