@@ -179,6 +179,22 @@ val castSynchronizer = CastPlayerSynchronizer(
 )
 ```
 
+## Release process
+
+Pillarbox is released via the CI pipeline hosted in [GitHub Actions](https://github.com/SRGSSR/pillarbox-android/actions). A release is triggered by pushing a tag in the format `X.Y.Z` (e.g. `2.1.0`).
+
+Pushing such a tag runs the [Release Pillarbox](https://github.com/SRGSSR/pillarbox-android/actions/workflows/release.yml) workflow, which:
+
+1. Runs pre-release checks
+2. Publishes packages
+3. Uploads the demo app to Firebase App Distribution
+4. Creates a GitHub Release
+5. Publishes the documentation
+
+Once the workflow completes, the Pillarbox team reviews the generated release notes and finalizes them.
+
+Past releases are available in the [release history](https://github.com/SRGSSR/pillarbox-android/releases).
+
 ## Road map
 
 - Handle Pillarbox metadata such as chapters, blocked time range and credits.
