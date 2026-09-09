@@ -16,10 +16,12 @@ import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
  * @property trackersData The [MediaItemTrackerData] containing information for tracking playback events and metrics.
  * @property mediaMetadata The [MediaMetadata] providing descriptive information about the media item, such as title, artist, etc.
  * @property pillarboxMetadata A [PillarboxMetadata] instance containing additional information about the asset.
+ * @property responseHeaders A [Map<String, List<String>>] The response headers associated with the asset load, or an empty map if unavailable.
  */
 data class Asset(
     val mediaSource: MediaSource,
     val trackersData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData(),
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY,
+    var responseHeaders: Map<String, List<String>> = emptyMap(),
 )

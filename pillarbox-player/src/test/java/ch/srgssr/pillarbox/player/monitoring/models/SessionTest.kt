@@ -231,6 +231,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(0, qosSession.media.metadataHeaders?.size ?: 0)
     }
 
     private fun createQoSSession(): Session {
@@ -252,6 +253,7 @@ class SessionTest {
                 assetUrl = ASSET_URL,
                 id = MEDIA_ID,
                 metadataUrl = METADATA_URL,
+                emptyMap(),
             ),
             qoeTimings = Timings.QoE(),
             qosTimings = Timings.QoS(),
