@@ -54,6 +54,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
  *
  * @param player The [Player] to observe.
  * @param modifier The [Modifier] to be applied to the layout.
+ * @param videoSurfaceModifier The [Modifier] to be applied to the video surface, which is only as big as the video itself.
  * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
  * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
  * @param onPictureInPictureClick The Picture-in-Picture button action.
@@ -64,6 +65,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 fun DemoPlayerView(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
+    videoSurfaceModifier: Modifier = Modifier,
     isPictureInPictureEnabled: Boolean = false,
     isInPictureInPicture: Boolean = false,
     onPictureInPictureClick: () -> Unit = {},
@@ -81,6 +83,7 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
+                videoSurfaceModifier = videoSurfaceModifier,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = onPictureInPictureClick,
@@ -103,6 +106,7 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
+            videoSurfaceModifier = videoSurfaceModifier,
             isPictureInPictureEnabled = isPictureInPictureEnabled,
             isInPictureInPicture = isInPictureInPicture,
             onPictureInPictureClick = onPictureInPictureClick,
@@ -124,6 +128,7 @@ fun DemoPlayerView(
 private fun PlayerContent(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
+    videoSurfaceModifier: Modifier = Modifier,
     appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory()),
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
@@ -156,6 +161,7 @@ private fun PlayerContent(
                 .fillMaxWidth()
                 .weight(1f)
                 .then(scalableModifier),
+            videoSurfaceModifier = videoSurfaceModifier,
             player = player,
             controlsToggleable = !isInPictureInPicture,
             controlsVisible = !isInPictureInPicture,

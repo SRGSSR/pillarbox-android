@@ -28,6 +28,7 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
+import ch.srgssr.pillarbox.demo.ui.player.state.pictureInPictureSourceRectHint
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -83,18 +84,11 @@ class SimplePlayerActivity : ComponentActivity() {
 
     @Composable
     private fun MainContent(player: PillarboxPlayer) {
-        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            rememberPictureInPictureButtonState {
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-                    .build()
-            }
-        } else {
-            rememberPictureInPictureButtonState()
-        }
+        val pictureInPictureButtonState = rememberPictureInPictureButtonState(player)
 
         DemoPlayerView(
             player = player,
+            videoSurfaceModifier = Modifier.pictureInPictureSourceRectHint(pictureInPictureButtonState),
             isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
             isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
             onPictureInPictureClick = pictureInPictureButtonState::onClick,

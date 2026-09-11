@@ -67,6 +67,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
+ * @param videoSurfaceModifier The modifier to be applied to the video surface, which is only as big as the video itself.
  * @param contentScale The surface [ContentScale].
  * @param controlsVisible The control visibility.
  * @param controlsToggleable The controls are toggleable.
@@ -79,6 +80,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun PlayerView(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
+    videoSurfaceModifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
@@ -93,6 +95,13 @@ fun PlayerView(
         player = player,
         contentScale = contentScale,
         presentationState = presentationState,
+        surface = {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .then(videoSurfaceModifier)
+            )
+        },
         shutter = {
             val deviceInfo by player.getDeviceInfoAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()
