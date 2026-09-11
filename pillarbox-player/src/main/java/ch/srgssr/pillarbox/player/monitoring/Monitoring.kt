@@ -64,6 +64,7 @@ internal class Monitoring(
             },
         )
         var assetUrl: String? = null
+        var responseHeaders: Map<String, List<String>>? = null
         var qoeTimings = Timings.QoE()
         var qosTimings = Timings.QoS()
         var error: PlaybackException? = null
@@ -158,6 +159,7 @@ internal class Monitoring(
                 metadata = metadataLoadingTime?.inWholeMilliseconds,
                 total = loadDuration.timeToReady?.inWholeMilliseconds,
             )
+            holder.responseHeaders = metrics.responseHeaders
 
             sendStartEvent(sessionHolder = holder)
             holder.state = SessionHolder.State.STARTED
@@ -297,6 +299,7 @@ internal class Monitoring(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
+                    metadataHeaders = sessionHolder.responseHeaders?.mapValues { (_, value) -> value.joinToString() },
                 ),
                 qoeTimings = sessionHolder.qoeTimings,
                 qosTimings = sessionHolder.qosTimings,

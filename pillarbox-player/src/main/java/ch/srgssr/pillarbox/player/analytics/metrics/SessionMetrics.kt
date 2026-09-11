@@ -57,6 +57,7 @@ internal class SessionMetrics internal constructor(
         get() = totalDrmLoadingCounter.getTotalPlayTime().takeIf { it != Duration.ZERO }
     var url: Uri? = null
     var totalDroppedFrames: Int = 0
+    var responseHeaders: Map<String, List<String>>? = null
 
     fun setDrmSessionAcquired() {
         if (drmSessionStartedCounter == 0) {
@@ -150,6 +151,9 @@ internal class SessionMetrics internal constructor(
 
         if (fieldSetter.get() == null) {
             fieldSetter.set(loadDuration)
+        }
+        if (responseHeaders.isNullOrEmpty() && loadEventInfo.responseHeaders.isNotEmpty()) {
+            this.responseHeaders = loadEventInfo.responseHeaders
         }
     }
 }

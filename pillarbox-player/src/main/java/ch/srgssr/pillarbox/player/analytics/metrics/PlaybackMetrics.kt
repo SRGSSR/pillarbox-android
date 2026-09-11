@@ -36,6 +36,7 @@ import kotlin.time.Duration
  * @property audioFormat The [Format] of the currently selected audio track.
  * @property surfaceSize The size of the surface used for rendering the video. If no surface is connected, this will be [Size.ZERO].
  * @property totalDroppedFrames The total number of video frames dropped.
+ * @property responseHeaders A [Map<String, List<String>>] The response headers associated with the asset load, or an empty map if unavailable.
  */
 @Parcelize
 data class PlaybackMetrics(
@@ -57,6 +58,7 @@ data class PlaybackMetrics(
     @TypeParceler<Size, SizeParceler>
     val surfaceSize: Size,
     val totalDroppedFrames: Int,
+    val responseHeaders: Map<String, List<String>>?,
 ) : Parcelable {
 
     /**

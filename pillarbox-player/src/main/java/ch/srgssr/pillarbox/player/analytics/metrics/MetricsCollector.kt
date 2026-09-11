@@ -284,6 +284,7 @@ class MetricsCollector(
             url = metrics.url,
             surfaceSize = surfaceSize,
             totalDroppedFrames = metrics.totalDroppedFrames,
+            responseHeaders = metrics.responseHeaders,
         )
     }
 
