@@ -31,7 +31,7 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer = RemotePlayer(localPlayer = localPlayer, remotePlayer = castPlayer)
+    val currentPlayer = RemotePlayer(localPlayer = localPlayer, castPlayer = castPlayer)
 
     /**
      * The [MediaRouteSelector] to use on the [MediaRouteButton].

@@ -73,7 +73,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     init {
-        mediaSession = PillarboxMediaSession.Builder(application, RemotePlayer(localPlayer = localPlayer, remotePlayer = castPlayer))
+        mediaSession = PillarboxMediaSession.Builder(application, RemotePlayer(localPlayer = localPlayer, castPlayer = castPlayer))
             .setId("ThumbnailMediaSession")
             .build()
 

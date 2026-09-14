@@ -20,12 +20,16 @@ import com.google.common.util.concurrent.ListenableFuture
 
 /**
  * A player that handle switching from local to remote playback.
+ *
+ * @param localPlayer The [PillarboxPlayer] used when not remotely casting.
+ * @param castPlayer The [PillarboxCastPlayer] used when Cast session is available.
+ * @param synchronizer The [PlayerSynchronizer] to synchronize state when transitioning between local to remote playback.
  */
 class RemotePlayer(
     private val localPlayer: PillarboxExoPlayer,
-    private val remotePlayer: PillarboxCastPlayer,
+    private val castPlayer: PillarboxCastPlayer,
     private val synchronizer: PlayerSynchronizer = DefaultPlayerSynchronizer(),
-) : ForwardingSimpleBasePlayer(if (remotePlayer.isCastSessionAvailable()) remotePlayer else localPlayer), PillarboxPlayer {
+) : ForwardingSimpleBasePlayer(if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer), PillarboxPlayer {
 
     private var player: PillarboxPlayer
         get() = super.player as PillarboxPlayer
@@ -49,7 +53,7 @@ class RemotePlayer(
 
     private val sessionListener = object : SessionAvailabilityListener {
         override fun onCastSessionAvailable() {
-            updateActivePlayer(remotePlayer)
+            updateActivePlayer(castPlayer)
         }
 
         override fun onCastSessionUnavailable() {
@@ -60,7 +64,7 @@ class RemotePlayer(
     private val pillarboxPlayerListeners = LinkedHashSet<PillarboxPlayer.Listener>()
 
     init {
-        remotePlayer.setSessionAvailabilityListener(sessionListener)
+        castPlayer.setSessionAvailabilityListener(sessionListener)
     }
 
     override fun setImageOutput(imageOutput: ImageOutput?) {
@@ -86,8 +90,8 @@ class RemotePlayer(
     }
 
     override fun handleRelease(): ListenableFuture<*> {
-        remotePlayer.release()
-        remotePlayer.setSessionAvailabilityListener(null)
+        castPlayer.release()
+        castPlayer.setSessionAvailabilityListener(null)
         localPlayer.release()
         return Futures.immediateVoidFuture()
     }
