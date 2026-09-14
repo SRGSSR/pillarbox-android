@@ -167,7 +167,7 @@ class SRGAssetLoader internal constructor(
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
             }.build(),
-            responseHeaders = resultWithHeaders.usefulHeaders,
+            responseHeaders = resultWithHeaders.headers,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
                 chapters = ChapterAdapter.getChapters(result, ilHost),

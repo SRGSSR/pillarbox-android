@@ -299,7 +299,8 @@ internal class Monitoring(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
-                    metadataHeaders = sessionHolder.responseHeaders?.mapValues { (_, value) -> value.joinToString() },
+                    metadataHeaders = sessionHolder.responseHeaders?.filterKeys { key -> MONITORED_METADATA_HEADERS.contains(key) }
+                        ?.mapValues { (_, value) -> value.joinToString() },
                 ),
                 qoeTimings = sessionHolder.qoeTimings,
                 qosTimings = sessionHolder.qosTimings,
@@ -311,6 +312,15 @@ internal class Monitoring(
         private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "Monitoring"
 
+        /**
+         * The names of the response headers needed for analytics/monitoring
+         */
+        private val MONITORED_METADATA_HEADERS = listOf(
+            "akamai-grn",
+            "x-location-info",
+            "x-proxy-detection-info",
+            "x-tracing-id",
+        )
         internal val List<Track>.selectedLanguage: String?
             get() = find { it.isSelected }?.format?.language
 

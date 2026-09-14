@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.network
 
 import androidx.annotation.RestrictTo
-import ch.srgssr.pillarbox.player.network.RequestSender.send
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 
 /**
  * A helper object responsible for sending HTTP requests using OkHttp and handling JSON serialization.
@@ -58,32 +56,6 @@ object RequestSender {
                         throw HttpResultException(response.code, response.message)
                     }
                 }
-        }
-    }
-
-    /**
-     * Sends the current request and returns the full [Response], without inspecting its status code nor decoding its body.
-     *
-     * Unlike [send], the returned [Response] is still open: its body has not been consumed, and unsuccessful status codes are not turned into a
-     * [HttpResultException]. The caller therefore owns the response and **must** close it, ideally with [use][okhttp3.Response.use]:
-     *
-     * ```kotlin
-     * request.sendRaw().onSuccess { response ->
-     *     response.use {
-     *         // Do something with the response
-     *     }
-     * }
-     * ```
-     *
-     * @param okHttpClient The OkHttp client used to make requests to the token service. Defaults to a [PillarboxOkHttp] instance.
-     *
-     * @return A [Result] object containing either the full [Response], which the caller has to close, or a [Throwable] representing the error that
-     * occurred while performing the request.
-     */
-    fun Request.sendRaw(okHttpClient: OkHttpClient = PillarboxOkHttp()): Result<Response> {
-        return runCatching {
-            okHttpClient.newCall(this)
-                .execute()
         }
     }
 }

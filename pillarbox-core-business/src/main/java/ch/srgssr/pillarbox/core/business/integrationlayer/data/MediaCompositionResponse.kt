@@ -14,25 +14,4 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 data class MediaCompositionResponse(
     val mediaComposition: MediaComposition,
     val headers: Map<String, List<String>> = emptyMap(),
-) {
-    /**
-     * Returns only the headers whose keys are present in the static list [MONITORED_METADATA_HEADERS].
-     *
-     * @return A map of `String` to `List<String>` containing the matched headers,
-     *         or an empty map if none of the keys are present in [MONITORED_METADATA_HEADERS].
-     */
-    val usefulHeaders: Map<String, List<String>>
-        get() = headers.filterKeys { key -> MONITORED_METADATA_HEADERS.contains(key) }
-
-    companion object {
-        /**
-         * The names of the response headers needed for analytics/monitoring
-         */
-        val MONITORED_METADATA_HEADERS = listOf(
-            "akamai-grn",
-            "x-location-info",
-            "x-proxy-detection-info",
-            "x-tracing-id",
-        )
-    }
-}
+)
