@@ -11,6 +11,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.core.business.SRGAssetLoaderTest.DummyMediaCompositionProvider.Companion.RESPONSE_HEADERS
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
@@ -112,6 +113,13 @@ class SRGAssetLoaderTest {
                 .setArtworkUri(metadata.artworkUri)
                 .build()
         assertEquals(expected, metadata)
+    }
+
+    @Test
+    fun testHeaders() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_METADATA))
+        val responseHeaders = asset.responseHeaders
+        assertEquals(responseHeaders, RESPONSE_HEADERS)
     }
 
     @Test
