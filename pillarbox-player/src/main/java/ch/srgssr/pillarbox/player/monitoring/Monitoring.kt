@@ -159,8 +159,6 @@ internal class Monitoring(
                 metadata = metadataLoadingTime?.inWholeMilliseconds,
                 total = loadDuration.timeToReady?.inWholeMilliseconds,
             )
-            holder.responseHeaders = metrics.responseHeaders
-
             sendStartEvent(sessionHolder = holder)
             holder.state = SessionHolder.State.STARTED
         }
@@ -172,6 +170,17 @@ internal class Monitoring(
 
     override fun onLoadCanceled(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
         setAssetUrlForEventTime(eventTime, loadEventInfo, mediaLoadData)
+    }
+
+    override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        if (eventTime.timeline.isEmpty || (mediaLoadData.dataType != C.DATA_TYPE_MEDIA && mediaLoadData.dataType != C.DATA_TYPE_MANIFEST)) return
+        val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
+
+        sessionHolders[session.sessionId]?.let { holder ->
+            if (holder.responseHeaders.isNullOrEmpty() && loadEventInfo.responseHeaders.isNotEmpty()) {
+                holder.responseHeaders = loadEventInfo.responseHeaders
+            }
+        }
     }
 
     override fun onLoadError(

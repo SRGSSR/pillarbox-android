@@ -54,7 +54,6 @@ class PillarboxMediaSource internal constructor(
     private var timeMarkLoadStart: TimeMark? = null
     private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
     private var pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
-    private var assetResponseHeader: Map<String, List<String>> = emptyMap()
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -66,8 +65,7 @@ class PillarboxMediaSource internal constructor(
         runBlocking {
             try {
                 val asset = assetLoader.loadAsset(mediaItem)
-                assetResponseHeader = asset.responseHeaders
-                dispatchLoadCompleted()
+                dispatchLoadCompleted(asset.responseHeaders)
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItemTrackerData = asset.trackersData
@@ -192,10 +190,10 @@ class PillarboxMediaSource internal constructor(
         eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET, 0)
     }
 
-    private fun dispatchLoadCompleted() {
+    private fun dispatchLoadCompleted(responseHeaders: Map<String, List<String>>? = null) {
         val startTimeMark = timeMarkLoadStart ?: return
 
-        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark), DATA_TYPE_CUSTOM_ASSET)
+        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark, responseHeaders), DATA_TYPE_CUSTOM_ASSET)
 
         loadTaskId = 0L
         timeMarkLoadStart = null
@@ -210,7 +208,7 @@ class PillarboxMediaSource internal constructor(
         timeMarkLoadStart = null
     }
 
-    private fun createLoadEventInfo(startTimeMark: TimeMark? = null): LoadEventInfo {
+    private fun createLoadEventInfo(startTimeMark: TimeMark? = null, responseHeaders: Map<String, List<String>>? = null): LoadEventInfo {
         val currentTimeMark = timeSource.markNow()
         val mediaUri = mediaItem.localConfiguration?.uri ?: Uri.EMPTY
 
@@ -219,7 +217,7 @@ class PillarboxMediaSource internal constructor(
             DataSpec(mediaUri),
             currentTimeMark.elapsedNow().inWholeMilliseconds
         )
-            .setResponseHeaders(assetResponseHeader)
+            .setResponseHeaders(responseHeaders ?: emptyMap())
             .setLoadDurationMs(startTimeMark?.let { (it.elapsedNow() - currentTimeMark.elapsedNow()).inWholeMilliseconds } ?: 0L)
             .setBytesLoaded(0L)
             .build()
