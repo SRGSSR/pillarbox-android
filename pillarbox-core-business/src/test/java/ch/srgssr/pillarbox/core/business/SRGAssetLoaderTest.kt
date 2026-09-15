@@ -119,7 +119,7 @@ class SRGAssetLoaderTest {
     fun testHeaders() = runTest {
         val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_METADATA))
         val responseHeaders = asset.responseHeaders
-        assertEquals(responseHeaders, RESPONSE_HEADERS)
+        assertEquals(RESPONSE_HEADERS, responseHeaders)
     }
 
     @Test

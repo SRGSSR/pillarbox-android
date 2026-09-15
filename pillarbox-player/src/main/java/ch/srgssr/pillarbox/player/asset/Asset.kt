@@ -23,5 +23,5 @@ data class Asset(
     val trackersData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData(),
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY,
-    var responseHeaders: Map<String, List<String>> = emptyMap(),
+    val responseHeaders: Map<String, List<String>> = emptyMap(),
 )
