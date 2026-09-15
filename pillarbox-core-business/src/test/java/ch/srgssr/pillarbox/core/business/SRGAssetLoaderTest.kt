@@ -11,12 +11,14 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.core.business.SRGAssetLoaderTest.DummyMediaCompositionProvider.Companion.RESPONSE_HEADERS
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
@@ -111,6 +113,13 @@ class SRGAssetLoaderTest {
                 .setArtworkUri(metadata.artworkUri)
                 .build()
         assertEquals(expected, metadata)
+    }
+
+    @Test
+    fun testHeaders() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_METADATA))
+        val responseHeaders = asset.responseHeaders
+        assertEquals(RESPONSE_HEADERS, responseHeaders)
     }
 
     @Test
@@ -229,7 +238,13 @@ class SRGAssetLoaderTest {
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
 
-        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
+            return fetchMediaCompositionInternal(uri).map { mediaComposition ->
+                MediaCompositionResponse(mediaComposition = mediaComposition, headers = RESPONSE_HEADERS)
+            }
+        }
+
+        private fun fetchMediaCompositionInternal(uri: Uri): Result<MediaComposition> {
             return when (val urn = uri.lastPathSegment) {
                 URN_NO_RESOURCES -> Result.success(createMediaComposition(urn, null))
                 URN_EMPTY_RESOURCES -> Result.success(createMediaComposition(urn, emptyList()))
@@ -411,6 +426,25 @@ class SRGAssetLoaderTest {
                 fullLengthMarkOut = 30,
                 mediaType = MediaType.VIDEO,
                 type = Type.EPISODE,
+            )
+
+            val RESPONSE_HEADERS = mapOf(
+                "access-control-allow-headers" to listOf("Authorization", "Content-Type", "Accept-Language", "X-Platform", "X-Profile-Id"),
+                "access-control-allow-methods" to listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"),
+                "akamai-grn" to listOf("0.8cd5ce17.1789113303.52617d6"),
+                "cache-control" to listOf("max-age=60"),
+                "connection" to listOf("keep-alive"),
+                "content-type" to listOf("application/json;charset=UTF-8"),
+                "date" to listOf("Fri, 11 Sep 2026 07:55:03 GMT"),
+                "vary" to listOf("Accept-Encoding"),
+                "x-content-type-options" to listOf("nosniff"),
+                "x-debug-advanced-override-executed" to listOf("true"),
+                "x-debug-ak-client-ip" to listOf("62.202.35.210"),
+                "x-debug-ak-client-real-ip" to listOf("62.202.35.210"),
+                "x-debug-edp-category-available" to listOf("rp", "pv"),
+                "x-location-info" to listOf("CH"),
+                "x-proxy-detection-info" to listOf("rp", "pv"),
+                "x-tracing-id" to listOf("6aa3b3d7-30fb693928bc20d5555f4552"),
             )
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {

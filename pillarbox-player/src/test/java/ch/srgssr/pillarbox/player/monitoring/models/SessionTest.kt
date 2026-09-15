@@ -39,6 +39,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -63,6 +64,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -87,6 +89,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -111,6 +114,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -135,6 +139,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -159,6 +164,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -183,6 +189,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -207,6 +214,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -231,6 +239,7 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     private fun createQoSSession(): Session {
@@ -252,6 +261,7 @@ class SessionTest {
                 assetUrl = ASSET_URL,
                 id = MEDIA_ID,
                 metadataUrl = METADATA_URL,
+                RESPONSE_HEADERS_FOR_MONITORING,
             ),
             qoeTimings = Timings.QoE(),
             qosTimings = Timings.QoS(),
@@ -271,5 +281,11 @@ class SessionTest {
         private const val PLAYER_VERSION = "Local"
         private const val SCREEN_HEIGHT = 470
         private const val SCREEN_WIDTH = 320
+        val RESPONSE_HEADERS_FOR_MONITORING = mapOf(
+            "akamai-grn" to "0.8cd5ce17.1789113303.52617d6",
+            "x-location-info" to "CH",
+            "x-proxy-detection-info" to "rp, pv",
+            "x-tracing-id" to "6aa3b3d7-30fb693928bc20d5555f4552",
+        )
     }
 }

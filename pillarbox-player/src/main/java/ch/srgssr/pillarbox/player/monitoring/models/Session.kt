@@ -128,12 +128,14 @@ data class Session(
      * @property assetUrl The URL of the asset.
      * @property id The id of the media.
      * @property metadataUrl The URL of the metadata.
+     * @property metadataHeaders The headers of the asset load response, keyed by header name.
      */
     @Serializable
     data class Media(
         @SerialName("asset_url") val assetUrl: String,
         val id: String,
         @SerialName("metadata_url") val metadataUrl: String,
+        @SerialName("metadata_headers") val metadataHeaders: Map<String, String>?,
     )
 
     /**
