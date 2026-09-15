@@ -102,6 +102,9 @@ dependencyAnalysis {
                 exclude(libs.androidx.compose.ui.tooling.asProvider())
                 exclude(libs.androidx.core.ktx)
             }
+            onUsedTransitiveDependencies {
+                exclude(libs.play.services.cast.asProvider())
+            }
         }
 
         project(":pillarbox-core-business") {
