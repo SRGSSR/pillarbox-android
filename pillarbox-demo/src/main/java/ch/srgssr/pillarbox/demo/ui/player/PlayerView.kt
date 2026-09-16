@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.graphics.Rect
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,11 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toAndroidRect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.roundToIntRect
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
 import androidx.media3.ui.compose.state.rememberPresentationState
@@ -73,6 +78,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param progressTracker The progress tracker.
  * @param overlayOptions The [MetricsOverlayOptions].
  * @param overlayEnabled true to display the metrics overlay.
+ * @param onSetRect Called with the bounds of the video surface in the window, each time they change.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -85,6 +91,7 @@ fun PlayerView(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
+    onSetRect: ((Rect) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val presentationState = rememberPresentationState(player, keepContentOnReset = false)
@@ -93,6 +100,15 @@ fun PlayerView(
         player = player,
         contentScale = contentScale,
         presentationState = presentationState,
+        surface = onSetRect?.let { onSetRect ->
+            {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .onGloballyPositioned { onSetRect(it.boundsInWindow().roundToIntRect().toAndroidRect()) }
+                )
+            }
+        },
         shutter = {
             val deviceInfo by player.getDeviceInfoAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()

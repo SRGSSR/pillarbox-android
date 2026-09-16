@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,7 +32,9 @@ import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 /**
@@ -48,6 +51,12 @@ class SimplePlayerActivity : ComponentActivity() {
     private val playerViewModel by viewModels<SimplePlayerViewModel>()
     private val layoutStyle by lazy { intent.getIntExtra(ARG_LAYOUT, LAYOUT_PLAYLIST) }
 
+    /**
+     * Bounds of the video surface in the window, used as the source rectangle hint of the Picture-in-Picture transition.
+     * `null` while the surface hasn't been laid out yet.
+     */
+    private val pictureInPictureSourceRectHint = MutableStateFlow<Rect?>(null)
+
     private fun readIntent(intent: Intent) {
         val playlist = IntentCompat.getSerializableExtra(intent, ARG_PLAYLIST, Playlist::class.java)
         playlist?.let { playerViewModel.playUri(it.items) }
@@ -61,12 +70,14 @@ class SimplePlayerActivity : ComponentActivity() {
         readIntent(intent)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lifecycleScope.launch {
-                playerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
-                    val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(it)
+                combine(playerViewModel.pictureInPictureRatio, pictureInPictureSourceRectHint) { aspectRatio, sourceRectHint ->
+                    PictureInPictureParams.Builder()
+                        .setAspectRatio(aspectRatio)
+                        .setSourceRectHint(sourceRectHint)
                         .build()
-                    setPictureInPictureParams(params)
                 }
+                    .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
+                    .collectLatest { params -> setPictureInPictureParams(params) }
             }
         }
 
@@ -87,6 +98,7 @@ class SimplePlayerActivity : ComponentActivity() {
             rememberPictureInPictureButtonState {
                 PictureInPictureParams.Builder()
                     .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
+                    .setSourceRectHint(pictureInPictureSourceRectHint.value)
                     .build()
             }
         } else {
@@ -99,6 +111,7 @@ class SimplePlayerActivity : ComponentActivity() {
             isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
             onPictureInPictureClick = pictureInPictureButtonState::onClick,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
+            onSetSourceRect = { sourceRect -> pictureInPictureSourceRectHint.value = sourceRect },
         )
     }
 

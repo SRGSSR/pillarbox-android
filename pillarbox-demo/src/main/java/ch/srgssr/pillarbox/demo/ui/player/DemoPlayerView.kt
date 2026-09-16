@@ -7,6 +7,7 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.Activity
+import android.graphics.Rect
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -58,6 +59,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
  * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
  * @param onPictureInPictureClick The Picture-in-Picture button action.
  * @param displayPlaylist If it displays the playlist UI or not.
+ * @param onSetSourceRect Called with the bounds of the video surface in the window, to use as the Picture-in-Picture source rectangle hint.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +70,7 @@ fun DemoPlayerView(
     isInPictureInPicture: Boolean = false,
     onPictureInPictureClick: () -> Unit = {},
     displayPlaylist: Boolean = false,
+    onSetSourceRect: ((Rect) -> Unit)? = null,
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
@@ -86,6 +89,7 @@ fun DemoPlayerView(
                 onPictureInPictureClick = onPictureInPictureClick,
                 onSettingsClick = { showSettings = !showSettings },
                 displayPlaylist = displayPlaylist,
+                onSetSourceRect = onSetSourceRect,
             )
 
             AnimatedVisibility(
@@ -108,6 +112,7 @@ fun DemoPlayerView(
             onPictureInPictureClick = onPictureInPictureClick,
             onSettingsClick = { showSettingsSheet = true },
             displayPlaylist = displayPlaylist,
+            onSetSourceRect = onSetSourceRect,
         )
 
         if (showSettingsSheet) {
@@ -130,6 +135,7 @@ private fun PlayerContent(
     onPictureInPictureClick: () -> Unit,
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
+    onSetSourceRect: ((Rect) -> Unit)? = null,
 ) {
     val shuffleButtonState = rememberShuffleButtonState(player)
     val repeatButtonState = rememberRepeatButtonState(player)
@@ -169,6 +175,7 @@ private fun PlayerContent(
                     AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
                 },
             ),
+            onSetRect = onSetSourceRect,
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
