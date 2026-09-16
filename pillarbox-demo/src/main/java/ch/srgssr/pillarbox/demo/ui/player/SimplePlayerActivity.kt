@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,12 +17,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -32,10 +29,6 @@ import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -51,12 +44,6 @@ class SimplePlayerActivity : ComponentActivity() {
     private val playerViewModel by viewModels<SimplePlayerViewModel>()
     private val layoutStyle by lazy { intent.getIntExtra(ARG_LAYOUT, LAYOUT_PLAYLIST) }
 
-    /**
-     * Bounds of the video surface in the window, used as the source rectangle hint of the Picture-in-Picture transition.
-     * `null` while the surface hasn't been laid out yet.
-     */
-    private val pictureInPictureSourceRectHint = MutableStateFlow<Rect?>(null)
-
     private fun readIntent(intent: Intent) {
         val playlist = IntentCompat.getSerializableExtra(intent, ARG_PLAYLIST, Playlist::class.java)
         playlist?.let { playerViewModel.playUri(it.items) }
@@ -68,18 +55,6 @@ class SimplePlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         readIntent(intent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            lifecycleScope.launch {
-                combine(playerViewModel.pictureInPictureRatio, pictureInPictureSourceRectHint) { aspectRatio, sourceRectHint ->
-                    PictureInPictureParams.Builder()
-                        .setAspectRatio(aspectRatio)
-                        .setSourceRectHint(sourceRectHint)
-                        .build()
-                }
-                    .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
-                    .collectLatest { params -> setPictureInPictureParams(params) }
-            }
-        }
 
         setContent {
             PillarboxTheme {
@@ -95,10 +70,12 @@ class SimplePlayerActivity : ComponentActivity() {
     @Composable
     private fun MainContent(player: PillarboxPlayer) {
         val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            rememberPictureInPictureButtonState {
+            val aspectRatio = playerViewModel.pictureInPictureRatio.collectAsState().value
+
+            rememberPictureInPictureButtonState { sourceRectHint ->
                 PictureInPictureParams.Builder()
-                    .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-                    .setSourceRectHint(pictureInPictureSourceRectHint.value)
+                    .setAspectRatio(aspectRatio)
+                    .setSourceRectHint(sourceRectHint)
                     .build()
             }
         } else {
@@ -111,7 +88,7 @@ class SimplePlayerActivity : ComponentActivity() {
             isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
             onPictureInPictureClick = pictureInPictureButtonState::onClick,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
-            onSetSourceRect = { sourceRect -> pictureInPictureSourceRectHint.value = sourceRect },
+            onSetSourceRect = { pictureInPictureButtonState.sourceRectHint = it },
         )
     }
 

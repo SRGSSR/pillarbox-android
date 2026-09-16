@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.player.state
 import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.os.Build
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -14,6 +15,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,24 +58,37 @@ fun rememberPictureInPictureButtonState(): PictureInPictureButtonState {
 /**
  * Creates a [PictureInPictureButtonState] that is remembered across compositions.
  *
- * @param pictureInPictureParamsProvider A provider to get the parameters to use when entering Picture-in-Picture mode.
+ * The state keeps the [Activity]'s Picture-in-Picture parameters up to date: they are refreshed each time
+ * [PictureInPictureButtonState.sourceRectHint] changes, and each time this composable recomposes. Reading the values used by
+ * [pictureInPictureParamsProvider] from a Compose state is therefore enough to keep the parameters in sync.
+ *
+ * @param pictureInPictureParamsProvider A provider to get the parameters to use when entering Picture-in-Picture mode. It receives the current
+ * [PictureInPictureButtonState.sourceRectHint], to pass to [PictureInPictureParams.Builder.setSourceRectHint].
  * @return A [PictureInPictureButtonState] instance.
  */
 @Composable
 @RequiresApi(Build.VERSION_CODES.O)
-fun rememberPictureInPictureButtonState(pictureInPictureParamsProvider: () -> PictureInPictureParams): PictureInPictureButtonState {
+fun rememberPictureInPictureButtonState(
+    pictureInPictureParamsProvider: (sourceRectHint: Rect?) -> PictureInPictureParams,
+): PictureInPictureButtonState {
     val activity = LocalActivity.current as ComponentActivity
-    val pictureInPictureParamsProvider by rememberUpdatedState(pictureInPictureParamsProvider)
-    val pictureInPictureButtonState = remember(activity, pictureInPictureParamsProvider) {
-        PictureInPictureButtonStateApi26(activity, pictureInPictureParamsProvider)
+    val currentPictureInPictureParamsProvider by rememberUpdatedState(pictureInPictureParamsProvider)
+    val pictureInPictureButtonState = remember(activity) {
+        PictureInPictureButtonStateApi26(activity) { sourceRectHint ->
+            currentPictureInPictureParamsProvider(sourceRectHint)
+        }
     }
 
-    DisposableEffect(activity, pictureInPictureParamsProvider) {
+    DisposableEffect(activity) {
         pictureInPictureButtonState.startObserving()
 
         onDispose {
             pictureInPictureButtonState.stopObserving()
         }
+    }
+
+    SideEffect {
+        pictureInPictureButtonState.updatePictureInPictureParams()
     }
 
     return pictureInPictureButtonState
@@ -92,6 +107,14 @@ interface PictureInPictureButtonState {
      * Whether the [Activity] is currently in Picture-in-Picture mode.
      */
     val isInPictureInPicture: Boolean
+
+    /**
+     * Bounds, in window coordinates, of the content that the system animates into and out of the Picture-in-Picture window, or `null` if they are
+     * not known yet. Setting it updates the [Activity]'s Picture-in-Picture parameters.
+     *
+     * It is ignored below Android O, where [PictureInPictureParams] is not available.
+     */
+    var sourceRectHint: Rect?
 
     /**
      * Enter Picture-in-Picture mode.
@@ -127,6 +150,11 @@ private open class PictureInPictureButtonStateBase(
     final override var isInPictureInPicture by mutableStateOf(activity.isInPictureInPictureMode)
         private set
 
+    /**
+     * Picture-in-Picture parameters require Android O, so the source rectangle hint is only stored here.
+     */
+    override var sourceRectHint: Rect? = null
+
     override fun onClick() {
         @Suppress("DEPRECATION")
         activity?.enterPictureInPictureMode()
@@ -144,9 +172,25 @@ private open class PictureInPictureButtonStateBase(
 @RequiresApi(Build.VERSION_CODES.O)
 private class PictureInPictureButtonStateApi26(
     activity: ComponentActivity,
-    private val pictureInPictureParamsProvider: () -> PictureInPictureParams,
+    private val pictureInPictureParamsProvider: (sourceRectHint: Rect?) -> PictureInPictureParams,
 ) : PictureInPictureButtonStateBase(activity) {
+    override var sourceRectHint: Rect? = null
+        set(value) {
+            if (field == value) return
+
+            field = value
+            updatePictureInPictureParams()
+        }
+
     override fun onClick() {
-        activity?.enterPictureInPictureMode(pictureInPictureParamsProvider())
+        activity?.enterPictureInPictureMode(pictureInPictureParamsProvider(sourceRectHint))
+    }
+
+    /**
+     * Pushes the current parameters to the [Activity], so that the system can animate the Picture-in-Picture transition, even when it is not
+     * triggered by [onClick].
+     */
+    fun updatePictureInPictureParams() {
+        activity?.setPictureInPictureParams(pictureInPictureParamsProvider(sourceRectHint))
     }
 }
