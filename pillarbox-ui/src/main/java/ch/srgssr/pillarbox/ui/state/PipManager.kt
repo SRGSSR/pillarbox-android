@@ -25,27 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.extension.toRational
 import java.lang.ref.WeakReference
 
-private const val TAG = "PipManager"
-
 /**
- * The system rejects aspect ratios outside `[1/2.39, 2.39]`. Those bounds stay slightly inside that range, to be safe from rounding.
- */
-private val MIN_ASPECT_RATIO = Rational(1000, 2385)
-private val MAX_ASPECT_RATIO = Rational(2385, 1000)
-
-/**
- * `AppOpsManager.OPSTR_PICTURE_IN_PICTURE` is not part of the public SDK.
- */
-private const val OpPictureInPicture = "android:picture_in_picture"
-
-/**
- * Creates a [PipManager] that is remembered across compositions.
+ * Remembers the value of a [PipManager] created based on the passed [Player] and launches a
+ * coroutine to listen to the [Player's][Player] changes. If the [Player] instance changes between
+ * compositions, this produces and remembers a new [PipManager].
  *
  * As long as it is in composition, it keeps the [Activity]'s Picture-in-Picture parameters up to date, so that the system can animate the
  * transition, even when Picture-in-Picture is not entered through [PipManager.enter].
@@ -53,6 +41,12 @@ private const val OpPictureInPicture = "android:picture_in_picture"
  * @param player The [Player] to get the Picture-in-Picture aspect ratio from. Set [PipManager.ratio] to use another aspect ratio.
  * @param autoEnterEnabled Whether the [Activity] automatically enters Picture-in-Picture when the user leaves it. Requires Android S.
  * @return A [PipManager] instance.
+ *
+ * **Sample usage:**
+ *
+ * ```kotlin
+ * val pipManager = rememberPipManager(player = player, autoEnterEnabled = true),
+ * ```
  */
 @Composable
 fun rememberPipManager(
@@ -80,49 +74,47 @@ fun rememberPipManager(
 }
 
 /**
+ * Represent the Picture in Picture manager
  * Manages the Picture-in-Picture mode of an [Activity].
  *
  * Get an instance with [rememberPipManager].
  */
 interface PipManager {
     /**
-     * Whether the device and the [Activity] support Picture-in-Picture. It is `false` when the [Activity] is missing
+     * Represents whether the device and the [Activity] support Picture-in-Picture. It is `false` when the [Activity] is missing
      * `android:supportsPictureInPicture="true"` in the manifest.
      */
     val isSupported: Boolean
 
     /**
-     * Whether the user allows Picture-in-Picture for this application.
+     * Represents whether the user allows Picture-in-Picture for this application.
      */
     val isAllowed: Boolean
 
     /**
-     * Whether the [Activity] is currently in Picture-in-Picture mode.
+     * Represents whether the [Activity] is currently in Picture-in-Picture mode.
      */
     val isInPictureInPicture: Boolean
 
     /**
-     * Whether the [Activity] is currently going to Picture-in-Picture mode.
+     * Represents whether the [Activity] is currently going to Picture-in-Picture mode.
      */
     val isTransitioning: Boolean
 
     /**
-     * Bounds, in window coordinates, of the content that the system animates into and out of the Picture-in-Picture window, or `null` if they are
-     * not known yet.
+     * Represents the bounds, in window coordinates, of the content that the system animates into and out of the Picture-in-Picture window,
+     * or `null` if they are not known yet.
      */
     var sourceRect: Rect?
 
     /**
-     * Aspect ratio of the Picture-in-Picture window. Setting it overrides the aspect ratio computed from the [Player] video size, and setting it
-     * back to `null` restores it.
-     *
-     * It is coerced into the range supported by the system.
+     * Represents the aspect ratio of the Picture-in-Picture window.
      */
     var ratio: Rational?
 
     /**
-     * Whether the [Activity] automatically enters Picture-in-Picture mode when the user leaves it, which gives a smoother transition than entering
-     * it from [onUserLeaveHint][Activity.onUserLeaveHint]. It has no effect below Android S.
+     * Represents whether the [Activity] automatically enters Picture-in-Picture mode when the user leaves it, which gives a smoother transition
+     * than entering it from [onUserLeaveHint][Activity.onUserLeaveHint]. It has no effect below Android S.
      */
     var autoEnterEnabled: Boolean
 
@@ -140,21 +132,9 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
     }
     private val playerListener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
-            playerRatio = videoSize.toPictureInPictureRatio()
+            playerRatio = videoSize.toRational()
             updatePictureInPictureParams()
         }
-    }
-
-    /**
-     * The user can change the Picture-in-Picture setting of the application while it is in the background, so [isAllowed] is refreshed each time
-     * the [Activity] is resumed.
-     *
-     * It goes through `this.activity`, and not through the constructor parameter, to not hold a strong reference to the [Activity].
-     */
-    private val lifecycleObserver = LifecycleEventObserver { t, event ->
-        /*if (event == Lifecycle.Event.ON_RESUME) {
-            isAllowed = this.activity?.isPictureInPictureAllowed() == true
-        }*/
     }
 
     private var player: Player? = null
@@ -221,15 +201,13 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
 
     fun attach(player: Player?) {
         this.player = player
-        playerRatio = player?.videoSize?.toPictureInPictureRatio()
+        playerRatio = player?.videoSize?.toRational()
         player?.addListener(playerListener)
         activity?.addOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
-        activity?.lifecycle?.addObserver(lifecycleObserver)
         updatePictureInPictureParams()
     }
 
     fun detach() {
-        activity?.lifecycle?.removeObserver(lifecycleObserver)
         activity?.removeOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         player?.removeListener(playerListener)
         player = null
@@ -255,39 +233,46 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
             }
             .build()
     }
-}
 
-/**
- * The Picture-in-Picture APIs throw when the [Activity] is not declared with `android:supportsPictureInPicture="true"`, which can only be detected
- * this way: [ActivityInfo][android.content.pm.ActivityInfo] does not expose that flag publicly.
- */
-private inline fun ComponentActivity.runCatchingPictureInPicture(block: ComponentActivity.() -> Unit) {
-    try {
-        block()
-    } catch (exception: IllegalStateException) {
-        Log.w(TAG, "Picture-in-Picture is not available. Is android:supportsPictureInPicture=\"true\" set for this Activity?", exception)
+    /**
+     * The Picture-in-Picture APIs throw when the [Activity] is not declared with `android:supportsPictureInPicture="true"`, which can only
+     * be detected this way: [ActivityInfo][android.content.pm.ActivityInfo] does not expose that flag publicly.
+     */
+    private inline fun ComponentActivity.runCatchingPictureInPicture(block: ComponentActivity.() -> Unit) {
+        try {
+            block()
+        } catch (exception: IllegalStateException) {
+            Log.w(TAG, "Picture-in-Picture is not available. Is android:supportsPictureInPicture=\"true\" set for this Activity?", exception)
+        }
     }
-}
 
-private fun ComponentActivity.supportsPictureInPicture(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-}
+    private fun ComponentActivity.supportsPictureInPicture(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    }
 
-// checkOpNoThrow() was renamed unsafeCheckOpNoThrow() in Android Q, which is in turn deprecated in more recent SDKs. They all behave the same, so
-// the oldest one is used to support every SDK with a single call. Any failure is reported as allowed, to not hide a working button.
-private fun ComponentActivity.isPictureInPictureAllowed(): Boolean {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+    /**
+     * Represents the Picture in Picture authorization/compatibility
+     *
+     * @return true if Picture in Picture is allowed by the Android version (>= Android 26), and is enabled for the application by the user.
+     */
+    private fun ComponentActivity.isPictureInPictureAllowed(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
 
-    val appOpsManager = getSystemService(AppOpsManager::class.java)
-    val mode = runCatching {
-        appOpsManager?.checkOpNoThrow(OpPictureInPicture, Process.myUid(), packageName)
-    }.getOrNull() ?: AppOpsManager.MODE_ALLOWED
+        val appOpsManager = getSystemService(AppOpsManager::class.java)
+        val mode = runCatching {
+            appOpsManager?.checkOpNoThrow(OpPictureInPicture, Process.myUid(), packageName)
+        }.getOrNull() ?: AppOpsManager.MODE_ALLOWED
 
-    return mode == AppOpsManager.MODE_ALLOWED
-}
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
 
-private fun VideoSize.toPictureInPictureRatio(): Rational? {
-    if (this == VideoSize.UNKNOWN) return null
+    companion object {
 
-    return toRational().coerceIn(MIN_ASPECT_RATIO, MAX_ASPECT_RATIO)
+        private const val TAG = "PipManager"
+
+        /**
+         * `AppOpsManager.OPSTR_PICTURE_IN_PICTURE` is not part of the public SDK.
+         */
+        private const val OpPictureInPicture = "android:picture_in_picture"
+    }
 }
