@@ -13,6 +13,7 @@ plugins {
 dependencies {
     api(project(":pillarbox-player"))
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.annotation)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
@@ -24,6 +25,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.common)
     implementation(libs.androidx.lifecycle.runtime.compose)
     api(libs.androidx.media3.common)

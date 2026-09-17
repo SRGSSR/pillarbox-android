@@ -4,10 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
@@ -26,9 +23,9 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.state.rememberPipManager
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -69,26 +66,10 @@ class SimplePlayerActivity : ComponentActivity() {
 
     @Composable
     private fun MainContent(player: PillarboxPlayer) {
-        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val aspectRatio = playerViewModel.pictureInPictureRatio.collectAsState().value
-
-            rememberPictureInPictureButtonState { sourceRectHint ->
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(aspectRatio)
-                    .setSourceRectHint(sourceRectHint)
-                    .build()
-            }
-        } else {
-            rememberPictureInPictureButtonState()
-        }
-
         DemoPlayerView(
             player = player,
-            isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
-            isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
-            onPictureInPictureClick = pictureInPictureButtonState::onClick,
+            pipManager = rememberPipManager(player = player, autoEnterEnabled = true),
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
-            onSetSourceRect = { pictureInPictureButtonState.sourceRectHint = it },
         )
     }
 

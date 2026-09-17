@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.graphics.Rect
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -60,6 +59,7 @@ import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.state.CreditState
+import ch.srgssr.pillarbox.ui.state.PipManager
 import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
@@ -78,7 +78,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param progressTracker The progress tracker.
  * @param overlayOptions The [MetricsOverlayOptions].
  * @param overlayEnabled true to display the metrics overlay.
- * @param onSetRect Called with the bounds of the video surface in the window, each time they change.
+ * @param pipManager The [PipManager] to report the video surface bounds to, so that the Picture-in-Picture transition animates from the video.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -91,7 +91,7 @@ fun PlayerView(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
-    onSetRect: ((Rect) -> Unit)? = null,
+    pipManager: PipManager? = null,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val presentationState = rememberPresentationState(player, keepContentOnReset = false)
@@ -100,12 +100,14 @@ fun PlayerView(
         player = player,
         contentScale = contentScale,
         presentationState = presentationState,
-        surface = onSetRect?.let { onSetRect ->
+        surface = pipManager?.let { pipManager ->
             {
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .onGloballyPositioned { onSetRect(it.boundsInWindow().roundToIntRect().toAndroidRect()) }
+                        .onGloballyPositioned {
+                            pipManager.sourceRect = it.boundsInWindow().roundToIntRect().toAndroidRect()
+                        }
                 )
             }
         },

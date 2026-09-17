@@ -6,8 +6,6 @@
 
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.Activity
-import android.graphics.Rect
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -49,28 +47,23 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.state.PipManager
 
 /**
  * Demo player
  *
  * @param player The [Player] to observe.
  * @param modifier The [Modifier] to be applied to the layout.
- * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
- * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
- * @param onPictureInPictureClick The Picture-in-Picture button action.
+ * @param pipManager The [PipManager] to drive the Picture-in-Picture button with, or `null` to hide it.
  * @param displayPlaylist If it displays the playlist UI or not.
- * @param onSetSourceRect Called with the bounds of the video surface in the window, to use as the Picture-in-Picture source rectangle hint.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DemoPlayerView(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
-    isPictureInPictureEnabled: Boolean = false,
-    isInPictureInPicture: Boolean = false,
-    onPictureInPictureClick: () -> Unit = {},
+    pipManager: PipManager? = null,
     displayPlaylist: Boolean = false,
-    onSetSourceRect: ((Rect) -> Unit)? = null,
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
@@ -84,12 +77,9 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                isPictureInPictureEnabled = isPictureInPictureEnabled,
-                isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = onPictureInPictureClick,
+                pipManager = pipManager,
                 onSettingsClick = { showSettings = !showSettings },
                 displayPlaylist = displayPlaylist,
-                onSetSourceRect = onSetSourceRect,
             )
 
             AnimatedVisibility(
@@ -107,12 +97,9 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
-            isPictureInPictureEnabled = isPictureInPictureEnabled,
-            isInPictureInPicture = isInPictureInPicture,
-            onPictureInPictureClick = onPictureInPictureClick,
+            pipManager = pipManager,
             onSettingsClick = { showSettingsSheet = true },
             displayPlaylist = displayPlaylist,
-            onSetSourceRect = onSetSourceRect,
         )
 
         if (showSettingsSheet) {
@@ -130,17 +117,15 @@ private fun PlayerContent(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory()),
-    isPictureInPictureEnabled: Boolean,
-    isInPictureInPicture: Boolean,
-    onPictureInPictureClick: () -> Unit,
+    pipManager: PipManager?,
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
-    onSetSourceRect: ((Rect) -> Unit)? = null,
 ) {
     val shuffleButtonState = rememberShuffleButtonState(player)
     val repeatButtonState = rememberRepeatButtonState(player)
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
+    val isInPictureInPicture = pipManager?.isInPictureInPicture == true
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -175,7 +160,7 @@ private fun PlayerContent(
                     AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
                 },
             ),
-            onSetRect = onSetSourceRect,
+            pipManager = pipManager,
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
@@ -185,9 +170,9 @@ private fun PlayerContent(
                 isRepeatEnabled = repeatButtonState.isEnabled,
                 repeatMode = repeatButtonState.repeatModeState,
                 onRepeatClick = repeatButtonState::onClick,
-                isPictureInPictureEnabled = isPictureInPictureEnabled,
+                isPictureInPictureEnabled = pipManager?.let { it.isSupported && it.isAllowed } == true,
                 isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = onPictureInPictureClick,
+                onPictureInPictureClick = { pipManager?.enter() },
                 isInFullscreen = fullscreenButtonState.isInFullscreen,
                 onFullscreenClick = fullscreenButtonState::onClick,
                 onSettingsClick = onSettingsClick,
