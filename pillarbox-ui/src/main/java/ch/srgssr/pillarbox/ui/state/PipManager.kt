@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
 import androidx.lifecycle.LifecycleEventObserver
@@ -93,20 +92,23 @@ interface PipManager {
     val isSupported: Boolean
 
     /**
-     * Whether the user allows Picture-in-Picture for this application. It is backed by a Compose state, refreshed each time the [Activity] is
-     * resumed, as the user can change that setting while the application is in the background.
+     * Whether the user allows Picture-in-Picture for this application.
      */
     val isAllowed: Boolean
 
     /**
-     * Whether the [Activity] is currently in Picture-in-Picture mode. It is backed by a Compose state, so reading it in a composable is enough to
-     * be recomposed when the mode changes.
+     * Whether the [Activity] is currently in Picture-in-Picture mode.
      */
     val isInPictureInPicture: Boolean
 
     /**
+     * Whether the [Activity] is currently going to Picture-in-Picture mode.
+     */
+    val isTransitioning: Boolean
+
+    /**
      * Bounds, in window coordinates, of the content that the system animates into and out of the Picture-in-Picture window, or `null` if they are
-     * not known yet. Prefer [Modifier.pictureInPictureSourceRect] to set it.
+     * not known yet.
      */
     var sourceRect: Rect?
 
@@ -134,6 +136,7 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
     private val activityRef = WeakReference(activity)
     private val pictureInPictureModeObserver = Consumer<PictureInPictureModeChangedInfo> { changedInfo ->
         isInPictureInPicture = changedInfo.isInPictureInPictureMode
+        isTransitioning = false
     }
     private val playerListener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -171,6 +174,9 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
     )
         private set
 
+    override var isTransitioning by mutableStateOf(false)
+        private set
+
     override var sourceRect: Rect? = null
         set(value) {
             if (field == value) return
@@ -201,6 +207,7 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
         isAllowed = this.activity?.isPictureInPictureAllowed() == true
         if (!isAllowed) return
         activity?.runCatchingPictureInPicture {
+            isTransitioning = true
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 enterPictureInPictureMode(pictureInPictureParams())
             } else {

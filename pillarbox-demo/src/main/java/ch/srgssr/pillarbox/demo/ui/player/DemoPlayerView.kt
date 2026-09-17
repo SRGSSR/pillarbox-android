@@ -126,6 +126,7 @@ private fun PlayerContent(
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     val isInPictureInPicture = pipManager?.isInPictureInPicture == true
+    val isPipTransitioning = pipManager?.isTransitioning == true
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -148,8 +149,8 @@ private fun PlayerContent(
                 .weight(1f)
                 .then(scalableModifier),
             player = player,
-            controlsToggleable = !isInPictureInPicture,
-            controlsVisible = !isInPictureInPicture,
+            controlsToggleable = !isInPictureInPicture && !isPipTransitioning,
+            controlsVisible = !isInPictureInPicture && !isPipTransitioning,
             contentScale = pinchContentScale,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
