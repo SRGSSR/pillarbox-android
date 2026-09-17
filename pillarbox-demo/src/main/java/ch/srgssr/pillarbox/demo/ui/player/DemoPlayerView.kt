@@ -127,6 +127,7 @@ private fun PlayerContent(
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     val isInPictureInPicture = pipManager?.isInPictureInPicture == true
     val isPipTransitioning = pipManager?.isTransitioning == true
+    val showControls = !isInPictureInPicture && !isPipTransitioning
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -149,8 +150,8 @@ private fun PlayerContent(
                 .weight(1f)
                 .then(scalableModifier),
             player = player,
-            controlsToggleable = !isInPictureInPicture && !isPipTransitioning,
-            controlsVisible = !isInPictureInPicture && !isPipTransitioning,
+            controlsToggleable = showControls,
+            controlsVisible = showControls,
             contentScale = pinchContentScale,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
@@ -179,7 +180,7 @@ private fun PlayerContent(
                 onSettingsClick = onSettingsClick,
             )
         }
-        if (displayPlaylist && !isInPictureInPicture && !fullscreenButtonState.isInFullscreen) {
+        if (displayPlaylist && showControls && !fullscreenButtonState.isInFullscreen) {
             PlaylistView(
                 modifier = Modifier
                     .weight(1f)
