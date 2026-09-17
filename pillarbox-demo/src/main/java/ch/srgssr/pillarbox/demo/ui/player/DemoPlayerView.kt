@@ -141,6 +141,8 @@ private fun PlayerContent(
     val repeatButtonState = rememberRepeatButtonState(player)
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
+    var isPipTransition by remember(isInPictureInPicture) { mutableStateOf(false) }
+    val areControlsHidden = isInPictureInPicture || isPipTransition
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -163,8 +165,8 @@ private fun PlayerContent(
                 .weight(1f)
                 .then(scalableModifier),
             player = player,
-            controlsToggleable = !isInPictureInPicture,
-            controlsVisible = !isInPictureInPicture,
+            controlsToggleable = !areControlsHidden,
+            controlsVisible = !areControlsHidden,
             contentScale = pinchContentScale,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
@@ -187,7 +189,10 @@ private fun PlayerContent(
                 onRepeatClick = repeatButtonState::onClick,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = onPictureInPictureClick,
+                onPictureInPictureClick = {
+                    isPipTransition = true
+                    onPictureInPictureClick()
+                },
                 isInFullscreen = fullscreenButtonState.isInFullscreen,
                 onFullscreenClick = fullscreenButtonState::onClick,
                 onSettingsClick = onSettingsClick,
