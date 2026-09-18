@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.media.MediaDrm
+import android.media.MediaDrm.PROPERTY_VENDOR
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -19,7 +21,6 @@ import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.extension.commandersActSource
 import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
-import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -101,7 +102,6 @@ class SRGAssetLoader internal constructor(
     private val comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data>,
     private val customTrackerData: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)?,
     private val customMediaMetadata: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)?,
-    private val resourceSelector: ResourceSelector,
     private val spriteSheetLoader: SpriteSheetLoader,
     private val spriteSheetLoaderCoroutineContext: CoroutineContext,
 ) : AssetLoader(
@@ -123,20 +123,23 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         checkNotNull(mediaItem.localConfiguration)
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
-            when (it) {
-                is HttpResultException -> throw it
-                is SerializationException -> throw DataParsingException(it)
-                else -> throw IOException(it.message)
+
+        val widevineDrmLevel = MediaDrm(C.WIDEVINE_UUID).getPropertyString("securityLevel")
+        val widevineDrmVendor = MediaDrm(C.WIDEVINE_UUID).getPropertyString(PROPERTY_VENDOR)
+        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri, widevineDrmVendor, widevineDrmLevel, "android")
+            .getOrElse {
+                when (it) {
+                    is HttpResultException -> throw it
+                    is SerializationException -> throw DataParsingException(it)
+                    else -> throw IOException(it.message)
+                }
             }
-        }
 
         val chapter = result.mainChapter
         chapter.getBlockReasonExceptionOrNull()?.let {
             throw it
         }
-
-        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
+        val resource = chapter.listResource?.firstOrNull() ?: throw ResourceNotFoundException() // backend should always return the best resource
         var uri = resource.url.toUri()
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)

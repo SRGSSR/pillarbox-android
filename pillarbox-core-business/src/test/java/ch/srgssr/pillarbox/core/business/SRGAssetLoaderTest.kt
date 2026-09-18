@@ -343,6 +343,15 @@ class SRGAssetLoaderTest {
             }
         }
 
+        override suspend fun fetchMediaComposition(
+            uri: Uri,
+            widevineDrmLevel: String?,
+            widevineDrmVendor: String?,
+            platform: String?
+        ): Result<MediaComposition> {
+            TODO("Not yet implemented")
+        }
+
         companion object {
             const val URN_NO_RESOURCES = "urn:rts:video:no_resources"
             const val URN_EMPTY_RESOURCES = "urn:rts:video:empty"

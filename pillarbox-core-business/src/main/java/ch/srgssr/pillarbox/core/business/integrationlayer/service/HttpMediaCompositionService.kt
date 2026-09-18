@@ -8,6 +8,7 @@ import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.network.RequestSender.send
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -20,10 +21,33 @@ class HttpMediaCompositionService(
     private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
 ) : MediaCompositionService {
 
-    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
-        return Request.Builder()
-            .url(uri.toString())
-            .build()
-            .send(okHttpClient)
+    override suspend fun fetchMediaComposition(
+        uri: Uri,
+        widevineDrmLevel: String?,
+        widevineDrmVendor: String?,
+        platform: String?
+    ): Result<MediaComposition> {
+        val urlWithParametersBuilder = uri.toString().toHttpUrlOrNull()?.newBuilder()
+        if (platform != null) {
+            urlWithParametersBuilder?.addQueryParameter("playerPlatform", platform)
+        }
+        if (widevineDrmVendor != null && widevineDrmLevel != null) {
+            urlWithParametersBuilder?.addQueryParameter("drmPlayerCapabilities", "$widevineDrmVendor;$widevineDrmLevel")
+        }
+
+        val requestBuilder = Request.Builder()
+        if (urlWithParametersBuilder != null) {
+            requestBuilder.url(urlWithParametersBuilder.build())
+        } else {
+            requestBuilder.url(uri.toString())
+        }
+
+        return requestBuilder.build().send(okHttpClient)
+    }
+
+    override suspend fun fetchMediaComposition(
+        uri: Uri
+    ): Result<MediaComposition> {
+        return fetchMediaComposition(uri, null, null, null)
     }
 }

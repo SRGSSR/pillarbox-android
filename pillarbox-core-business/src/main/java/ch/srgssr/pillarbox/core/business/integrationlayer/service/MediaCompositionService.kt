@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 /**
  * Represents a service responsible for fetching [MediaComposition]s.
  */
-fun interface MediaCompositionService {
+interface MediaCompositionService {
     /**
      * Fetches a [MediaComposition] located at the provided [uri].
      *
@@ -29,4 +29,26 @@ fun interface MediaCompositionService {
      * @return A [Result] containing either the successfully fetched [MediaComposition] or an error indicating the reason for failure.
      */
     suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition>
+
+    /**
+     * Fetches a [MediaComposition] located at the provided [uri].
+     *
+     * ```kotlin
+     * val mediaCompositionResult = mediaCompositionService.fetchMediaComposition(uri)
+     * val mediaComposition = mediaCompositionResult.getOrNull()
+     * if (mediaComposition == null) {
+     *     val throwable = mediaCompositionResult.exceptionOrNull()
+     *     // Handle error
+     * } else {
+     *     // Do something with the media composition
+     * }
+     * ```
+     *
+     * @param uri The URI identifying the desired [MediaComposition].
+     * @param widevineDrmLevel device capabilities level (L1 or L3).
+     * @param widevineDrmVendor device capabilities vendor.
+     * @param platform device platform should be 'android'.
+     * @return A [Result] containing either the successfully fetched [MediaComposition] or an error indicating the reason for failure.
+     */
+    suspend fun fetchMediaComposition(uri: Uri, widevineDrmLevel: String?, widevineDrmVendor: String?, platform: String?): Result<MediaComposition>
 }
