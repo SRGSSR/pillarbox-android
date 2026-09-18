@@ -8,7 +8,6 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
-import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.media3.common.C
@@ -17,7 +16,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.VideoSize
 import androidx.media3.common.util.NotificationUtil
 import androidx.media3.session.R
 import androidx.media3.ui.PlayerNotificationManager
@@ -27,13 +25,9 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
-import ch.srgssr.pillarbox.player.extension.toRational
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.StringUtil
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 private const val NotificationId = 2025
 
@@ -52,13 +46,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         .setSessionActivity(pendingIntent())
         .build()
     private val notificationManager: PlayerNotificationManager
-
-    private val _pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
-
-    /**
-     * Picture in picture aspect ratio
-     */
-    val pictureInPictureRatio = _pictureInPictureRatio.asStateFlow()
 
     init {
         notificationManager = PlayerNotificationManager.Builder(application, NotificationId, "Pillarbox now playing")
@@ -131,10 +118,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         mediaSession.release()
         player.release()
         player.removeListener(this)
-    }
-
-    override fun onVideoSizeChanged(videoSize: VideoSize) {
-        _pictureInPictureRatio.update { videoSize.toRational() }
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {

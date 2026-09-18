@@ -24,11 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toAndroidRect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.roundToIntRect
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
 import androidx.media3.ui.compose.state.rememberPresentationState
@@ -55,6 +59,7 @@ import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.state.CreditState
+import ch.srgssr.pillarbox.ui.state.PipManager
 import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
@@ -73,6 +78,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param progressTracker The progress tracker.
  * @param overlayOptions The [MetricsOverlayOptions].
  * @param overlayEnabled true to display the metrics overlay.
+ * @param pipManager The [PipManager] to report the video surface bounds to, so that the Picture-in-Picture transition animates from the video.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -85,6 +91,7 @@ fun PlayerView(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
+    pipManager: PipManager? = null,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val presentationState = rememberPresentationState(player, keepContentOnReset = false)
@@ -93,6 +100,17 @@ fun PlayerView(
         player = player,
         contentScale = contentScale,
         presentationState = presentationState,
+        surface = pipManager?.let { pipManager ->
+            {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .onGloballyPositioned {
+                            pipManager.sourceRect = it.boundsInWindow().roundToIntRect().toAndroidRect()
+                        }
+                )
+            }
+        },
         shutter = {
             val deviceInfo by player.getDeviceInfoAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()

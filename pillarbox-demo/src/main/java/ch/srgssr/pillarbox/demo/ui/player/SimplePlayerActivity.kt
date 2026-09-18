@@ -4,10 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,19 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import ch.srgssr.pillarbox.ui.state.rememberPipManager
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -59,16 +52,6 @@ class SimplePlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         readIntent(intent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            lifecycleScope.launch {
-                playerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
-                    val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(it)
-                        .build()
-                    setPictureInPictureParams(params)
-                }
-            }
-        }
 
         setContent {
             PillarboxTheme {
@@ -83,21 +66,9 @@ class SimplePlayerActivity : ComponentActivity() {
 
     @Composable
     private fun MainContent(player: PillarboxPlayer) {
-        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            rememberPictureInPictureButtonState {
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-                    .build()
-            }
-        } else {
-            rememberPictureInPictureButtonState()
-        }
-
         DemoPlayerView(
             player = player,
-            isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
-            isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
-            onPictureInPictureClick = pictureInPictureButtonState::onClick,
+            pipManager = rememberPipManager(player = player, autoEnterEnabled = true),
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
     }
