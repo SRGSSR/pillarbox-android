@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.ui.state
 
 import android.app.Activity
 import android.app.AppOpsManager
+import android.app.AppOpsManager.OPSTR_PICTURE_IN_PICTURE
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.graphics.Rect
@@ -260,19 +261,13 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
 
         val appOpsManager = getSystemService(AppOpsManager::class.java)
         val mode = runCatching {
-            appOpsManager?.checkOpNoThrow(OpPictureInPicture, Process.myUid(), packageName)
+            appOpsManager?.checkOpNoThrow(OPSTR_PICTURE_IN_PICTURE, Process.myUid(), packageName)
         }.getOrNull() ?: AppOpsManager.MODE_ALLOWED
 
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
     companion object {
-
         private const val TAG = "PipManager"
-
-        /**
-         * `AppOpsManager.OPSTR_PICTURE_IN_PICTURE` is not part of the public SDK.
-         */
-        private const val OpPictureInPicture = "android:picture_in_picture"
     }
 }
