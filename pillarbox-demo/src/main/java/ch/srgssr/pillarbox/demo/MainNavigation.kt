@@ -283,6 +283,12 @@ internal fun getServers(context: Context): List<EnvironmentConfig> {
                 location = location,
             ),
             EnvironmentConfig(
+                name = context.getString(R.string.production_playplus),
+                serverName = name,
+                host = IlHost.PLAY_PLUS_PRODUCTION,
+                location = location,
+            ),
+            EnvironmentConfig(
                 name = context.getString(R.string.stage),
                 serverName = name,
                 host = IlHost.STAGE,

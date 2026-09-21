@@ -16,7 +16,6 @@ class PillarboxAndroidLibraryComposePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
-
         extensions.configure<LibraryExtension> {
             buildFeatures {
                 compose = true
