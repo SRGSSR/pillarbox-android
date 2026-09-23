@@ -30,7 +30,7 @@ internal object ChapterAdapter {
                 .setTitle(chapter.title)
                 .setArtworkUri(ImageScalingService(ilHost).getScaledImageUrl(chapter.imageUrl).toUri())
                 .setDescription(chapter.lead)
-                .build()
+                .build(),
         )
     }
 

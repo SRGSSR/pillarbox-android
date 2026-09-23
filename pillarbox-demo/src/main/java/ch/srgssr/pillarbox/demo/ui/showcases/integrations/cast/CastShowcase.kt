@@ -40,6 +40,7 @@ fun CastShowcase() {
             DemoPlayerView(
                 player = player,
                 modifier = Modifier.fillMaxSize(),
+                displayPlaylist = false // TODO MBO check needed?
             )
             MediaRouteButton(
                 modifier = Modifier.align(Alignment.TopEnd),

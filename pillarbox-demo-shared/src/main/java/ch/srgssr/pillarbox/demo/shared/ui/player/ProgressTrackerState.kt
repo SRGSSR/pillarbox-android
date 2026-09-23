@@ -38,6 +38,7 @@ fun rememberProgressTrackerState(
     val appSettings by appSettingsRepository.getAppSettings().collectAsState(AppSettings())
     val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
 
+    // TODO MBO double check no use of ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
     return remember(player, smoothSeekingEnabled, imageOutput) {
         imageOutput?.let {
             ImageProgressTrackerState(player, coroutineScope, imageOutput)

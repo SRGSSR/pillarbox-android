@@ -103,6 +103,7 @@ class PlayerActivity : ComponentActivity() {
             player.apply {
                 prepare()
                 playWhenReady = true
+                trackingEnabled = false
             }
         }
     }

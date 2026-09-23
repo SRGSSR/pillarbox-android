@@ -94,7 +94,25 @@ class PillarboxExoPlayer internal constructor(
         coroutineContext = coroutineContext,
     )
 
+    override var smoothSeekingEnabled: Boolean = false
+        set(value) {
+            if (value != field) {
+                field = value
+                if (!value) {
+                    seekEnd()
+                }
+                clearSeeking()
+                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+                    listener.onSmoothSeekingEnabledChanged(value)
+                }
+            }
+        }
+
+    private var pendingSeek: Long? = null
+    private var isSeeking: Boolean = false
+
     override val isMetricsAvailable: Boolean = true
+    override val isSeekParametersAvailable: Boolean = true
 
     override val isImageOutputAvailable: Boolean = true
 
@@ -177,14 +195,6 @@ class PillarboxExoPlayer internal constructor(
         listeners.remove(listener)
     }
 
-    override fun addListener(listener: Player.Listener) {
-        exoPlayer.addListener(listener)
-    }
-
-    override fun removeListener(listener: Player.Listener) {
-        exoPlayer.removeListener(listener)
-    }
-
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
         exoPlayer.seekTo(timeRange.end + 1)
     }
@@ -245,6 +255,19 @@ class PillarboxExoPlayer internal constructor(
         return exoPlayer.getSecondaryRenderer(index)
     }
 
+    private fun seekEnd() {
+        isSeeking = false
+        pendingSeek?.let { pendingPosition ->
+            pendingSeek = null
+            seekTo(pendingPosition)
+        }
+    }
+
+    private fun clearSeeking() {
+        isSeeking = false
+        pendingSeek = null
+    }
+
     override fun isRemoteReceiver(): Boolean {
         return remoteReceiver
     }
@@ -261,9 +284,14 @@ class PillarboxExoPlayer internal constructor(
         private val window = Window()
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            clearSeeking()
             if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                 currentPillarboxMetadata = PillarboxMetadata.EMPTY
             }
+        }
+
+        override fun onRenderedFirstFrame() {
+            seekEnd()
         }
 
         override fun onTracksChanged(tracks: Tracks) {
@@ -273,6 +301,22 @@ class PillarboxExoPlayer internal constructor(
                 currentPillarboxMetadata = format.customData as? PillarboxMetadata ?: PillarboxMetadata.EMPTY
             } else {
                 currentPillarboxMetadata = PillarboxMetadata.EMPTY
+            }
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            when (playbackState) {
+                Player.STATE_READY -> {
+                    if (isSeeking) {
+                        seekEnd()
+                    }
+                }
+
+                Player.STATE_IDLE, Player.STATE_ENDED -> {
+                    clearSeeking()
+                }
+
+                Player.STATE_BUFFERING -> Unit
             }
         }
 

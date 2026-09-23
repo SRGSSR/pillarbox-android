@@ -63,6 +63,8 @@ private fun PlayerView(
     }
 
     Box(modifier) {
+        // TODO MBO check if should be:
+        //  val progressTracker = rememberProgressTrackerState(player, coroutineScope, imageOutput)
         val progressTracker = remember(player) {
             if (player.isPlaybackTypeRemote()) {
                 SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = false)

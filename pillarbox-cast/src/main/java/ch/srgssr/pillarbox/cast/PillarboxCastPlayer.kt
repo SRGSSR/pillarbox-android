@@ -29,6 +29,7 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.util.EventLogger
@@ -44,6 +45,8 @@ import ch.srgssr.pillarbox.cast.extension.getVolume
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
@@ -128,12 +131,17 @@ class PillarboxCastPlayer internal constructor(
     private val positionSupplier = PosSupplier(0)
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
+    private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
 
-    private val listeners: ListenerSet<PillarboxPlayer.Listener> = ListenerSet(applicationLooper, Clock.DEFAULT) { listener, flags ->
+    private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
 
-    private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
+    /**
+     * Smooth seeking is not supported on [CastPlayer]. By its very nature (ie. being remote), seeking **smoothly** is impossible to achieve.
+     */
+    override var smoothSeekingEnabled: Boolean = false
+        set(value) {}
 
     /**
      * This flag is not supported on [CastPlayer]. The receiver should implement tracking on its own.
@@ -147,21 +155,32 @@ class PillarboxCastPlayer internal constructor(
     override val isMetricsAvailable: Boolean = false
 
     /**
+     * [CastPlayer] does not support [SeekParameters].
+     */
+    override val isSeekParametersAvailable: Boolean = false
+
+    /**
      * [CastPlayer] does not support [ImageOutput].
      */
     override val isImageOutputAvailable: Boolean = false
 
-    override val currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+    override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+        private set(value) {
+            if (value != field) {
+                field = value
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
+                    listener.onPillarboxMetadataChanged(value)
+                }
+            }
+        }
 
     private var castSession: CastSession? = null
         set(value) {
-            if (field != value) {
-                field?.removeCastListener(castListener)
-                value?.addCastListener(castListener)
-                field = value
+            field?.removeCastListener(castListener)
+            value?.addCastListener(castListener)
+            field = value
 
-                remoteMediaClient = value?.remoteMediaClient
-            }
+            remoteMediaClient = value?.remoteMediaClient
         }
 
     private var deviceInfo = if (isMediaRouter2Available()) checkNotNull(mediaRouter).fetchDeviceInfo() else DEVICE_INFO_REMOTE_EMPTY
@@ -175,6 +194,7 @@ class PillarboxCastPlayer internal constructor(
     private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
+
     private val _castSessionAvailable = MutableStateFlow(false)
 
     /**
@@ -199,6 +219,11 @@ class PillarboxCastPlayer internal constructor(
                 field?.addProgressListener(positionSupplier, 1000L)
                 field?.requestStatus()
                 invalidateState()
+                if (field == null) {
+                    sessionAvailabilityListener?.onCastSessionUnavailable()
+                } else {
+                    sessionAvailabilityListener?.onCastSessionAvailable()
+                }
             }
         }
 
@@ -207,16 +232,9 @@ class PillarboxCastPlayer internal constructor(
         castSession = castContext.sessionManager.currentCastSession.also {
             _castSessionAvailable.value = it != null
         }
-
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
-
-    override fun isScrubbingModeEnabled(): Boolean = false
-
-    override fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean) = Unit
-
-    override fun setImageOutput(imageOutput: ImageOutput?) = Unit
 
     override fun addListener(listener: PillarboxPlayer.Listener) {
         super.addListener(listener)
@@ -227,6 +245,26 @@ class PillarboxCastPlayer internal constructor(
         super.removeListener(listener)
         listeners.remove(listener)
     }
+
+    override fun setSeekParameters(seekParameters: SeekParameters?) = Unit
+
+    override fun getSeekParameters(): SeekParameters {
+        return SeekParameters.DEFAULT
+    }
+
+    override fun setImageOutput(imageOutput: ImageOutput?) = Unit
+
+    /**
+     * @return `true` when a cast session is available
+     * @see castSessionAvailable
+     */
+    fun isCastSessionAvailable(): Boolean {
+        return castSessionAvailable.value // TODO MBO  return remoteMediaClient != null ?
+    }
+
+    override fun isScrubbingModeEnabled(): Boolean = false
+
+    override fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean) = Unit
 
     /**
      * Sets a listener for updates on the cast session availability.
@@ -251,6 +289,9 @@ class PillarboxCastPlayer internal constructor(
         val deviceVolume = castSession?.let {
             (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
+        currentPillarboxMetadata = remoteMediaClient.mediaStatus?.mediaInfo?.customData?.let {
+            PillarboxMetadataConverter.decodePillarboxMetadata(it)
+        } ?: PillarboxMetadata.EMPTY
 
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
@@ -295,43 +336,6 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    override fun handleAddMediaItems(index: Int, mediaItems: MutableList<MediaItem>) = withRemoteClient {
-        if (mediaQueue.itemCount == 0) {
-            handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
-            return@withRemoteClient
-        }
-        DebugLogger.debug(TAG, "handleAddMediaItems at $index")
-        val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
-        if (mediaQueueItems.size == 1) {
-            queueAppendItem(mediaQueueItems[0], null)
-        } else {
-            val insertBeforeId = mediaQueue.itemIdAtIndex(index)
-            queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
-        }
-    }
-
-    override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
-        DebugLogger.debug(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
-        if (toIndex - fromIndex == 1) {
-            queueRemoveItem(mediaQueue.itemIdAtIndex(fromIndex), null)
-        } else {
-            val itemsToRemove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
-            queueRemoveItems(itemsToRemove.toIntArray(), null)
-        }
-    }
-
-    override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
-        DebugLogger.debug(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
-        if (toIndex - fromIndex == 1) {
-            val itemId = mediaQueue.itemIdAtIndex(fromIndex)
-            queueMoveItemToNewIndex(itemId, newIndex, null)
-        } else {
-            val itemsIdToMove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
-            val insertBeforeId = mediaQueue.itemIdAtIndex(newIndex + (toIndex - fromIndex))
-            queueReorderItems(itemsIdToMove.toIntArray(), insertBeforeId, null)
-        }
-    }
-
     override fun handleStop() = withRemoteClient {
         stop()
     }
@@ -365,23 +369,6 @@ class PillarboxCastPlayer internal constructor(
         queueSetRepeatMode(getCastRepeatMode(repeatMode), null)
     }
 
-    override fun handleSetVolume(volume: Float, volumeOperationType: Int) = withRemoteClient {
-        super<SimpleBasePlayer>.handleSetVolume(volume, volumeOperationType)
-        when (volumeOperationType) {
-            C.VOLUME_OPERATION_TYPE_SET_VOLUME -> {
-                setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
-            }
-
-            C.VOLUME_OPERATION_TYPE_MUTE -> {
-                setStreamMute(true)
-            }
-
-            C.VOLUME_OPERATION_TYPE_UNMUTE -> {
-                setStreamMute(false)
-            }
-        }
-    }
-
     override fun handleSetDeviceVolume(
         @IntRange(from = 0) deviceVolume: Int,
         flags: @C.VolumeFlags Int,
@@ -405,48 +392,6 @@ class PillarboxCastPlayer internal constructor(
         val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks.orEmpty()
         val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, mediaTrack)
         setActiveMediaTracks(selectedTrackIds)
-    }
-
-    override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
-        DebugLogger.debug(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
-        when (seekCommand) {
-            COMMAND_SEEK_TO_DEFAULT_POSITION -> {
-                val mediaSeekOptions = MediaSeekOptions.Builder().apply {
-                    if (isLiveStream) {
-                        this.setIsSeekToInfinite(true)
-                    } else {
-                        this.setPosition(0)
-                    }
-                }.build()
-                seek(mediaSeekOptions)
-            }
-
-            COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, COMMAND_SEEK_FORWARD, COMMAND_SEEK_BACK -> {
-                seekTo(this, positionMs)
-            }
-
-            COMMAND_SEEK_TO_PREVIOUS, COMMAND_SEEK_TO_NEXT -> {
-                if (mediaItemIndex != currentMediaItemIndex) {
-                    if (seekCommand == COMMAND_SEEK_TO_PREVIOUS) queuePrev(null) else queueNext(null)
-                } else {
-                    seekTo(this, positionMs)
-                }
-            }
-
-            COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
-                queuePrev(null)
-            }
-
-            COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
-                queueNext(null)
-            }
-
-            COMMAND_SEEK_TO_MEDIA_ITEM -> {
-                jumpTo(this, mediaItemIndex, positionMs)
-            }
-
-            else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
-        }
     }
 
     override fun handleSetPlaybackParameters(playbackParameters: PlaybackParameters) = withRemoteClient {
@@ -534,12 +479,6 @@ class PillarboxCastPlayer internal constructor(
             .orEmpty()
     }
 
-    private fun withRemoteClient(command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
-        remoteMediaClient?.command()
-
-        return Futures.immediateVoidFuture()
-    }
-
     private fun withCastSession(method: String, command: CastSession.() -> Unit): ListenableFuture<*> {
         try {
             castSession?.command()
@@ -558,37 +497,16 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
-        override fun get(): Long {
-            return position
-        }
-
-        override fun onProgressUpdated(position: Long, duration: Long) {
-            val playerPosition = position - (remoteMediaClient?.approximateLiveSeekableRangeStart ?: 0L)
-            if (playerPosition != this.position) {
-                this.position = playerPosition
-                invalidateState()
-            }
+    internal fun notifyChapterChanged(chapter: Chapter?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+            listener.onChapterChanged(chapter)
         }
     }
 
-    private fun setSessionAvailable(isSessionAvailable: Boolean) {
-        if (castSessionAvailable.value != isSessionAvailable) {
-            if (isSessionAvailable) {
-                sessionAvailabilityListener?.onCastSessionAvailable()
-            } else {
-                sessionAvailabilityListener?.onCastSessionUnavailable()
-            }
+    internal fun notifyCreditChanged(credit: Credit?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+            listener.onCreditChanged(credit)
         }
-        _castSessionAvailable.value = isSessionAvailable
-    }
-
-    /**
-     * @return `true` when a cast session is available
-     * @see castSessionAvailable
-     */
-    fun isCastSessionAvailable(): Boolean {
-        return castSessionAvailable.value
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback() {
@@ -641,8 +559,6 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.i(TAG, "onSessionEnded ${session.sessionId} with error = $error")
-            setSessionAvailable(false)
-            castSession = null
         }
 
         override fun onSessionEnding(session: CastSession) {
@@ -684,6 +600,133 @@ class PillarboxCastPlayer internal constructor(
             setSessionAvailable(false)
             castSession = null
         }
+    }
+
+    override fun handleAddMediaItems(index: Int, mediaItems: MutableList<MediaItem>) = withRemoteClient {
+        if (mediaQueue.itemCount == 0) {
+            handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
+            return@withRemoteClient
+        }
+        DebugLogger.debug(TAG, "handleAddMediaItems at $index")
+        val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
+        if (mediaQueueItems.size == 1) {
+            queueAppendItem(mediaQueueItems[0], null)
+        } else {
+            val insertBeforeId = mediaQueue.itemIdAtIndex(index)
+            queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
+        }
+    }
+
+    override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
+        DebugLogger.debug(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
+        if (toIndex - fromIndex == 1) {
+            queueRemoveItem(mediaQueue.itemIdAtIndex(fromIndex), null)
+        } else {
+            val itemsToRemove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
+            queueRemoveItems(itemsToRemove.toIntArray(), null)
+        }
+    }
+
+    override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
+        DebugLogger.debug(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
+        if (toIndex - fromIndex == 1) {
+            val itemId = mediaQueue.itemIdAtIndex(fromIndex)
+            queueMoveItemToNewIndex(itemId, newIndex, null)
+        } else {
+            val itemsIdToMove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
+            val insertBeforeId = mediaQueue.itemIdAtIndex(newIndex + (toIndex - fromIndex))
+            queueReorderItems(itemsIdToMove.toIntArray(), insertBeforeId, null)
+        }
+    }
+
+    override fun handleSetVolume(volume: Float, volumeOperationType: Int) = withRemoteClient {
+        super<SimpleBasePlayer>.handleSetVolume(volume, volumeOperationType)
+        when (volumeOperationType) {
+            C.VOLUME_OPERATION_TYPE_SET_VOLUME -> {
+                setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
+            }
+
+            C.VOLUME_OPERATION_TYPE_MUTE -> {
+                setStreamMute(true)
+            }
+
+            C.VOLUME_OPERATION_TYPE_UNMUTE -> {
+                setStreamMute(false)
+            }
+        }
+    }
+
+    override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
+        DebugLogger.debug(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
+        when (seekCommand) {
+            COMMAND_SEEK_TO_DEFAULT_POSITION -> {
+                val mediaSeekOptions = MediaSeekOptions.Builder().apply {
+                    if (isLiveStream) {
+                        this.setIsSeekToInfinite(true)
+                    } else {
+                        this.setPosition(0)
+                    }
+                }.build()
+                seek(mediaSeekOptions)
+            }
+
+            COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, COMMAND_SEEK_FORWARD, COMMAND_SEEK_BACK -> {
+                seekTo(this, positionMs)
+            }
+
+            COMMAND_SEEK_TO_PREVIOUS, COMMAND_SEEK_TO_NEXT -> {
+                if (mediaItemIndex != currentMediaItemIndex) {
+                    if (seekCommand == COMMAND_SEEK_TO_PREVIOUS) queuePrev(null) else queueNext(null)
+                } else {
+                    seekTo(this, positionMs)
+                }
+            }
+
+            COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
+                queuePrev(null)
+            }
+
+            COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
+                queueNext(null)
+            }
+
+            COMMAND_SEEK_TO_MEDIA_ITEM -> {
+                jumpTo(this, mediaItemIndex, positionMs)
+            }
+
+            else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
+        }
+    }
+
+    private fun withRemoteClient(command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
+        remoteMediaClient?.command()
+
+        return Futures.immediateVoidFuture()
+    }
+
+    private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
+        override fun get(): Long {
+            return position
+        }
+
+        override fun onProgressUpdated(position: Long, duration: Long) {
+            val playerPosition = position - (remoteMediaClient?.approximateLiveSeekableRangeStart ?: 0L)
+            if (playerPosition != this.position) {
+                this.position = playerPosition
+                invalidateState()
+            }
+        }
+    }
+
+    private fun setSessionAvailable(isSessionAvailable: Boolean) {
+        if (castSessionAvailable.value != isSessionAvailable) {
+            if (isSessionAvailable) {
+                sessionAvailabilityListener?.onCastSessionAvailable()
+            } else {
+                sessionAvailabilityListener?.onCastSessionUnavailable()
+            }
+        }
+        _castSessionAvailable.value = isSessionAvailable
     }
 
     // Based on CastPlayer.Api30Impl from AndroidX Media3 1.6.0
