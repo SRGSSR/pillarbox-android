@@ -10,10 +10,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.LruCache
+import androidx.core.util.TypedValueCompat
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerNotificationManager
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
-import androidx.media3.ui.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -32,8 +32,14 @@ class PillarboxMediaDescriptionAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope = MainScope()
 ) : MediaDescriptionAdapter {
-    private val imageMaxWidth: Int = context.resources.getDimensionPixelSize(R.dimen.compat_notification_large_icon_max_width)
-    private val imageMaxHeight: Int = context.resources.getDimensionPixelSize(R.dimen.compat_notification_large_icon_max_height)
+    // Hard-code the value of compat_notification_large_icon_max_width and
+    // compat_notification_large_icon_max_width as 320dp because the resource IDs are not public
+    // in
+    // https://cs.android.com/android/platform/superproject/+/androidx-main:frameworks/support/core/core/src/main/res/values/dimens.xml
+    private val imageMaxWidth: Int = TypedValueCompat.dpToPx(NOTIFICATION_SIZE_DP.toFloat(), context.resources.displayMetrics).toInt()
+
+    private val imageMaxHeight: Int = imageMaxWidth
+
     private val bitmapCache = LruCache<Uri, Bitmap>(3)
 
     override fun getCurrentContentTitle(player: Player): CharSequence {
@@ -97,5 +103,8 @@ class PillarboxMediaDescriptionAdapter(
             bitmapCache.put(imageUri, it)
             callback.onBitmap(it)
         }
+    }
+    companion object {
+        private const val NOTIFICATION_SIZE_DP = 320
     }
 }

@@ -1,8 +1,5 @@
 <component name="CopyrightManager">
-  <settings>
-    <module2copyright>
-      <element module="Project Files" copyright="Simple MIT" />
-    </module2copyright>
+  <settings default="Simple MIT">
     <LanguageOptions name="JAVA" />
     <LanguageOptions name="Kotlin" />
     <LanguageOptions name="__TEMPLATE__">

@@ -25,7 +25,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -39,6 +39,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -63,6 +65,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -73,7 +77,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.CAR, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -87,6 +91,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -97,7 +103,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.DESKTOP, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -111,6 +117,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -121,7 +129,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -135,6 +143,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -145,7 +155,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -159,6 +169,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -169,7 +181,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -183,6 +195,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -193,7 +207,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertEquals(Session.Device.Type.TV, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -207,6 +221,8 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
     }
 
     @Test
@@ -217,7 +233,7 @@ class SessionTest {
         assertEquals(APPLICATION_ID, qosSession.application.id)
         assertEquals(APPLICATION_VERSION, qosSession.application.version)
         assertEquals("", qosSession.device.id)
-        assertEquals("unknown robolectric", qosSession.device.model)
+        assertEquals("robolectric robolectric", qosSession.device.model)
         assertNull(qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
@@ -231,6 +247,82 @@ class SessionTest {
         assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals(PLAYER_LANGUAGE, qosSession.player.language)
+        assertEquals(RESPONSE_HEADERS_FOR_MONITORING, qosSession.media.metadataHeaders)
+    }
+
+    @Test
+    @Config(qualifiers = "ch-rCH")
+    fun `contextConstructor provides correct default values with mocked locale (Switzerland)`() {
+        val qosSession = createQoSSession()
+
+        assertEquals(APPLICATION_ID, qosSession.application.id)
+        assertEquals(APPLICATION_VERSION, qosSession.application.version)
+        assertEquals("", qosSession.device.id)
+        assertEquals("robolectric robolectric", qosSession.device.model)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
+        assertEquals(ASSET_URL, qosSession.media.assetUrl)
+        assertEquals(MEDIA_ID, qosSession.media.id)
+        assertEquals(METADATA_URL, qosSession.media.metadataUrl)
+        assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
+        assertEquals(PLAYER_NAME, qosSession.player.name)
+        assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
+        assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
+        assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
+        assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals("ch", qosSession.player.language)
+    }
+
+    @Test
+    @Config(qualifiers = "fr-rFR")
+    fun `contextConstructor provides correct default values with mocked locale (France)`() {
+        val qosSession = createQoSSession()
+
+        assertEquals(APPLICATION_ID, qosSession.application.id)
+        assertEquals(APPLICATION_VERSION, qosSession.application.version)
+        assertEquals("", qosSession.device.id)
+        assertEquals("robolectric robolectric", qosSession.device.model)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
+        assertEquals(ASSET_URL, qosSession.media.assetUrl)
+        assertEquals(MEDIA_ID, qosSession.media.id)
+        assertEquals(METADATA_URL, qosSession.media.metadataUrl)
+        assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
+        assertEquals(PLAYER_NAME, qosSession.player.name)
+        assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
+        assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
+        assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
+        assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals("fr", qosSession.player.language)
+    }
+
+    @Test
+    fun `contextConstructor provides correct default values with mocked locale (country3)`() {
+        val qosSession = createQoSSession()
+
+        assertEquals(APPLICATION_ID, qosSession.application.id)
+        assertEquals(APPLICATION_VERSION, qosSession.application.version)
+        assertEquals("", qosSession.device.id)
+        assertEquals("robolectric robolectric", qosSession.device.model)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
+        assertEquals(ASSET_URL, qosSession.media.assetUrl)
+        assertEquals(MEDIA_ID, qosSession.media.id)
+        assertEquals(METADATA_URL, qosSession.media.metadataUrl)
+        assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
+        assertEquals(PLAYER_NAME, qosSession.player.name)
+        assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
+        assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
+        assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
+        assertEquals(SCREEN_WIDTH, qosSession.screen.width)
+        assertEquals("en", qosSession.player.language)
     }
 
     private fun createQoSSession(): Session {
@@ -252,6 +344,7 @@ class SessionTest {
                 assetUrl = ASSET_URL,
                 id = MEDIA_ID,
                 metadataUrl = METADATA_URL,
+                RESPONSE_HEADERS_FOR_MONITORING,
             ),
             qoeTimings = Timings.QoE(),
             qosTimings = Timings.QoS(),
@@ -264,12 +357,19 @@ class SessionTest {
         private const val ASSET_URL = "https://rts-vod-amd.akamaized.net/ww/12345/3037738d-fe91-32e3-93f2-4dbb62a0f9bd/master.m3u8"
         private const val MEDIA_ID = "urn:rts:video:12345"
         private const val METADATA_URL = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY"
-        private const val MIN_ANDROID_VERSION = "7.0"
+        private const val MIN_ANDROID_VERSION = "17"
         private const val OPERATING_SYSTEM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_PLATFORM = "Android"
         private const val PLAYER_VERSION = "Local"
         private const val SCREEN_HEIGHT = 470
         private const val SCREEN_WIDTH = 320
+        private const val PLAYER_LANGUAGE = "en" // Robolectric default
+        val RESPONSE_HEADERS_FOR_MONITORING = mapOf(
+            "akamai-grn" to "0.8cd5ce17.1789113303.52617d6",
+            "x-location-info" to "CH",
+            "x-proxy-detection-info" to "rp, pv",
+            "x-tracing-id" to "6aa3b3d7-30fb693928bc20d5555f4552",
+        )
     }
 }

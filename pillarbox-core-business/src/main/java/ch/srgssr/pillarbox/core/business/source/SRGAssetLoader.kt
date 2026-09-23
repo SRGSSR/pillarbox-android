@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.extension.commandersActSource
 import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
@@ -122,13 +123,14 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         checkNotNull(mediaItem.localConfiguration)
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+        val resultWithHeaders = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
                 is HttpResultException -> throw it
                 is SerializationException -> throw DataParsingException(it)
                 else -> throw IOException(it.message)
             }
         }
+        val result = resultWithHeaders.mediaComposition
 
         val chapter = result.mainChapter
         chapter.getBlockReasonExceptionOrNull()?.let {
@@ -145,7 +147,7 @@ class SRGAssetLoader internal constructor(
         getComScoreData(result, chapter, resource)?.let {
             trackerData[ComScoreTracker::class.java] = FactoryData(comscoreTrackerFactory, it)
         }
-        getCommandersActData(result, chapter, resource)?.let {
+        getCommandersActData(mediaItem, result, chapter, resource)?.let {
             trackerData[CommandersActTracker::class.java] = FactoryData(commanderActTrackerFactory, it)
         }
         customTrackerData?.invoke(trackerData, resource, chapter, result)
@@ -158,15 +160,17 @@ class SRGAssetLoader internal constructor(
         val mediaSource = chapter.spriteSheet?.let {
             MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
+        val ilHost = mediaItem.localConfiguration!!.uri.toIlUrl().host
         return Asset(
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
             }.build(),
+            responseHeaders = resultWithHeaders.headers,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
-                chapters = ChapterAdapter.getChapters(result),
+                chapters = ChapterAdapter.getChapters(result, ilHost),
                 credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
             ),
         )
@@ -210,6 +214,7 @@ class SRGAssetLoader internal constructor(
      * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
      */
     private fun getCommandersActData(
+        mediaItem: MediaItem,
         mediaComposition: MediaComposition,
         chapter: Chapter,
         resource: Resource
@@ -220,8 +225,7 @@ class SRGAssetLoader internal constructor(
             resource.analyticsLabels?.let { putAll(it) }
         }
         return if (commandersActData.isNotEmpty()) {
-            // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
-            CommandersActTracker.Data(assets = commandersActData, sourceId = null)
+            CommandersActTracker.Data(assets = commandersActData, source = mediaItem.commandersActSource)
         } else {
             null
         }

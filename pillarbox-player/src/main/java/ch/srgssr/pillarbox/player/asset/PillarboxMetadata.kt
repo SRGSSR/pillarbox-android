@@ -9,7 +9,6 @@ import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
 /**
  * @property chapters A list of [Chapter] instances representing chapters within the media.
@@ -17,7 +16,6 @@ import kotlinx.serialization.Serializable
  * @property blockedTimeRanges A list of [BlockedTimeRange] instances representing periods within the media that should be skipped during playback.
  */
 @Parcelize
-@Serializable
 data class PillarboxMetadata(
     val chapters: List<Chapter> = emptyList(),
     val credits: List<Credit> = emptyList(),

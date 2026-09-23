@@ -27,7 +27,10 @@ class CommandersActSrgTest {
     private val analyticsConfig = TestUtils.analyticsConfig
 
     private val commandersAct: CommandersActSrg by lazy {
-        CommandersActSrg(config = analyticsConfig, appContext = ApplicationProvider.getApplicationContext())
+        CommandersActSrg(
+            config = analyticsConfig,
+            appContext = ApplicationProvider.getApplicationContext()
+        )
     }
 
     @Test
@@ -45,6 +48,20 @@ class CommandersActSrgTest {
     }
 
     @Test
+    @Config(qualifiers = "television")
+    fun `vector id is tv android`() {
+        val actual = commandersAct.getPermanentDataLabel("vector_id")
+        assertEquals("tv.android", actual)
+    }
+
+    @Test
+    @Config
+    fun `vector id is mobile android`() {
+        val actual = commandersAct.getPermanentDataLabel("vector_id")
+        assertEquals("mobile.android", actual)
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp")
     fun `test navigation device is tablet`() {
         val actual = commandersAct.getPermanentDataLabel("navigation_device")
@@ -59,9 +76,22 @@ class CommandersActSrgTest {
     }
 
     @Test
+    fun `set profile identifier with non null data`() {
+        val userId = "user_id"
+        commandersAct.setProfileIdentifier(userId)
+        assertEquals(userId, commandersAct.getPermanentDataLabel("profile_id"))
+    }
+
+    @Test
+    fun `set profile identifier with null data`() {
+        commandersAct.setProfileIdentifier(null)
+        assertNull(commandersAct.getPermanentDataLabel("profile_id"))
+    }
+
+    @Test
     fun `sendEvent() with CommandersActEvent`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
-        val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")
+        val commandersAct = createCommandersAct(serverSide)
         val eventSlot = slot<TCEvent>()
 
         commandersAct.sendEvent(CommandersActEvent(name = "dummy"))
@@ -76,7 +106,7 @@ class CommandersActSrgTest {
     @Test
     fun `sendPageView() with CommandersActPageView`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
-        val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")
+        val commandersAct = createCommandersAct(serverSide)
         val eventSlot = slot<TCEvent>()
 
         commandersAct.sendPageView(
@@ -103,7 +133,7 @@ class CommandersActSrgTest {
     @Test
     fun `sendTcMediaEvent() with TCMediaEvent`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
-        val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")
+        val commandersAct = createCommandersAct(serverSide)
         val eventSlot = slot<TCEvent>()
 
         commandersAct.sendTcMediaEvent(TCMediaEvent(eventType = MediaEventType.Eof, assets = emptyMap()))
@@ -117,7 +147,8 @@ class CommandersActSrgTest {
 
     @Test
     fun `initial consent services`() {
-        assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertEquals("", commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.PROFILE_ID.label))
     }
 
     @Test
@@ -134,4 +165,11 @@ class CommandersActSrgTest {
         assertEquals(legacyUniqueId, TCDevice.getInstance().sdkID)
         assertEquals(legacyUniqueId, TCUser.getInstance().anonymous_id)
     }
+
+    private fun createCommandersAct(serverSide: TCServerSide): CommandersActSrg = CommandersActSrg(
+        tcServerSide = serverSide,
+        config = analyticsConfig,
+        navigationDevice = "phone",
+        vectorId = "mobile.android"
+    )
 }

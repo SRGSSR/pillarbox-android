@@ -2,11 +2,13 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.player.tracks
 
 import android.content.Context
+import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
-import androidx.media3.common.TrackSelectionOverride
 import ch.srgssr.pillarbox.player.extension.defaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.defaultTextTrack
 import ch.srgssr.pillarbox.player.extension.defaultVideoTrack
@@ -24,9 +26,7 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
  * @param track The [Track] to select.
  */
 fun Player.selectTrack(track: Track) {
-    val trackGroup = currentTracks.groups[track.groupIndex].mediaTrackGroup
-
-    setTrackOverride(TrackSelectionOverride(trackGroup, track.trackIndexInGroup))
+    setTrackOverride(track.trackSelectionOverride)
 }
 
 /**
@@ -92,4 +92,20 @@ fun Player.setAutoTextTrack() {
  */
 fun Player.setAutoVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.defaultVideoTrack()
+}
+
+/**
+ * return true if the player is [DeviceInfo.PLAYBACK_TYPE_REMOTE].
+ *  * @see [Player.getDeviceInfo]
+ */
+fun Player.isPlaybackTypeRemote(): Boolean {
+    return deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE
+}
+
+/**
+ * return true if the player is [DeviceInfo.PLAYBACK_TYPE_LOCAL].
+ * @see [Player.getDeviceInfo]
+ */
+fun Player.isPlaybackTypeLocal(): Boolean {
+    return deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_LOCAL
 }

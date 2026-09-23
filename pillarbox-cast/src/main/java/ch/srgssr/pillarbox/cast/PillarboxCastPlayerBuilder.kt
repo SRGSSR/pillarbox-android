@@ -26,6 +26,7 @@ abstract class PillarboxCastPlayerBuilder {
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
     private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
+    private var tracksConverter: TracksConverter = DefaultTracksConverter()
     private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
     private var onCastSessionUnavailable: (PillarboxCastPlayer.() -> Unit)? = null
 
@@ -63,30 +64,21 @@ abstract class PillarboxCastPlayerBuilder {
     }
 
     /**
-     * On cast session available
-     *
-     * @param onCastSessionAvailable The method to invoke when [SessionAvailabilityListener.onCastSessionAvailable] is called.
-     */
-    fun onCastSessionAvailable(onCastSessionAvailable: PillarboxCastPlayer.() -> Unit) {
-        this.onCastSessionAvailable = onCastSessionAvailable
-    }
-
-    /**
-     * On cast session unavailable
-     *
-     * @param onCastSessionUnavailable The method to invoke when [SessionAvailabilityListener.onCastSessionUnavailable] is called.
-     */
-    fun onCastSessionUnavailable(onCastSessionUnavailable: PillarboxCastPlayer.() -> Unit) {
-        this.onCastSessionUnavailable = onCastSessionUnavailable
-    }
-
-    /**
      * Media item converter
      *
      * @param mediaItemConverter The [MediaItemConverter] to use.
      */
     fun mediaItemConverter(mediaItemConverter: MediaItemConverter) {
         this.mediaItemConverter = mediaItemConverter
+    }
+
+    /**
+     * Tracks converter
+     *
+     * @param tracksConverter The [TracksConverter] to use.
+     */
+    fun tracksConverter(tracksConverter: TracksConverter) {
+        this.tracksConverter = tracksConverter
     }
 
     internal fun create(context: Context): PillarboxCastPlayer {
@@ -98,6 +90,7 @@ abstract class PillarboxCastPlayerBuilder {
             seekForwardIncrementMs = seekForwardIncrement.inWholeMilliseconds,
             maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector = trackSelector,
+            tracksConverter = tracksConverter,
         ).apply {
             if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {

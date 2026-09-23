@@ -97,6 +97,7 @@ internal fun RemoteMediaClient.getVolume(): Double {
     return mediaStatus?.streamVolume ?: 1.0
 }
 
+// TODO MBO needed?
 internal fun RemoteMediaClient.getTracks(): Tracks {
     val mediaTracks = mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
     return if (mediaTracks.isEmpty()) {

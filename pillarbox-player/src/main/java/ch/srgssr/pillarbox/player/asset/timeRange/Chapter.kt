@@ -4,13 +4,13 @@
  */
 package ch.srgssr.pillarbox.player.asset.timeRange
 
+import android.os.Bundle
+import android.os.Parcel
 import android.os.Parcelable
-import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata
-import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.parcelize.TypeParceler
 
 /**
  * Represents a chapter.
@@ -21,29 +21,23 @@ import kotlinx.serialization.Transient
  * @property id The unique identifier of the chapter.
  * @property start The start position of the chapter, in milliseconds.
  * @property end The end position of the chapter, in milliseconds.
- * @property title The title of the chapter.
- * @property description The description of the chapter.
- * @property artworkUri The artwork uri of the chapter.
+ * @property mediaMetadata The [MediaMetadata] associated with the chapter.
  */
 @Parcelize
-@Serializable
 data class Chapter(
     val id: String,
     override val start: Long,
     override val end: Long,
-    val title: String,
-    val description: String? = null,
-    val artworkUri: String? = null,
-) : TimeRange, Parcelable {
+    @TypeParceler<MediaMetadata, MediaMetadataParceler>()
+    val mediaMetadata: MediaMetadata
+) : TimeRange, Parcelable
 
-    /**
-     * The [MediaMetadata] of the chapter build from fields.
-     */
-    @IgnoredOnParcel
-    @Transient
-    val mediaMetadata: MediaMetadata = MediaMetadata.Builder()
-        .setTitle(title)
-        .setDescription(description)
-        .setArtworkUri(artworkUri?.toUri())
-        .build()
+internal object MediaMetadataParceler : Parceler<MediaMetadata> {
+    override fun create(parcel: Parcel): MediaMetadata {
+        return MediaMetadata.fromBundle(parcel.readBundle(MediaMetadata::class.java.classLoader) ?: Bundle())
+    }
+
+    override fun MediaMetadata.write(parcel: Parcel, flags: Int) {
+        parcel.writeBundle(toBundle())
+    }
 }

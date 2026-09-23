@@ -16,14 +16,15 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
  * @property type The type of the page. This property cannot be blank.
  * @property levels A list of strings representing the navigation levels of the page. Defaults to an empty list.
  * @property labels A map of custom labels to be associated with the page view event. Blank values are ignored and not sent. Defaults to an empty map.
- *
+ * @property source The [CommandersActSource] of the page being viewed.
  * @throws IllegalArgumentException If [name] or [type] is blank.
  */
 class CommandersActPageView(
     val name: String,
     val type: String,
     val levels: List<String> = emptyList(),
-    val labels: Map<String, String> = emptyMap()
+    val labels: Map<String, String> = emptyMap(),
+    val source: CommandersActSource? = null,
 ) {
     init {
         require(name.isNotBlank()) { "Name can't be blank!" }
@@ -44,10 +45,16 @@ class CommandersActPageView(
         }
         tcEvent.pageName = name
         tcEvent.pageType = type
+
         for (i in levels.indices) {
             tcEvent.addAdditionalProperty(CommandersActLabels.NAVIGATION_LEVEL_I.label + (i + 1), levels[i])
         }
         tcEvent.addAdditionalProperty(CommandersActLabels.CONTENT_BU_OWNER.label, vendor.toString())
+        source?.let {
+            with(it) {
+                tcEvent.setCommandersActSource()
+            }
+        }
         return tcEvent
     }
 }

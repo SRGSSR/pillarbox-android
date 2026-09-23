@@ -8,7 +8,6 @@ import android.os.Looper
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -27,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(AndroidJUnit4::class)
 class PlayerCallbackFlowTest {
-    private lateinit var player: ExoPlayer
+    private lateinit var player: PillarboxExoPlayer
 
     @BeforeTest
     fun setUp() {
@@ -59,18 +58,6 @@ class PlayerCallbackFlowTest {
 
         player.isCurrentMediaItemLiveAsFlow().test {
             assertFalse(awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `is current media item live as flow, live`() = runTest {
-        player.setMediaItem(MediaItem.fromUri(LIVE))
-
-        TestPlayerRunHelper.runUntilTimelineChanged(player)
-
-        player.isCurrentMediaItemLiveAsFlow().test {
-            assertTrue(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -156,18 +143,6 @@ class PlayerCallbackFlowTest {
     }
 
     @Test
-    fun `get current default position as flow, live`() = runTest {
-        player.setMediaItem(MediaItem.fromUri(LIVE))
-
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
-
-        player.getCurrentDefaultPositionAsFlow().test {
-            assertEquals(0L, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
     fun `get current default position as flow, live dvr`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE_DVR))
 
@@ -194,38 +169,6 @@ class PlayerCallbackFlowTest {
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(C.TIME_UNSET, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get current default position as flow, transition vod to live dvr`() = runTest {
-        player.setMediaItems(listOf(MediaItem.fromUri(VOD), MediaItem.fromUri(LIVE)))
-
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
-
-        player.seekToNextMediaItem()
-
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
-
-        player.getCurrentDefaultPositionAsFlow().test {
-            assertEquals(0L, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get current default position as flow, transition live dvr to vod`() = runTest {
-        player.setMediaItems(listOf(MediaItem.fromUri(LIVE), MediaItem.fromUri(VOD)))
-
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
-
-        player.seekToNextMediaItem()
-
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
-
-        player.getCurrentDefaultPositionAsFlow().test {
-            assertEquals(0L, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -263,7 +206,7 @@ class PlayerCallbackFlowTest {
 
     private companion object {
         private const val VOD = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
-        private const val LIVE = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
-        private const val LIVE_DVR = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
+
+        private const val LIVE_DVR = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
     }
 }

@@ -9,6 +9,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.MediaSession
@@ -78,6 +79,7 @@ open class PillarboxMediaSession internal constructor() {
     class Builder(context: Context, player: PillarboxPlayer) {
         private val mediaSessionBuilder = MediaSession.Builder(context, player)
         private var callback: Callback = Callback.Default
+        private var bitmapLoader: BitmapLoader? = null
 
         /**
          * Sets a [PendingIntent] to launch an [Activity][android.app.Activity] for the [MediaSession].
@@ -111,9 +113,21 @@ open class PillarboxMediaSession internal constructor() {
          *
          * @param callback
          * @return this builder for convenience.
+         * @see MediaSession.Builder.setBitmapLoader
          */
         fun setCallback(callback: Callback): Builder {
             this.callback = callback
+            return this
+        }
+
+        /**
+         * Set bitmapLoader
+         *
+         * @param bitmapLoader The [BitmapLoader] to use.
+         * @return this builder for convenience.
+         */
+        fun setBitmapLoader(bitmapLoader: BitmapLoader): Builder {
+            this.bitmapLoader = bitmapLoader
             return this
         }
 
@@ -125,9 +139,12 @@ open class PillarboxMediaSession internal constructor() {
         fun build(): PillarboxMediaSession {
             val pillarboxMediaSession = PillarboxMediaSession()
             val media3SessionCallback = MediaSessionCallbackImpl(callback, pillarboxMediaSession)
-            val mediaSession = mediaSessionBuilder
-                .setCallback(media3SessionCallback)
-                .build()
+            val mediaSession = mediaSessionBuilder.apply {
+                setCallback(media3SessionCallback)
+                bitmapLoader?.let {
+                    setBitmapLoader(it)
+                }
+            }.build()
             pillarboxMediaSession.setMediaSession(mediaSession)
             return pillarboxMediaSession
         }

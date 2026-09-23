@@ -184,13 +184,13 @@ class PillarboxPreloadManager(
      */
     @Suppress("MagicNumber")
     inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int, PreloadStatus> {
-        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus? {
+        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus {
             val offset = abs(rankingData - currentPlayingIndex)
 
             return when (offset) {
                 1 -> PreloadStatus.specifiedRangeLoaded(1.seconds.inWholeMilliseconds)
                 2, 3 -> PreloadStatus.specifiedRangeLoaded(500.milliseconds.inWholeMilliseconds)
-                else -> null
+                else -> PreloadStatus.PRELOAD_STATUS_NOT_PRELOADED
             }
         }
     }

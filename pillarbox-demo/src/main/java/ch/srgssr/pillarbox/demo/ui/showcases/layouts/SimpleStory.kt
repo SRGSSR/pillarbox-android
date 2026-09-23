@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.C
@@ -24,8 +25,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 
 /**
  * A sample trying to reproduce story-like TikTok.
@@ -76,10 +76,10 @@ private fun SimpleStoryPlayer(demoItem: DemoItem, isPlaying: Boolean = false) {
             player.release()
         }
     }
-    PlayerSurface(
+    PlayerFrame(
         modifier = Modifier.fillMaxSize(),
         player = player,
-        scaleMode = ScaleMode.Crop
+        contentScale = ContentScale.FillHeight
     )
 
     LifecycleStartEffect(isPlaying) {

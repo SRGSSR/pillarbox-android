@@ -3,7 +3,7 @@
 # Overview
 
 [![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![Android min SDK](https://img.shields.io/badge/Android-24%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
+[![Android min SDK](https://img.shields.io/badge/Android-23%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
 [![Build status](https://img.shields.io/github/actions/workflow/status/SRGSSR/pillarbox-android/quality.yml?label=Build)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/quality.yml)
 [![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
@@ -71,7 +71,7 @@ repositories {
 #### Create a Personal access token
 
 1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
-2. Click on `Generate new token (classic)`.
+2. Click on `Generate new token`.
 3. Provide a note for the token, and change the expiration (if needed).
 4. Make sure that at least the `read:packages` scope is selected.
 5. Click on `Generate token`.
@@ -162,10 +162,27 @@ kotlin {
 To start using Pillarbox in your project, you can check each module's documentation:
 - [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 - [`pillarbox-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-cast/docs/README.md)
+- [`pillarbox-cast-receiver`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-cast-receiver/docs/README.md)
 - [`pillarbox-core-business`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business/docs/README.md)
 - [`pillarbox-core-business-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business-cast/docs/README.md)
 - [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
 - [`pillarbox-ui`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-ui/docs/README.md)
+
+## Release process
+
+Pillarbox is released via the CI pipeline hosted in [GitHub Actions](https://github.com/SRGSSR/pillarbox-android/actions). A release is triggered by pushing a tag in the format `X.Y.Z` (e.g. `2.1.0`).
+
+Pushing such a tag runs the [Release Pillarbox](https://github.com/SRGSSR/pillarbox-android/actions/workflows/release.yml) workflow, which:
+
+1. Runs pre-release checks
+2. Publishes packages
+3. Uploads the demo app to Firebase App Distribution
+4. Creates a GitHub Release
+5. Publishes the documentation
+
+Once the workflow completes, the Pillarbox team reviews the generated release notes and finalizes them.
+
+Past releases are available in the [release history](https://github.com/SRGSSR/pillarbox-android/releases).
 
 ## Contributing
 

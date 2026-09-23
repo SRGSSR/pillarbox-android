@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 /**
  * Pillarbox [Player] interface extension.
  */
-@Suppress("ComplexInterface")
+@Suppress("ComplexInterface", "TooManyFunctions")
 interface PillarboxPlayer : Player {
 
     /**
@@ -200,14 +200,39 @@ interface PillarboxPlayer : Player {
     fun setImageOutput(imageOutput: ImageOutput?)
 
     /**
-     * Adds a Pillarbox [Listener], which will be notified of events specific to Pillarbox in addition to the standard player events.
+     * Enabled scrubbing mode, the feature is only available
+     * if [androidx.media3.common.DeviceInfo.playbackType] is [androidx.media3.common.DeviceInfo.PLAYBACK_TYPE_LOCAL].
+     *
+     * @see androidx.media3.exoplayer.ExoPlayer.setScrubbingModeEnabled
+     * @see Player.getDeviceInfo
+     */
+    fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean)
+
+    /**
+     * Returns whether the player is optimized for scrubbing (many frequent seeks).
+     * @see androidx.media3.exoplayer.ExoPlayer.setScrubbingModeEnabled
+     */
+    fun isScrubbingModeEnabled(): Boolean
+
+    /**
+     * Register a [Listener] to the player.
+     * It also call [Player.addListener]
+     * @see [Player.addListener]
      */
     fun addListener(listener: Listener)
 
     /**
-     * Removes a [Listener] previously added with [addListener].
+     * Unregister a [Listener] from the player.
+     * It also call [Player.removeListener]
+     * @see [Player.removeListener]
      */
     fun removeListener(listener: Listener)
+
+    /**
+     * A player is considered as running as receiver when at least one remote sender is connected.
+     * @return if this player is running as a remote receiver.
+     */
+    fun isRemoteReceiver() = false
 
     companion object {
 
@@ -232,7 +257,7 @@ interface PillarboxPlayer : Player {
         const val EVENT_TRACKING_ENABLED_CHANGED = 103
 
         /**
-         * Event indicating that the [smooth seeking state][smoothSeekingEnabled] has changed.
+         * Event indicating that the [Pillarbox metadata][currentPillarboxMetadata] has changed.
          */
         const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = 104
 

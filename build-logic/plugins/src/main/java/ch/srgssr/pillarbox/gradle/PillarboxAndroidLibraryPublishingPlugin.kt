@@ -103,14 +103,11 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                             url.set("https://github.com/SRGSSR/pillarbox-android/actions")
                         }
 
-                        // TODO Simplify this once https://github.com/gradle/gradle/issues/28759 is released
-                        withXml {
-                            asNode().appendNode("distributionManagement").apply {
-                                appendNode("repository").apply {
-                                    appendNode("id", "github")
-                                    appendNode("name", "GitHub Packages")
-                                    appendNode("url", "https://maven.pkg.github.com/SRGSSR/pillarbox-android")
-                                }
+                        distributionManagement {
+                            repository {
+                                id.set("github")
+                                name.set("GitHub Packages")
+                                url.set("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
                             }
                         }
                     }
@@ -148,7 +145,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         }
 
         extensions.configure<DokkaExtension> {
-            dokkaSourceSets.getByName("main") {
+            dokkaSourceSets.findByName("main")?.apply{
                 includes.from("docs/README.md")
 
                 externalDocumentationLinks.register("kotlinx.coroutines") {

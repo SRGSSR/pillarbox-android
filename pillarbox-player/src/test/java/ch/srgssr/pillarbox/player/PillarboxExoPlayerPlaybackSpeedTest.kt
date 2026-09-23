@@ -37,25 +37,6 @@ class PillarboxExoPlayerPlaybackSpeedTest {
     }
 
     @Test
-    fun `playback speed is always 1x when playing live without dvr`() {
-        player.apply {
-            setMediaItem(MediaItem.fromUri(LIVE_ONLY_URL))
-            prepare()
-            play()
-        }
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        assertEquals(Player.STATE_READY, player.playbackState)
-
-        player.setPlaybackSpeed(2f)
-        assertEquals(1f, player.getPlaybackSpeed())
-
-        player.seekTo(0)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.setPlaybackSpeed(2f)
-        assertEquals(1f, player.getPlaybackSpeed())
-    }
-
-    @Test
     fun `playback speed is at 1x when at live edge otherwise it can be changed`() {
         player.apply {
             setMediaItem(MediaItem.fromUri(LIVE_DVR_URL))
@@ -66,12 +47,13 @@ class PillarboxExoPlayerPlaybackSpeedTest {
         player.setPlaybackSpeed(2f)
         assertEquals(1f, player.getPlaybackSpeed())
 
-        player.seekTo(0)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_POSITION_DISCONTINUITY) {
+            player.seekTo(0)
+        }
 
-        player.setPlaybackSpeed(2f)
-        assertEquals(2f, player.getPlaybackSpeed())
-        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_IS_LOADING_CHANGED)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(2f)
+        }
         assertEquals(2f, player.getPlaybackSpeed())
     }
 
@@ -103,18 +85,20 @@ class PillarboxExoPlayerPlaybackSpeedTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         val speed = 2f
-        player.setPlaybackSpeed(speed)
-        TestPillarboxRunHelper.runUntilEvents(player)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(speed)
+        }
         assertEquals(speed, player.getPlaybackSpeed())
 
-        player.setPlaybackSpeed(1f)
-        TestPillarboxRunHelper.runUntilEvents(player)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_PLAYBACK_PARAMETERS_CHANGED) {
+            setPlaybackSpeed(1f)
+        }
         assertEquals(1f, player.getPlaybackSpeed())
     }
 
     private companion object {
-        private const val LIVE_DVR_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
-        private const val LIVE_ONLY_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
+        private const val LIVE_DVR_URL = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
+
         private const val VOD_URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
     }
 }

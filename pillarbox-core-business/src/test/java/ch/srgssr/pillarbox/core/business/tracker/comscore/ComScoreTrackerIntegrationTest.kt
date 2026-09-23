@@ -27,6 +27,7 @@ import io.mockk.Called
 import io.mockk.MockKVerificationScope
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
+import io.mockk.excludeRecords
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
@@ -81,7 +82,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `player prepared and playing, changing media item`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -124,9 +125,20 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
+    fun `live video for radio show don't send any analytics`() {
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_RADIO))
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        verify { streamingAnalytics wasNot Called }
+    }
+
+    @Test
     @Ignore("SurfaceView/SurfaceHolder not implemented in Robolectric")
     fun `surface size changed`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -181,11 +193,12 @@ class ComScoreTrackerIntegrationTest {
     // region Live media
     @Test
     fun `live - player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation(atLeast = 0)
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -198,7 +211,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and playing`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -218,7 +231,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and paused`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -244,7 +257,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing, paused, playing again`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -276,7 +289,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and stopped`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -302,7 +315,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and seeking`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.playWhenReady = true
 
@@ -329,7 +342,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and seek`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.seekTo(3.minutes.inWholeMilliseconds)
 
@@ -348,7 +361,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO_TV))
         player.prepare()
         player.stop()
 
@@ -527,6 +540,66 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
+    fun `not live - player prepared, playing and reach EOF`() {
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO_SHORT))
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifyBufferEvents()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
+    fun `not live - player prepared, playing repeat one`() {
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO_SHORT))
+        player.prepare()
+        player.repeatMode = Player.REPEAT_MODE_ONE
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
+        player.repeatMode = Player.REPEAT_MODE_OFF
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        // We don't check buffers event because when repeating the current item, the buffering may not start.
+        excludeRecords {
+            streamingAnalytics.notifyBufferStart()
+            streamingAnalytics.notifyBufferStop()
+        }
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            // For some reason, notify play event are called twice
+            // 1 from onPositionDiscontinuityChanged during auto transition.
+            // 2 from onIsPlayingChanged
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
     fun `player prepared, playing and released`() {
         player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
@@ -673,8 +746,11 @@ class ComScoreTrackerIntegrationTest {
     // endregion
 
     private companion object {
-        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
-        private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
-        private const val URN_NOT_LIVE_VIDEO = "urn:rts:video:8806923"
+        private const val URL = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
+        private const val URN_LIVE_DVR_VIDEO_RADIO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO_RADIO
+        private const val URN_LIVE_DVR_VIDEO_TV = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO_TV
+        private const val URN_NOT_LIVE_VIDEO = LocalMediaCompositionWithFallbackService.URN_VOD
+
+        private const val URN_NOT_LIVE_VIDEO_SHORT = LocalMediaCompositionWithFallbackService.URN_VOD_SHORT
     }
 }

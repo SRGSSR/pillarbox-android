@@ -10,10 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PillarboxPlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 
 /**
- * Simple player integration with only using [PlayerSurface] without any controls or UI.
+ * Simple player integration with only using [PillarboxPlayerSurface] without any controls or UI.
  */
 @Composable
 fun SimpleLayoutShowcase() {
@@ -30,5 +31,5 @@ fun SimpleLayoutShowcase() {
             player.release()
         }
     }
-    PlayerSurface(player = player)
+    PillarboxPlayerSurface(player = player, surfaceType = SurfaceType.Surface)
 }

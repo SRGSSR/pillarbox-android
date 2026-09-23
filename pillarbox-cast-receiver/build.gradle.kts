@@ -5,9 +5,14 @@
 
 plugins {
     alias(libs.plugins.pillarbox.android.library)
-    // Uncomment when the module is ready for publishing
-    // alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+}
+
+android {
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -26,6 +31,7 @@ dependencies {
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testRuntimeOnly(libs.robolectric)

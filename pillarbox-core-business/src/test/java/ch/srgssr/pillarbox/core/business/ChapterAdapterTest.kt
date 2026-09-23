@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business
 
+import android.net.Uri
+import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
@@ -65,9 +67,11 @@ class ChapterAdapterTest {
             id = "urn",
             start = 10,
             end = 100,
-            title = "title",
-            description = "lead",
-            artworkUri = ImageScalingService().getScaledImageUrl("https://www.rts.ch/image.png"),
+            mediaMetadata = MediaMetadata.Builder()
+                .setTitle("title")
+                .setDescription("lead")
+                .setArtworkUri(Uri.parse(ImageScalingService().getScaledImageUrl("https://www.rts.ch/image.png")))
+                .build()
         )
         assertEquals(expected, ChapterAdapter.toChapter(chapter))
     }

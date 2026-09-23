@@ -62,6 +62,14 @@ internal open class MediaSessionCallbackImpl(
                 handleCommandEnableSmoothSeeking(player, Bundle.EMPTY)
             }
 
+            PillarboxSessionCommands.COMMAND_SET_SCRUBBING_MODE_ENABLED -> {
+                handleCommandEnableScrubbingMode(player, args)
+            }
+
+            PillarboxSessionCommands.COMMAND_GET_SCRUBBING_MODE_ENABLED -> {
+                handleCommandEnableScrubbingMode(player, Bundle.EMPTY)
+            }
+
             PillarboxSessionCommands.COMMAND_SET_TRACKER_ENABLED -> {
                 handleCommandEnableTracker(player, args)
             }
@@ -107,17 +115,18 @@ internal open class MediaSessionCallbackImpl(
         mediaSession.connectedControllersWithImageOutput.remove(controller)
     }
 
-    private fun handleCommandEnableSmoothSeeking(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
-        if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
-            player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
+    // TODO MBO refactor to merge handleCommandEnableScrubbingMode, handleCommandEnableTracker, handleCommandSeekParameters?
+    private fun handleCommandEnableScrubbingMode(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
+        if (args.containsKey(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED)) {
+            player.setScrubbingModeEnabled(args.getBoolean(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED))
         }
         return Futures.immediateFuture(
             SessionResult(
                 SessionResult.RESULT_SUCCESS,
                 Bundle().apply {
                     putBoolean(
-                        PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
-                        player.smoothSeekingEnabled
+                        PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED,
+                        player.isScrubbingModeEnabled()
                     )
                 }
             )
@@ -195,6 +204,23 @@ internal open class MediaSessionCallbackImpl(
                     putParcelable(
                         PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
                         metrics
+                    )
+                }
+            )
+        )
+    }
+
+    private fun handleCommandEnableSmoothSeeking(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
+        if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
+            player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
+        }
+        return Futures.immediateFuture(
+            SessionResult(
+                SessionResult.RESULT_SUCCESS,
+                Bundle().apply {
+                    putBoolean(
+                        PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
+                        player.smoothSeekingEnabled
                     )
                 }
             )

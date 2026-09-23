@@ -8,6 +8,7 @@ import com.android.build.api.dsl.LibraryExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.assign
@@ -25,14 +26,23 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
         rootProject.dependencies.add("kover", project(path))
 
         extensions.configure<LibraryExtension> {
-            defaultConfig {
-                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            }
-
             testOptions {
                 unitTests {
                     isIncludeAndroidResources = true
                     isReturnDefaultValues = true
+                }
+                unitTests.all {
+                    it.jvmArgs(
+                        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                        "--add-opens=java.base/java.util=ALL-UNNAMED",
+                        "--add-opens=java.base/java.io=ALL-UNNAMED",
+                        "--add-opens=java.base/java.net=ALL-UNNAMED",
+                        "--add-opens=java.base/java.security=ALL-UNNAMED",
+                        "--add-opens=java.base/java.text=ALL-UNNAMED",
+                        "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                        "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                        "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                    )
                 }
             }
         }
@@ -47,8 +57,11 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
             }
         }
 
+        tasks.withType<AbstractTestTask>().configureEach {
+            failOnNoDiscoveredTests = false
+        }
+
         tasks.withType<Test>().configureEach {
-            failOnNoDiscoveredTests = false // :pillarbox-ui does not contain any test yet
             testLogging.exceptionFormat = TestExceptionFormat.FULL
         }
     }

@@ -8,6 +8,7 @@ import androidx.media3.common.C.TRACK_TYPE_AUDIO
 import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.C.TRACK_TYPE_VIDEO
 import androidx.media3.common.Format
+import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.Tracks
 
 /**
@@ -39,6 +40,12 @@ sealed class Track(
      */
     val isSupported: Boolean
         get() = group.isTrackSupported(trackIndexInGroup)
+
+    /**
+     * The [TrackSelectionOverride] for this [Track].
+     */
+    val trackSelectionOverride: TrackSelectionOverride
+        get() = TrackSelectionOverride(group.mediaTrackGroup, trackIndexInGroup)
 
     companion object {
         /**

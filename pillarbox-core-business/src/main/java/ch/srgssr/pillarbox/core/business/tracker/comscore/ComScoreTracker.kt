@@ -4,19 +4,19 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.comscore
 
-import android.util.Log
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.Size
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.BuildConfig
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
+import java.lang.ref.WeakReference
 
 /**
  * A [MediaItemTracker] implementation for ComScore analytics.
@@ -38,32 +38,52 @@ class ComScoreTracker internal constructor(
     private lateinit var latestData: Data
 
     /**
-     * A surface is connected to the player when its [ExoPlayer.getSurfaceSize] is different from [Size.ZERO].
+     * A surface is connected to the player when its [PillarboxExoPlayer.getSurfaceSize] is different from [Size.ZERO].
      * When used with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN]. When not connected the size is [Size.ZERO].
      */
     private var isSurfaceConnected: Boolean = false
     private var isBuffering: Boolean = false
+    private lateinit var player: WeakReference<PillarboxExoPlayer>
+    private lateinit var data: Data
+
+    private var playbackSessionActive = false
+        set(value) {
+            if (value != field) {
+                if (field) {
+                    notifyEnd()
+                } else {
+                    createPlaybackSession()
+                }
+            }
+            field = value
+        }
 
     init {
         streamingAnalytics.setMediaPlayerName(MEDIA_PLAYER_NAME)
         streamingAnalytics.setMediaPlayerVersion(BuildConfig.VERSION_NAME)
     }
 
-    override fun start(player: ExoPlayer, data: Data) {
+    override fun start(player: PillarboxExoPlayer, data: Data) {
+        this.player = WeakReference<PillarboxExoPlayer>(player)
+        this.data = data
         isSurfaceConnected = player.surfaceSize != Size.ZERO
-        streamingAnalytics.createPlaybackSession()
-        setMetadata(data)
         handleStart(player)
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: PillarboxExoPlayer) {
         player.removeAnalyticsListener(component)
-        notifyEnd()
+        playbackSessionActive = false
+        isSurfaceConnected = false
+    }
+
+    private fun createPlaybackSession() {
+        DebugLogger.debug(TAG, "createPlaybackSession with $data")
+        streamingAnalytics.createPlaybackSession()
+        setMetadata(data)
     }
 
     private fun setMetadata(data: Data) {
-        DebugLogger.debug(TAG, "SetMetadata $data")
         val assets = ContentMetadata.Builder()
             .customLabels(data.assets)
             .build()
@@ -71,10 +91,11 @@ class ComScoreTracker internal constructor(
         latestData = data
     }
 
-    private fun handleStart(player: ExoPlayer) {
+    private fun handleStart(player: PillarboxExoPlayer) {
+        playbackSessionActive = true
         streamingAnalytics.notifyChangePlaybackRate(player.getPlaybackSpeed())
         when {
-            player.isPlaying -> {
+            player.isPlaying && !player.currentTimeline.isEmpty -> {
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 notifyPlay(player.currentPosition, window)
             }
@@ -84,15 +105,23 @@ class ComScoreTracker internal constructor(
     }
 
     private fun notifyPause() {
+        if (!playbackSessionActive) return
         DebugLogger.debug(TAG, "notifyPause")
         streamingAnalytics.notifyPause()
     }
 
     private fun notifyPlay(position: Long, window: Window) {
         if (!isSurfaceConnected) return
+        playbackSessionActive = true
         notifyPosition(position, window)
         DebugLogger.debug(TAG, "notifyPlay")
         streamingAnalytics.notifyPlay()
+    }
+
+    private fun notifyPlay(eventTime: AnalyticsListener.EventTime) {
+        if (eventTime.timeline.isEmpty) return
+        eventTime.timeline.getWindow(eventTime.windowIndex, window)
+        notifyPlay(eventTime.eventPlaybackPositionMs, window)
     }
 
     private fun notifyEnd() {
@@ -106,6 +135,7 @@ class ComScoreTracker internal constructor(
      * be bigger than 500ms. Otherwise our SDK will just ignore the notifyBufferStart.
      */
     private fun notifyBufferStart() {
+        playbackSessionActive = true
         DebugLogger.debug(TAG, "notifyBufferStart")
         streamingAnalytics.notifyBufferStart()
         isBuffering = true
@@ -163,6 +193,9 @@ class ComScoreTracker internal constructor(
             when (state) {
                 Player.STATE_BUFFERING -> notifyBufferStart()
                 Player.STATE_READY -> notifyBufferStop()
+                Player.STATE_ENDED -> {
+                    playbackSessionActive = false
+                }
             }
         }
 
@@ -172,12 +205,20 @@ class ComScoreTracker internal constructor(
             newPosition: Player.PositionInfo,
             reason: Int
         ) {
+            // Check position discontinuity only within the same MediaItem
+            if (!playbackSessionActive || oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
-                    if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
                     notifySeek()
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPosition(newPosition.positionMs, window)
+                }
+
+                Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {
+                    playbackSessionActive = false
+                    if (isSurfaceConnected && player.get()?.isPlaying == true) {
+                        notifyPlay(position = newPosition.positionMs, window)
+                    }
                 }
             }
         }
@@ -192,10 +233,8 @@ class ComScoreTracker internal constructor(
         }
 
         override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
-            val position = eventTime.eventPlaybackPositionMs
-            eventTime.timeline.getWindow(eventTime.windowIndex, window)
             if (isPlaying) {
-                notifyPlay(position, window)
+                notifyPlay(eventTime)
             } else {
                 if (!isBuffering) {
                     notifyPause()
@@ -206,12 +245,10 @@ class ComScoreTracker internal constructor(
         override fun onSurfaceSizeChanged(eventTime: AnalyticsListener.EventTime, width: Int, height: Int) {
             val isCurrentSurfaceConnected = Size(width, height) != Size.ZERO
             if (isCurrentSurfaceConnected != isSurfaceConnected) {
-                Log.d(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected")
+                DebugLogger.debug(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected ${player.get()?.isPlaying}")
                 isSurfaceConnected = isCurrentSurfaceConnected
-                if (isCurrentSurfaceConnected) {
-                    val position = eventTime.eventPlaybackPositionMs
-                    eventTime.timeline.getWindow(eventTime.windowIndex, window)
-                    notifyPlay(position, window)
+                if (isCurrentSurfaceConnected && player.get()?.isPlaying == true) {
+                    notifyPlay(eventTime)
                 } else {
                     notifyPause()
                 }

@@ -42,4 +42,5 @@ updates:
     ignore:
       - dependency-name: "com.comscore:*"
       - dependency-name: "com.google.guava:*" # Guava is updated together with AndroidX Media3
+      - dependency-name: "androidx.media3:*"
       - dependency-name: "com.tagcommander.lib:*"

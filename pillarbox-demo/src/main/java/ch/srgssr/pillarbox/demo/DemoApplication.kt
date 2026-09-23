@@ -57,6 +57,7 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
             vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "Pillarbox",
             appSiteName = "pillarbox-demo-android",
+            platformId = "pillarbox",
             sourceKey = SourceKey.DEVELOPMENT,
             userConsent = initialUserConsent
         )

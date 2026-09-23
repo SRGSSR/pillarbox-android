@@ -124,7 +124,7 @@ private open class PictureInPictureButtonStateBase(
         activity.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
     }
 
-    override var isInPictureInPicture by mutableStateOf(activity.isInPictureInPictureMode)
+    final override var isInPictureInPicture by mutableStateOf(activity.isInPictureInPictureMode)
         private set
 
     override fun onClick() {

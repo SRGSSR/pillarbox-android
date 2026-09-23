@@ -24,13 +24,22 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
-        pluginManager.apply("org.jetbrains.kotlin.android")
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+        pluginManager.apply("ch.srgssr.pillarbox.gradle.detekt")
 
         extensions.configure<ApplicationExtension> {
             configureAndroidLintModule(this)
             configureAndroidModule(this)
+
+            compileOptions {
+                targetCompatibility = AppConfig.javaVersion
+            }
+
             configureKotlinModule()
+
+            defaultConfig {
+                minSdk = AppConfig.appMinSdk
+            }
 
             compileOptions {
                 isCoreLibraryDesugaringEnabled = true
@@ -50,7 +59,10 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
             signingConfigs {
                 register("release") {
-                    val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
+
+                    val password = providers.environmentVariable("DEMO_KEY_PASSWORD")
+                        .orElse(providers.gradleProperty("pillarbox.keystore.password"))
+                        .orNull
 
                     storeFile = rootProject.projectDir.resolve("config/keystore/demo.keystore")
                     storePassword = password

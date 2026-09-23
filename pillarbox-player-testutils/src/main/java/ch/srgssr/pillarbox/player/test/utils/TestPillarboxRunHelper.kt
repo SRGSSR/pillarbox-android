@@ -34,10 +34,11 @@ object TestPillarboxRunHelper {
      *
      * @param player The [Player].
      * @param expectedEvents The expected [Player.Event]. If empty, waits until the first [Player.Listener.onEvents].
+     * @param action The action to call that will trigger [expectedEvents].
      * @throws TimeoutException If the [RobolectricUtil.DEFAULT_TIMEOUT_MS] is exceeded.
      */
     @Throws(TimeoutException::class)
-    fun runUntilEvents(player: Player, vararg expectedEvents: @Player.Event Int) {
+    fun runUntilEvents(player: Player, vararg expectedEvents: @Player.Event Int, action: Player.() -> Unit = {}) {
         verifyMainTestThread(player)
         if (player is ExoPlayer) {
             verifyPlaybackThreadIsAlive(player)
@@ -52,6 +53,7 @@ object TestPillarboxRunHelper {
             }
         }
         player.addListener(listener)
+        player.action()
         RobolectricUtil.runMainLooperUntil({ receivedCallback.get() || player.playerError != null }, 20_000, Clock.DEFAULT)
         player.removeListener(listener)
         if (player.playerError != null) {

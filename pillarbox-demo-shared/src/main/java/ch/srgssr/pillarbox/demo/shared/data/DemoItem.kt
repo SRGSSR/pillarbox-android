@@ -56,7 +56,6 @@ sealed class DemoItem(
         override fun toMediaItem(): MediaItem {
             return MediaItem.Builder()
                 .setUri(uri)
-                .setMediaId(uri)
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setTitle(title)

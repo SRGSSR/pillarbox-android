@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,18 +31,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.media3.common.Player
+import androidx.media3.ui.compose.state.rememberPresentationState
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 
 /**
  * Resizable player demo
@@ -75,7 +77,7 @@ fun ResizablePlayerShowcase() {
 }
 
 @Composable
-private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
+private fun AdaptivePlayer(player: PillarboxPlayer, modifier: Modifier = Modifier) {
     var resizeMode by remember { mutableStateOf(ScaleMode.Fit) }
     val (widthPercent, setWidthPercent) = remember { mutableFloatStateOf(1f) }
     val (heightPercent, setHeightPercent) = remember { mutableFloatStateOf(1f) }
@@ -84,18 +86,26 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
         val playerWidth by animateDpAsState(targetValue = this.maxWidth * widthPercent, label = "player_width")
         val playerHeight by animateDpAsState(targetValue = this.maxHeight * heightPercent, label = "player_height")
 
-        Box(
-            modifier = Modifier.size(width = playerWidth, height = playerHeight),
-            contentAlignment = Alignment.Center,
+        val presentationState = rememberPresentationState(player)
+        val contentScale = when (resizeMode) {
+            ScaleMode.Fit -> ContentScale.Fit
+            ScaleMode.Crop -> ContentScale.Crop
+            ScaleMode.Fill -> ContentScale.FillBounds
+        }
+        PlayerFrame(
+            player = player,
+            presentationState = presentationState,
+            modifier = Modifier
+                .size(width = playerWidth, height = playerHeight)
+                .background(color = Color.Black),
+            contentScale = contentScale,
         ) {
-            PlayerSurface(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black),
+            val interactionSource = remember { MutableInteractionSource() }
+            PlayerControls(
                 player = player,
-                displayDebugView = true,
-                contentAlignment = Alignment.Center,
-                scaleMode = resizeMode,
+                modifier = Modifier.fillMaxSize(),
+                interactionSource = interactionSource,
+                content = { }
             )
         }
 

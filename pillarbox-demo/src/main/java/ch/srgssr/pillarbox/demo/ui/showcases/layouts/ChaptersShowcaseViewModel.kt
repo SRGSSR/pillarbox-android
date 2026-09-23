@@ -9,7 +9,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.currentPillarboxMetadataAsFlow
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
@@ -27,7 +26,8 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Player
      */
-    val player: PillarboxPlayer = PillarboxExoPlayer(application)
+
+    val player = PillarboxExoPlayer(application)
 
     /**
      * The media to play.

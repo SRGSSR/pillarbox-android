@@ -52,25 +52,6 @@ class JsonTimeRangesTest {
     }
 
     @Test
-    fun `encode chapter`() {
-        val chapter = Chapter(id = "id:1", start = 1000, end = 2000, title = "title", description = null, artworkUri = "https://image.png")
-        val chapterJson = json.encodeToString(chapter)
-        val expectedChapterJson = """{"id":"id:1","start":1000,"end":2000,"title":"title","artworkUri":"https://image.png"}"""
-        assertEquals(expectedChapterJson, chapterJson)
-    }
-
-    @Test
-    fun `encode decode chapter`() {
-        val chapters = listOf(
-            Chapter(id = "id:1", start = 1000, end = 2000, title = "title 1", description = null, artworkUri = null),
-            Chapter(id = "id:2", start = 2000, end = 3000, title = "title 2", description = "The description", artworkUri = null),
-            Chapter(id = "id:3", start = 4000, end = 10000, title = "title 3", description = null, artworkUri = "https://image.png"),
-            Chapter(id = "id:4", start = 4000, end = 10000, title = "title 4", description = "The description", artworkUri = "https://image.png"),
-        )
-        assertEquals(chapters, json.decodeFromString(json.encodeToString(chapters)))
-    }
-
-    @Test
     fun `encode decode list block segment`() {
         val blockedTimeRanges = listOf(
             BlockedTimeRange(id = "id01", start = 1000, end = 2000, reason = "reason"),

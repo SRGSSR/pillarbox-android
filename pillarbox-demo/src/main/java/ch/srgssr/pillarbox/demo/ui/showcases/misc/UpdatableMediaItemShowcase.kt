@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 
 /**
  * Updatable media item view
@@ -25,7 +25,7 @@ fun UpdatableMediaItemShowcase() {
     val updatableMediaItemViewModel: UpdatableMediaItemViewModel = viewModel()
     val player = updatableMediaItemViewModel.player
     val currentItem by player.currentMediaMetadataAsState()
-    PlayerSurface(player = player) {
+    PlayerFrame(player = player) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             Text(
                 color = Color.Green,

@@ -15,9 +15,9 @@ import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.ImageProgressTrackerState
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -29,20 +29,19 @@ import kotlinx.coroutines.CoroutineScope
  */
 @Composable
 fun rememberProgressTrackerState(
-    player: Player,
+    player: PillarboxPlayer,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    imageOutput: ImageOutput = ImageOutput.NO_OP,
+    imageOutput: ImageOutput? = null,
 ): ProgressTrackerState {
     val context = LocalContext.current
     val appSettingsRepository = remember { AppSettingsRepository(context) }
     val appSettings by appSettingsRepository.getAppSettings().collectAsState(AppSettings())
     val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
 
-    return remember(player, smoothSeekingEnabled) {
-        if (smoothSeekingEnabled && player is PillarboxPlayer) {
-            SmoothProgressTrackerState(player, coroutineScope, imageOutput)
-        } else {
-            SimpleProgressTrackerState(player, coroutineScope)
-        }
+    // TODO MBO double check no use of ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
+    return remember(player, smoothSeekingEnabled, imageOutput) {
+        imageOutput?.let {
+            ImageProgressTrackerState(player, coroutineScope, imageOutput)
+        } ?: SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = smoothSeekingEnabled)
     }
 }

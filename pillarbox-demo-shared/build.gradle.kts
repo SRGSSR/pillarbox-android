@@ -36,7 +36,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.core.ktx)
     api(libs.androidx.datastore.core)
     api(libs.androidx.datastore.preferences)
     api(libs.androidx.datastore.preferences.core)
@@ -57,6 +56,7 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    testImplementation(libs.junit)
+    testCompileOnly(libs.junit)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
 }

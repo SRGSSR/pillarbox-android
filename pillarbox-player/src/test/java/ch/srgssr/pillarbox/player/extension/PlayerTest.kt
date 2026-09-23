@@ -8,20 +8,34 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.mockk.clearAllMocks
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import org.junit.Rule
 import org.junit.runner.RunWith
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class PlayerTest {
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
+    @MockK
+    lateinit var player: Player
+
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
+    }
+
     @Test
     fun `getCurrentMediaItems without any items`() {
-        val player = mockk<Player> {
-            every { mediaItemCount } returns 0
-        }
-
+        every { player.mediaItemCount } returns 0
         assertEquals(0, player.getCurrentMediaItems().size)
     }
 
@@ -33,7 +47,7 @@ class PlayerTest {
                 add(mockk<MediaItem>())
             }
         }
-        val player = mockk<Player> {
+        player.apply {
             every { mediaItemCount } returns mediaItemsCount
             every { getMediaItemAt(any()) } answers { mediaItems[invocation.args[0] as Int] }
         }
@@ -43,7 +57,7 @@ class PlayerTest {
 
     @Test
     fun getPlaybackSpeed() {
-        val player = mockk<Player> {
+        player.apply {
             every { playbackParameters } returns PlaybackParameters(5f)
         }
 
@@ -52,7 +66,7 @@ class PlayerTest {
 
     @Test
     fun `currentPositionPercentage with negative duration`() {
-        val player = mockk<Player> {
+        player.apply {
             every { currentPosition } returnsMany listOf(-5L, 0L, 5L)
             every { duration } returns -4L
         }
@@ -64,7 +78,7 @@ class PlayerTest {
 
     @Test
     fun `currentPositionPercentage with duration equals to 0`() {
-        val player = mockk<Player> {
+        player.apply {
             every { currentPosition } returnsMany listOf(-5L, 0L, 5L)
             every { duration } returns 0L
         }
@@ -76,7 +90,7 @@ class PlayerTest {
 
     @Test
     fun `currentPositionPercentage with positive duration`() {
-        val player = mockk<Player> {
+        player.apply {
             every { currentPosition } returnsMany listOf(-5L, 0L, 5L)
             every { duration } returns 4L
         }

@@ -22,6 +22,7 @@ fun PillarboxExoPlayer(context: Context = ApplicationProvider.getApplicationCont
         loadControl(PillarboxTestLoadControl())
         clock(FakeClock(true))
         coroutineContext(EmptyCoroutineContext)
+        playerStuckDetectionTimeouts(PlayerStuckDetectionTimeouts.DisabledForTest)
         block()
     }
 }

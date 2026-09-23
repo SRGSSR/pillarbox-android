@@ -95,7 +95,7 @@ class IsPlayingAllTypeOfContentTest {
                 ContentUrls.LIVE_HLS,
                 ContentUrls.LIVE_DVR_HLS,
                 ContentUrls.AUDIO_LIVE_DVR_HLS,
-                ContentUrls.AUDIO_LIVE_MP3
+                //ContentUrls.AUDIO_LIVE_MP3 sometime redirect to an http url
             )
         }
     }

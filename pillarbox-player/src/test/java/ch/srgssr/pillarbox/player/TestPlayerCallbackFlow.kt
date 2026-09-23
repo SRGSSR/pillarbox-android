@@ -5,16 +5,12 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
-import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.Timeline
-import androidx.media3.common.TrackGroup
-import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -388,234 +384,13 @@ class TestPlayerCallbackFlow {
     }
 
     @Test
-    fun `get aspect ratio as flow, empty tracks`() = runTest {
+    fun `get aspect ratio as flow`() = runTest {
         val fakePlayer = PlayerListenerCommander(player)
 
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(Tracks.EMPTY)
-
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, video tracks`() = runTest {
-        val videoTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createVideoFormat("v1", width = 800, height = 600),
-                    createVideoFormat("v2", width = 1440, height = 900),
-                    createVideoFormat("v3", width = 1920, height = 1080),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(videoTracks)
-
-            assertEquals(0f, awaitItem())
-            assertEquals(8 / 5f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, video tracks no video size`() = runTest {
-        val videoTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createVideoFormat("v1", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v2", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v3", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(videoTracks)
-
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, video tracks no video size, has video size`() = runTest {
-        val videoTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createVideoFormat("v1", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v2", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v3", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onVideoSizeChanged(VideoSize(1920, 1080))
-            fakePlayer.onTracksChanged(videoTracks)
-
-            assertEquals(0f, awaitItem())
+        fakePlayer.getAspectRatioAsFlow(16 / 9f).test {
             assertEquals(16 / 9f, awaitItem())
+            fakePlayer.onVideoSizeChanged(VideoSize(1920, 1080, 1f))
             ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, video tracks no video size, no video size`() = runTest {
-        val videoTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createVideoFormat("v1", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v2", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                    createVideoFormat("v3", width = Format.NO_VALUE, height = Format.NO_VALUE),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(videoTracks)
-
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, video tracks without selection`() = runTest {
-        val videoTracksWithoutSelection = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = -1,
-                    createVideoFormat("v1", width = 800, height = 600),
-                    createVideoFormat("v2", width = 1440, height = 900),
-                    createVideoFormat("v3", width = 1920, height = 1080),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(videoTracksWithoutSelection)
-
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, audio tracks`() = runTest {
-        val audioTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createAudioFormat("v1"),
-                    createAudioFormat("v2"),
-                    createAudioFormat("v3"),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(audioTracks)
-
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `get aspect ratio as flow, changing tracks`() = runTest {
-        val videoTracksWithoutSelection = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createVideoFormat("v1", width = 800, height = 600),
-                    createVideoFormat("v2", width = 1440, height = 900),
-                    createVideoFormat("v3", width = 1920, height = 1080),
-                )
-            )
-        )
-        val audioTracks = Tracks(
-            listOf(
-                createTrackGroup(
-                    selectedIndex = 1,
-                    createAudioFormat("v1"),
-                    createAudioFormat("v2"),
-                    createAudioFormat("v3"),
-                )
-            )
-        )
-
-        val fakePlayer = PlayerListenerCommander(player)
-
-        fakePlayer.getAspectRatioAsFlow(0f).test {
-            fakePlayer.onTracksChanged(videoTracksWithoutSelection)
-            fakePlayer.onTracksChanged(audioTracks)
-
-            assertEquals(0f, awaitItem())
-            assertEquals(8 / 5f, awaitItem())
-            assertEquals(0f, awaitItem())
-            ensureAllEventsConsumed()
-        }
-    }
-
-    private companion object {
-        private const val AUDIO_MIME_TYPE = MimeTypes.AUDIO_MP4
-        private const val VIDEO_MIME_TYPE = MimeTypes.VIDEO_H265
-
-        private fun createAudioFormat(label: String): Format {
-            return Format.Builder()
-                .setId("id:$label")
-                .setLabel(label)
-                .setLanguage("fr")
-                .setContainerMimeType(AUDIO_MIME_TYPE)
-                .build()
-        }
-
-        private fun createVideoFormat(
-            label: String,
-            width: Int,
-            height: Int,
-        ): Format {
-            return Format.Builder()
-                .setId("id:$label")
-                .setLabel(label)
-                .setLanguage("fr")
-                .setWidth(width)
-                .setHeight(height)
-                .setContainerMimeType(VIDEO_MIME_TYPE)
-                .build()
-        }
-
-        private fun createTrackGroup(
-            selectedIndex: Int,
-            vararg formats: Format,
-        ): Tracks.Group {
-            val trackGroup = TrackGroup(*formats)
-            val trackSupport = IntArray(formats.size) {
-                C.FORMAT_HANDLED
-            }
-            val selected = BooleanArray(formats.size) { index ->
-                index == selectedIndex
-            }
-            return Tracks.Group(trackGroup, false, trackSupport, selected)
         }
     }
 }

@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.gradle
 
+import ch.srgssr.pillarbox.gradle.internal.AppConfig
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import com.android.build.api.dsl.LibraryExtension
@@ -18,11 +19,12 @@ class PillarboxAndroidLibraryPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("com.autonomousapps.dependency-analysis")
-        pluginManager.apply("org.jetbrains.kotlin.android")
+        pluginManager.apply("ch.srgssr.pillarbox.gradle.detekt")
 
         extensions.configure<LibraryExtension> {
             configureAndroidModule(this)
             defaultConfig {
+                minSdk = AppConfig.libraryMinSdk
                 consumerProguardFiles("consumer-rules.pro")
             }
 

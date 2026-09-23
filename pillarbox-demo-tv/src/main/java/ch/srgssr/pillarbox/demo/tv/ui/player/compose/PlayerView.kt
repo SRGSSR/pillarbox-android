@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.LocalContentColor
@@ -79,11 +78,11 @@ import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.state.rememberCreditState
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
@@ -183,7 +182,7 @@ fun PlayerView(
                 onRetry = player::prepare,
             )
         } else {
-            PlayerSurface(
+            PlayerFrame(
                 player = player,
                 modifier = Modifier
                     .fillMaxSize()
@@ -211,7 +210,7 @@ fun PlayerView(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                val currentCredit by player.getCurrentCreditAsState()
+                val creditState = rememberCreditState(player)
 
                 if (metricsOverlayEnabled && player.isMetricsAvailable) {
                     val currentMetricsFlow = remember(player) {
@@ -235,12 +234,12 @@ fun PlayerView(
                     controlsVisible = controlsVisibilityState.visible,
                 )
 
-                if (!controlsVisibilityState.visible && currentCredit != null) {
+                if (!controlsVisibilityState.visible && creditState.isInCredit) {
                     SkipButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(MaterialTheme.paddings.baseline),
-                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                        onClick = creditState::onClick,
                     )
                 }
 
@@ -270,7 +269,7 @@ fun PlayerView(
 
                             PlayerToolbar(
                                 player = player,
-                                currentCredit = currentCredit,
+                                currentCredit = creditState.currentCredit,
                                 modifier = Modifier.fillMaxWidth(),
                                 onSettingsClick = {
                                     drawerMode = DrawerMode.SETTINGS
@@ -329,7 +328,7 @@ private fun ChapterInfo(
 
 @Composable
 private fun PlayerTimeRow(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     onProgressChange: () -> Unit,

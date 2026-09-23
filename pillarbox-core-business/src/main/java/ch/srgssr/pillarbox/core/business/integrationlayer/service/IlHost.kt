@@ -12,20 +12,34 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.service
 enum class IlHost(val baseHostUrl: String) {
 
     /**
-     * The base URL for the production environment.
+     * The base URL for the integration layer production environment.
      */
     PROD(baseHostUrl = "https://il.srgssr.ch"),
 
     /**
-     * The base URL for the test environment.
+     * The base URL for the integration layer test environment.
      */
     TEST(baseHostUrl = "https://il-test.srgssr.ch"),
 
     /**
-     * The base URL for the stage environment.
+     * The base URL for the integration layer stage environment.
      */
     STAGE(baseHostUrl = "https://il-stage.srgssr.ch"),
 
+    /**
+     * The base URL for the PlayPlus production environment.
+     */
+    PLAY_PLUS_PRODUCTION(baseHostUrl = "https://api.playplus.ch"),
+
+    /**
+     * The base URL for the PlayPlus integration environment.
+     */
+    PLAY_PLUS_INTEGRATION(baseHostUrl = "https://api.int.playplus.ch"),
+
+    /**
+     * The base URL for the PlayPlus development environment.
+     */
+    PLAY_PLUS_DEVELOPMENT(baseHostUrl = "https://api.dev.playplus.ch"),
     ;
 
     companion object {

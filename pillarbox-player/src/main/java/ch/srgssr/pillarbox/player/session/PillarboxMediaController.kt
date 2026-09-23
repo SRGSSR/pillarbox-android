@@ -327,14 +327,17 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
     }
 
-    override fun addListener(listener: PillarboxPlayer.Listener) {
-        mediaController.addListener(listener)
-        listeners.add(listener)
+    override fun isScrubbingModeEnabled(): Boolean {
+        return sendCustomCommandBlocking(
+            PillarboxSessionCommands.COMMAND_GET_SCRUBBING_MODE_ENABLED
+        ).extras.getBoolean(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED)
     }
 
-    override fun removeListener(listener: PillarboxPlayer.Listener) {
-        mediaController.removeListener(listener)
-        listeners.remove(listener)
+    override fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean) {
+        sendCustomCommandBlocking(
+            PillarboxSessionCommands.COMMAND_SET_SCRUBBING_MODE_ENABLED,
+            Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED, scrubbingModeEnabled) }
+        )
     }
 
     internal fun setMediaController(mediaController: MediaController) {
@@ -450,6 +453,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override fun getApplicationLooper(): Looper {
         return mediaController.applicationLooper
+    }
+
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        mediaController.addListener(listener)
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        mediaController.addListener(listener)
+        listeners.add(listener)
     }
 
     override fun addListener(listener: Player.Listener) {
@@ -852,6 +865,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @FloatRange(from = 0.0, to = 1.0)
     override fun getVolume(): Float {
         return mediaController.getVolume()
+    }
+
+    override fun mute() {
+        mediaController.mute()
+    }
+
+    override fun unmute() {
+        mediaController.unmute()
     }
 
     override fun clearVideoSurface() {

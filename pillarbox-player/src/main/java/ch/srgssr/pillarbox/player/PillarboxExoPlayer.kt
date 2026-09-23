@@ -17,12 +17,12 @@ import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
+import ch.srgssr.pillarbox.player.analytics.getWindowUid
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
@@ -107,11 +107,11 @@ class PillarboxExoPlayer internal constructor(
                 }
             }
         }
+
     private var pendingSeek: Long? = null
     private var isSeeking: Boolean = false
 
     override val isMetricsAvailable: Boolean = true
-
     override val isSeekParametersAvailable: Boolean = true
 
     override val isImageOutputAvailable: Boolean = true
@@ -130,16 +130,18 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyTimeRangeChanged)
-    private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyTimeRangeChanged)
+    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyBlockedTimeRangeChanged)
+    private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyChapterChanged, this::notifyCreditChanged)
+
+    private var remoteReceiver = false
 
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
             if (value != field) {
-                field = value
                 listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
                     listener.onPillarboxMetadataChanged(value)
                 }
+                field = value
             }
         }
 
@@ -151,6 +153,10 @@ class PillarboxExoPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
+    }
+
+    override fun getAudioSessionId(): Int {
+        return exoPlayer.audioSessionId
     }
 
     override fun getAnalyticsCollector(): PillarboxAnalyticsCollector {
@@ -174,8 +180,7 @@ class PillarboxExoPlayer internal constructor(
     fun getMetricsFor(index: Int): PlaybackMetrics? {
         if (currentTimeline.isEmpty) return null
         currentTimeline.getWindow(index, window)
-        val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
-        return analyticsCollector.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+        return analyticsCollector.sessionManager.getSessionFromWindowUid(window.getWindowUid())?.let {
             analyticsCollector.metricsCollector.getMetricsForSession(it)
         }
     }
@@ -187,90 +192,11 @@ class PillarboxExoPlayer internal constructor(
 
     override fun removeListener(listener: PillarboxPlayer.Listener) {
         exoPlayer.removeListener(listener)
-        listeners.add(listener)
+        listeners.remove(listener)
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
-        clearSeeking()
         exoPlayer.seekTo(timeRange.end + 1)
-    }
-
-    override fun seekTo(positionMs: Long) {
-        if (!smoothSeekingEnabled) {
-            exoPlayer.seekTo(positionMs)
-            return
-        }
-        smoothSeekTo(positionMs)
-    }
-
-    private fun smoothSeekTo(positionMs: Long) {
-        if (isSeeking) {
-            pendingSeek = positionMs
-            return
-        }
-        isSeeking = true
-        exoPlayer.seekTo(positionMs)
-    }
-
-    override fun seekTo(mediaItemIndex: Int, positionMs: Long) {
-        if (!smoothSeekingEnabled) {
-            exoPlayer.seekTo(mediaItemIndex, positionMs)
-            return
-        }
-        smoothSeekTo(mediaItemIndex, positionMs)
-    }
-
-    private fun smoothSeekTo(mediaItemIndex: Int, positionMs: Long) {
-        if (mediaItemIndex != currentMediaItemIndex) {
-            clearSeeking()
-            exoPlayer.seekTo(mediaItemIndex, positionMs)
-            return
-        }
-        if (isSeeking) {
-            pendingSeek = positionMs
-            return
-        }
-        exoPlayer.seekTo(mediaItemIndex, positionMs)
-    }
-
-    override fun seekToDefaultPosition() {
-        clearSeeking()
-        exoPlayer.seekToDefaultPosition()
-    }
-
-    override fun seekToDefaultPosition(mediaItemIndex: Int) {
-        clearSeeking()
-        exoPlayer.seekToDefaultPosition(mediaItemIndex)
-    }
-
-    override fun seekBack() {
-        clearSeeking()
-        exoPlayer.seekBack()
-    }
-
-    override fun seekForward() {
-        clearSeeking()
-        exoPlayer.seekForward()
-    }
-
-    override fun seekToNext() {
-        clearSeeking()
-        exoPlayer.seekToNext()
-    }
-
-    override fun seekToPrevious() {
-        clearSeeking()
-        exoPlayer.seekToPrevious()
-    }
-
-    override fun seekToNextMediaItem() {
-        clearSeeking()
-        exoPlayer.seekToNextMediaItem()
-    }
-
-    override fun seekToPreviousMediaItem() {
-        clearSeeking()
-        exoPlayer.seekToPreviousMediaItem()
     }
 
     /**
@@ -280,7 +206,6 @@ class PillarboxExoPlayer internal constructor(
      * Release call automatically [stop] if the player is not in [Player.STATE_IDLE].
      */
     override fun release() {
-        clearSeeking()
         exoPlayer.release()
         listeners.release()
         mediaMetadataTracker.release()
@@ -295,22 +220,22 @@ class PillarboxExoPlayer internal constructor(
         return currentTracks.getMediaItemTrackerDataOrNull()
     }
 
-    private fun notifyTimeRangeChanged(timeRange: TimeRange?) {
-        when (timeRange) {
-            is Chapter? -> listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
-                listener.onChapterChanged(timeRange)
-            }
+    private fun notifyBlockedTimeRangeChanged(blockedTimeRange: BlockedTimeRange) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
+            listener.onBlockedTimeRangeReached(blockedTimeRange)
+        }
+        handleBlockedTimeRange(blockedTimeRange)
+    }
 
-            is Credit? -> listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
-                listener.onCreditChanged(timeRange)
-            }
+    private fun notifyChapterChanged(chapter: Chapter?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+            listener.onChapterChanged(chapter)
+        }
+    }
 
-            is BlockedTimeRange -> {
-                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
-                    listener.onBlockedTimeRangeReached(timeRange)
-                }
-                handleBlockedTimeRange(timeRange)
-            }
+    private fun notifyCreditChanged(credit: Credit?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+            listener.onCreditChanged(credit)
         }
     }
 
@@ -341,6 +266,18 @@ class PillarboxExoPlayer internal constructor(
     private fun clearSeeking() {
         isSeeking = false
         pendingSeek = null
+    }
+
+    override fun isRemoteReceiver(): Boolean {
+        return remoteReceiver
+    }
+
+    /**
+     * Set this player is working as a remote receiver.
+     * Should only be called by a cast receiver and never be call manually.
+     */
+    fun setRemoteReceiver(isRemoteReceiver: Boolean) {
+        remoteReceiver = isRemoteReceiver
     }
 
     private inner class ComponentListener : Player.Listener {
@@ -384,7 +321,6 @@ class PillarboxExoPlayer internal constructor(
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            clearSeeking()
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
                 setPlaybackSpeed(NormalSpeed)
                 seekToDefaultPosition()

@@ -13,6 +13,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 internal object PillarboxSessionCommands {
     const val ARG_SMOOTH_SEEKING = "pillarbox.smoothSeekingEnabled"
+    const val ARG_SCRUBBING_MODE_ENABLED = "pillarbox.scrubbingEnabled"
     const val ARG_TRACKER_ENABLED = "pillarbox.trackerEnabled"
     const val ARG_CHAPTER = "pillarbox.chapter"
     const val ARG_BLOCKED = "pillarbox.blocked"
@@ -40,6 +41,8 @@ internal object PillarboxSessionCommands {
     val COMMAND_SET_TRACKER_ENABLED = SessionCommand("pillarbox.setTrackingEnabled", Bundle.EMPTY)
     val COMMAND_GET_SEEK_PARAMETERS = SessionCommand("pillarbox.getSeekParameters", Bundle.EMPTY)
     val COMMAND_SET_SEEK_PARAMETERS = SessionCommand("pillarbox.setSeekParameters", Bundle.EMPTY)
+    val COMMAND_GET_SCRUBBING_MODE_ENABLED = SessionCommand("pillarbox.getScrubbingEnabled", Bundle.EMPTY)
+    val COMMAND_SET_SCRUBBING_MODE_ENABLED = SessionCommand("pillarbox.setScrubbingEnabled", Bundle.EMPTY)
     val COMMAND_ENABLE_IMAGE_OUTPUT = SessionCommand("pillarbox.enableImageOutput", Bundle.EMPTY)
 
     val AVAILABLE_COMMANDS = listOf(
@@ -47,6 +50,8 @@ internal object PillarboxSessionCommands {
         COMMAND_GET_TRACKER_ENABLED,
         COMMAND_SET_SMOOTH_SEEKING_ENABLED,
         COMMAND_GET_SMOOTH_SEEKING_ENABLED,
+        COMMAND_SET_SCRUBBING_MODE_ENABLED,
+        COMMAND_GET_SCRUBBING_MODE_ENABLED,
         COMMAND_GET_CURRENT_PILLARBOX_METADATA,
         COMMAND_CHAPTER_CHANGED,
         COMMAND_CREDIT_CHANGED,

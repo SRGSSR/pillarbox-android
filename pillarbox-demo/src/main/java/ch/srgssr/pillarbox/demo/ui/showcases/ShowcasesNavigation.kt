@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail.ThumbnailView
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.AudioVideoSwitchShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ContentNotYetAvailable
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
@@ -86,6 +87,10 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
 
     composable<NavigationRoutes.CastShowcase>(DemoPageView("GoogleCastSample", Levels)) {
         CastShowcase()
+    }
+
+    composable<NavigationRoutes.AudioVideoSwitchShowcase>(DemoPageView("VideoAudioSwitchLiveSample", Levels)) {
+        AudioVideoSwitchShowcase()
     }
 }
 

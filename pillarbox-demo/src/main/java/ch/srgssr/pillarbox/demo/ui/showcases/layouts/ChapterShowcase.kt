@@ -54,7 +54,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
@@ -214,11 +216,15 @@ private fun ChapterItemPreview() {
                 id = "i1",
                 start = 5.minutes.inWholeMilliseconds,
                 end = 12.minutes.inWholeMilliseconds,
-                title = "Title2",
-                artworkUri = """
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle("Title2")
+                    .setArtworkUri(
+                        """
                         https://cdn.prod.swi-services.ch/video-delivery/images/
                         14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9
-                """.trimIndent(),
+                        """.trimIndent().toUri()
+                    )
+                    .build()
             ),
             active = false,
             demoItem = SamplesSRG.OnDemandHorizontalVideo,

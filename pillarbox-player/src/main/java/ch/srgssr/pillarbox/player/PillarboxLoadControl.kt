@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 class PillarboxLoadControl(
     bufferDurations: BufferDurations = DEFAULT_BUFFER_DURATIONS,
-    private val allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+    allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
 ) : LoadControl {
 
     private val defaultLoadControl: DefaultLoadControl = DefaultLoadControl.Builder()
@@ -62,8 +62,8 @@ class PillarboxLoadControl(
         defaultLoadControl.onReleased(playerId)
     }
 
-    override fun getAllocator(): Allocator {
-        return allocator
+    override fun getAllocator(playerId: PlayerId): Allocator {
+        return defaultLoadControl.getAllocator(playerId)
     }
 
     override fun getBackBufferDurationUs(playerId: PlayerId): Long {
@@ -79,11 +79,12 @@ class PillarboxLoadControl(
     }
 
     override fun shouldContinuePreloading(
+        playerId: PlayerId,
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
-        bufferedDurationUs: Long,
+        bufferedDurationUs: Long
     ): Boolean {
-        return defaultLoadControl.shouldContinuePreloading(timeline, mediaPeriodId, bufferedDurationUs)
+        return defaultLoadControl.shouldContinuePreloading(playerId, timeline, mediaPeriodId, bufferedDurationUs)
     }
 
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {
@@ -107,11 +108,12 @@ class PillarboxLoadControl(
     )
 
     private companion object {
-        private const val BACK_BUFFER_DURATION_MS = 4_000
+        private const val BACK_BUFFER_DURATION_MS = 1_000
         private val DEFAULT_BUFFER_DURATIONS = BufferDurations(
-            bufferForPlayback = 500.milliseconds,
-            bufferForPlaybackAfterRebuffer = 1.seconds,
-            minBufferDuration = 1.seconds,
+            bufferForPlayback = Duration.ZERO,
+            bufferForPlaybackAfterRebuffer = Duration.ZERO,
+            minBufferDuration = 10.seconds,
+            maxBufferDuration = 60.seconds,
         )
     }
 }

@@ -71,4 +71,30 @@ class CommandersActEventTest {
         assertNull(tcEvent.pageName)
         assertNull(tcEvent.pageType)
     }
+
+    @Test
+    fun `convert event with some blank labels and source to TCCustomEvent`() {
+        val event = CommandersActEvent(
+            name = "name",
+            labels = mapOf(
+                "event_value_3" to "",
+                "event_source" to " ",
+                "event_value" to "value",
+                "event_type" to "type",
+            ),
+            source = CommandersActSource(pageId = "page_id_value", sectionId = "section_id_value")
+        )
+        val tcEvent = event.toTCCustomEvent()
+        val expectedProperties = mapOf(
+            "event_value" to "value",
+            "event_type" to "type",
+            "page_id" to "page_id_value",
+            "section_id" to "section_id_value"
+        )
+
+        assertEquals<Map<String, Any>>(expectedProperties, tcEvent.additionalProperties)
+        assertEquals(event.name, tcEvent.name)
+        assertNull(tcEvent.pageName)
+        assertNull(tcEvent.pageType)
+    }
 }

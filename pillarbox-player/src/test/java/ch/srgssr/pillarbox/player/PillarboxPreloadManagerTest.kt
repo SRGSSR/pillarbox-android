@@ -82,7 +82,7 @@ class PillarboxPreloadManagerTest {
     }
 
     private companion object {
-        private val VOD1 = MediaItem.fromUri("urn:rts:video:13444390")
+        private val VOD1 = MediaItem.fromUri("urn:rts:video:13950405")
         private val VOD2 = MediaItem.fromUri("urn:rts:video:13444333")
         private val VOD3 = MediaItem.fromUri("urn:rts:video:13444466")
         private val VOD4 = MediaItem.fromUri("urn:rts:video:13444447")

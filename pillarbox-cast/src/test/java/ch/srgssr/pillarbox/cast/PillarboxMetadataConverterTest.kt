@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.cast
 
+import androidx.core.net.toUri
+import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter.appendToCustomData
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
@@ -18,7 +20,6 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class PillarboxMetadataConverterTest {
-
     @Test
     fun `PillarboxMetadata encode and decode give the initial result`() {
         val listChapter = listOf(
@@ -26,22 +27,36 @@ class PillarboxMetadataConverterTest {
                 id = "urn:0",
                 start = 1000,
                 end = 2000,
-                title = "Chapter 1",
-                artworkUri = "https://example.com/artwork.png",
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle("Chapter 1")
+                    .setArtworkUri(
+                        """
+                        https://example.com/artwork.png
+                        """.trimIndent().toUri()
+                    )
+                    .build()
             ),
             Chapter(
                 id = "urn:1",
                 start = 1000,
                 end = 2000,
-                title = "Chapter 2",
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle("Chapter 2")
+                    .build()
             ),
             Chapter(
                 id = "urn:2",
                 start = 1000,
                 end = 2000,
-                title = "Chapter 3",
-                artworkUri = "https://example.com/artwork.png",
-                description = "Description of Chapter 3",
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle("Chapter 3")
+                    .setDescription("Description of Chapter 3")
+                    .setArtworkUri(
+                        """
+                        https://example.com/artwork.png
+                        """.trimIndent().toUri()
+                    )
+                    .build()
             ),
         )
         val listCredits = listOf(

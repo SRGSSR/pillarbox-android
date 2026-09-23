@@ -56,6 +56,19 @@ val customMediaItem: MediaItem = SRGMediaItem(urn) {
 player.setMediaItem(mediaItem)
 ```
 
+### Add Commanders Act specific data linked to a MediaItem
+
+[CommandersActSource][ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource] can be passed to `SRGMediaItem` to forward labels to Commanders Act.
+
+```kotlin
+val customMediaItem: MediaItem = SRGMediaItem("urn:rts:video:12345") {
+    commandersActSource(CommandersActSource(pageId = "pageId", sectionId = "sectionId"))
+}
+
+// Give the MediaItem to the player so it can be played
+player.setMediaItem(mediaItem)
+```
+
 ### Handle error
 
 All exceptions thrown by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] are caught by the player inside a
@@ -134,3 +147,4 @@ val player = PillarboxExoPlayer(context) {
 [ch.srgssr.pillarbox.player.source.PillarboxMediaSource]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.source/-pillarbox-media-source/index.html
 [kotlin.Exception]: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
+[ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.analytics.commandersact/-commanders-act-source/index.html
