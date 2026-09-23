@@ -5,8 +5,6 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
-import android.media.MediaDrm
-import android.media.MediaDrm.PROPERTY_VENDOR
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -123,10 +121,7 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         checkNotNull(mediaItem.localConfiguration)
-
-        val widevineDrmLevel = MediaDrm(C.WIDEVINE_UUID).getPropertyString("securityLevel")
-        val widevineDrmVendor = MediaDrm(C.WIDEVINE_UUID).getPropertyString(PROPERTY_VENDOR)
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri, widevineDrmVendor, widevineDrmLevel, "android")
+        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri)
             .getOrElse {
                 when (it) {
                     is HttpResultException -> throw it

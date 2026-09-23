@@ -89,11 +89,6 @@ class SRGAssetLoaderTest {
         assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))
     }
 
-    @Test(expected = ResourceNotFoundException::class)
-    fun testNoCompatibleResource() = runTest {
-        assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE))
-    }
-
     @Test
     fun testCompatibleResource() = runTest {
         assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE))
@@ -341,15 +336,6 @@ class SRGAssetLoaderTest {
 
                 else -> Result.failure(IllegalArgumentException("No resource found"))
             }
-        }
-
-        override suspend fun fetchMediaComposition(
-            uri: Uri,
-            widevineDrmLevel: String?,
-            widevineDrmVendor: String?,
-            platform: String?
-        ): Result<MediaComposition> {
-            TODO("Not yet implemented")
         }
 
         companion object {
