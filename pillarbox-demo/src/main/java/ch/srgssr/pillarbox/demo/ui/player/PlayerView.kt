@@ -227,7 +227,7 @@ private fun PlayerOverlay(
     ) {
         val creditState = rememberCreditState(player)
         AnimatedVisibility(
-            visible = creditState.isInCredit && !controlsVisibility.visible,
+            visible = controlsVisible && creditState.isInCredit && !controlsVisibility.visible,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(MaterialTheme.paddings.baseline),
@@ -238,6 +238,9 @@ private fun PlayerOverlay(
         }
 
         ProgressIndicator(player, isSliderDragged)
+
+        // When the controls are forced hidden (e.g. Picture-in-Picture), remove them immediately instead of playing the exit animation
+        if (!controlsVisible) return@Box
 
         DemoControls(
             modifier = Modifier
