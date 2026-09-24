@@ -6,8 +6,10 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
@@ -87,9 +89,9 @@ class HttpMediaCompositionTest {
                 val request = chain.request()
                 requestedUrls.add(request.url)
 
-                val mediaComposition = SRGAssetLoaderTest.DummyMediaCompositionProvider.createMediaComposition(
-                    urn = SRGAssetLoaderTest.DummyMediaCompositionProvider.URN_HLS_RESOURCE,
-                    listResource = listOf(SRGAssetLoaderTest.DummyMediaCompositionProvider.createResource(Resource.Type.HLS)),
+                val mediaComposition = createMediaComposition(
+                    urn = URN_HLS_RESOURCE,
+                    listResource = listOf(createResource(Resource.Type.HLS)),
                 )
 
                 Response.Builder()
@@ -101,5 +103,30 @@ class HttpMediaCompositionTest {
                     .build()
             }
             .build()
+    }
+
+    companion object {
+        const val URN_HLS_RESOURCE = "urn:rts:video:resource_hls"
+        const val DUMMY_IMAGE_URL = "https://image.png"
+
+        fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
+            return MediaComposition(
+                urn,
+                listOf(
+                    Chapter(
+                        urn = urn,
+                        title = urn,
+                        listResource = listResource,
+                        imageUrl = DUMMY_IMAGE_URL,
+                        mediaType = MediaType.VIDEO,
+                        type = Type.EPISODE,
+                    )
+                )
+            )
+        }
+
+        fun createResource(type: Resource.Type): Resource {
+            return Resource(url = "", type = type)
+        }
     }
 }
