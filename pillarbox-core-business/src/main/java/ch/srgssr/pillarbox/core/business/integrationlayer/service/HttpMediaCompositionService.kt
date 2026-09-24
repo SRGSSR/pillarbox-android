@@ -19,10 +19,15 @@ import okhttp3.Request
 /**
  * A service for fetching a [MediaComposition] over HTTP.
  *
+ * The [deviceCapabilities] are appended to every request as query parameters:
+ *
+ * - `playerPlatform`: the [DeviceCapabilities.platform].
+ * - `drmPlayerCapabilities`: `<drmVendor>;<drmSecurityLevel>`, only when both [DeviceCapabilities.drmVendor] and
+ * [DeviceCapabilities.drmSecurityLevel] are known.
+ *
  * @param okHttpClient The OkHttp client instance used for making HTTP requests.
  * @param deviceCapabilities Describes the playback capabilities of the device, so that the integration layer only returns resources that the
- * device is actually able to play.
- *
+ * device is actually able to play. Defaults to [DeviceCapabilities.device], whose Widevine properties are read the first time it is used.
  */
 class HttpMediaCompositionService(
     private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
@@ -52,7 +57,8 @@ class HttpMediaCompositionService(
     }
 
     /**
-     * Appends [deviceCapabilities] to [uri] as integration layer query parameters.
+     * Appends [deviceCapabilities] to [uri] as integration layer query parameters. The DRM capabilities are omitted when they are partially or
+     * completely unknown.
      */
     internal fun withPlayerCapabilities(uri: Uri): Uri {
         val drmVendor = deviceCapabilities.drmVendor

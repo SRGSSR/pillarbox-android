@@ -77,8 +77,7 @@ All exceptions thrown by [PillarboxMediaSource][ch.srgssr.pillarbox.player.sourc
 [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] can throw:
 
 - [BlockReasonException][ch.srgssr.pillarbox.core.business.exception.BlockReasonException] when the chapter has a block reason.
-- [ResourceNotFoundException][ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException] when no "playable" resources are found in the
-  chapter.
+- [ResourceNotFoundException][ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException] when the chapter contains no resources.
 - `RemoteResult.Error`.`throwable`:
     - `HttpException`.
     - `IOException`.
@@ -99,27 +98,50 @@ player.addListener(object : Player.Listener {
 
 ## Going further
 
-[PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] factory can be created with a
-[MediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService], which can be used to retrieve a
-[MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]. You can create and provide your own implementation:
+### Device capabilities
+
+By default, the [MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition] is fetched with
+[HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService], which sends the
+[DeviceCapabilities][ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities] of the device (platform and Widevine vendor and
+security level) to the integration layer. The integration layer then returns the resources the device is able to play, ordered by preference, and
+the first one is played.
+
+You can advertise other capabilities by providing your own instance:
 
 ```kotlin
-class CachedMediaCompositionService : MediaCompositionService {
-    private val mediaCompositionCache = mutableMapOf<Uri, MediaComposition>()
+val player = PillarboxExoPlayer(context) {
+    srgAssetLoader(context) {
+        mediaCompositionService(
+            HttpMediaCompositionService(
+                deviceCapabilities = DeviceCapabilities(drmVendor = "Google", drmSecurityLevel = "L3"),
+            )
+        )
+    }
+}
+```
 
-    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+### Custom MediaCompositionService
+
+[PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] factory can be created with a
+[MediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService], which can be used to retrieve a
+[MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]. You can create and provide your own implementation.
+
+The simplest way is to delegate the network request to
+[HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService]:
+
+```kotlin
+class CachedMediaCompositionService(
+    private val httpMediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+) : MediaCompositionService {
+    private val mediaCompositionCache = mutableMapOf<Uri, MediaCompositionResponse>()
+
+    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
         if (uri in mediaCompositionCache) {
             return Result.success(mediaCompositionCache.getValue(uri))
         }
 
-        val mediaComposition = fetchMediaCompositionFromBackend(uri)
-        if (mediaComposition != null) {
-            mediaCompositionCache[uri] = mediaComposition
-
-            return Result.success(mediaComposition)
-        } else {
-            return Result.failure(IOException("$uri not found"))
-        }
+        return httpMediaCompositionService.fetchMediaComposition(uri)
+            .onSuccess { mediaCompositionCache[uri] = it }
     }
 }
 ```
@@ -139,7 +161,9 @@ val player = PillarboxExoPlayer(context) {
 [androidx.media3.exoplayer.source.MediaSource]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
 [ch.srgssr.pillarbox.core.business.exception.BlockReasonException]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/BlockReasonException.kt
 [ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
+[ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.data/-device-capabilities/index.html
 [ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.data/-media-composition/index.html
+[ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.service/-http-media-composition-service/index.html
 [ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.service/-media-composition-service/index.html
 [ch.srgssr.pillarbox.core.business.SRGMediaItem]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business/-s-r-g-media-item.html
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player/index.html

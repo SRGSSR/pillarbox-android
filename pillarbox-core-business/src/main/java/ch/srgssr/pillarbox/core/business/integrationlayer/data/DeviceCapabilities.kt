@@ -13,14 +13,15 @@ import androidx.media3.common.C
  * Describes the playback capabilities of the device, so that the integration layer only returns resources that the device is actually able to
  * play.
  *
- * Use [DeviceCapabilities.device] to get the capabilities of the current device, and pass a custom instance to a [MediaCompositionService] to
- * advertise something else.
+ * Use [DeviceCapabilities.device] to get the capabilities of the current device, and pass a custom instance to
+ * [HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService] to advertise something else.
+ *
+ * The DRM capabilities are only sent to the integration layer when both [drmVendor] and [drmSecurityLevel] are known.
  *
  * @property platform The platform requesting the media composition.
  * @property drmVendor The Widevine vendor of the device, or `null` if Widevine is unavailable.
  * @property drmSecurityLevel The Widevine security level of the device, or `null` if Widevine is unavailable.
  */
-
 class DeviceCapabilities(
     val platform: String = PLATFORM_ANDROID,
     val drmVendor: String? = null,
