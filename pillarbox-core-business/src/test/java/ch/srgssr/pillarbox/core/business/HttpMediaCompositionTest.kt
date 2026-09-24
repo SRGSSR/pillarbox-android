@@ -4,34 +4,14 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import android.content.Context
-import android.net.Uri
-import androidx.core.net.toUri
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
-import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
-import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
-import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
-import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
-import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
-import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.network.jsonSerializer
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl
@@ -42,11 +22,8 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
-import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class HttpMediaCompositionTest {
