@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.net.Uri
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
 import ch.srgssr.pillarbox.player.network.HttpResultException
@@ -18,10 +19,19 @@ import okhttp3.Request
 /**
  * A service for fetching a [MediaComposition] over HTTP.
  *
+ * The [deviceCapabilities] are appended to every request as query parameters:
+ *
+ * - `playerPlatform`: the [DeviceCapabilities.platform].
+ * - `drmPlayerCapabilities`: `<drmVendor>;<drmSecurityLevel>`, only when both [DeviceCapabilities.drmVendor] and
+ * [DeviceCapabilities.drmSecurityLevel] are known.
+ *
  * @param okHttpClient The OkHttp client instance used for making HTTP requests.
+ * @param deviceCapabilities Describes the playback capabilities of the device, so that the integration layer only returns resources that the
+ * device is actually able to play. Defaults to [DeviceCapabilities.device], whose Widevine properties are read the first time it is used.
  */
 class HttpMediaCompositionService(
     private val okHttpClient: OkHttpClient = PillarboxOkHttp(),
+    private val deviceCapabilities: DeviceCapabilities = DeviceCapabilities.device
 ) : MediaCompositionService {
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -29,7 +39,7 @@ class HttpMediaCompositionService(
         return runCatching {
             okHttpClient.newCall(
                 Request.Builder()
-                    .url(uri.toString())
+                    .url(withPlayerCapabilities(uri).toString())
                     .build()
             )
                 .execute()
@@ -44,5 +54,27 @@ class HttpMediaCompositionService(
                 MediaCompositionResponse(mediaCompositionParsed, headers)
             }
         }
+    }
+
+    /**
+     * Appends [deviceCapabilities] to [uri] as integration layer query parameters. The DRM capabilities are omitted when they are partially or
+     * completely unknown.
+     */
+    internal fun withPlayerCapabilities(uri: Uri): Uri {
+        val drmVendor = deviceCapabilities.drmVendor
+        val drmSecurityLevel = deviceCapabilities.drmSecurityLevel
+
+        return uri.buildUpon().apply {
+            appendQueryParameter(PARAM_PLAYER_PLATFORM, deviceCapabilities.platform)
+
+            if (drmVendor != null && drmSecurityLevel != null) {
+                appendQueryParameter(PARAM_DRM_PLAYER_CAPABILITIES, "$drmVendor;$drmSecurityLevel")
+            }
+        }.build()
+    }
+
+    private companion object {
+        const val PARAM_PLAYER_PLATFORM = "playerPlatform"
+        const val PARAM_DRM_PLAYER_CAPABILITIES = "drmPlayerCapabilities"
     }
 }

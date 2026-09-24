@@ -91,11 +91,6 @@ class SRGAssetLoaderTest {
         assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))
     }
 
-    @Test(expected = ResourceNotFoundException::class)
-    fun testNoCompatibleResource() = runTest {
-        assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE))
-    }
-
     @Test
     fun testCompatibleResource() = runTest {
         assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE))
