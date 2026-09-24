@@ -50,7 +50,7 @@ class HttpMediaCompositionTest {
         // The URN is not in the local media compositions, so the request falls back to HTTP and reaches the integration layer
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(REMOTE_URN_TATAKI_1, result.getOrThrow().chapterUrn)
+        assertEquals(REMOTE_URN_TATAKI_1, result.getOrThrow().mediaComposition.chapterUrn)
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertEquals("${deviceCapabilities.drmVendor};${deviceCapabilities.drmSecurityLevel}", requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -64,7 +64,7 @@ class HttpMediaCompositionTest {
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(MEDIA_COMPOSITION, result.getOrThrow())
+        assertEquals(MEDIA_COMPOSITION, result.getOrThrow().mediaComposition)
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(DeviceCapabilities.PLATFORM_ANDROID, requestedUrl.queryParameter("playerPlatform"))
         assertNull(requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -83,7 +83,7 @@ class HttpMediaCompositionTest {
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(MEDIA_COMPOSITION, result.getOrThrow())
+        assertEquals(MEDIA_COMPOSITION, result.getOrThrow().mediaComposition)
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertEquals("${deviceCapabilities.drmVendor};${deviceCapabilities.drmSecurityLevel}", requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -102,7 +102,7 @@ class HttpMediaCompositionTest {
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(MEDIA_COMPOSITION, result.getOrThrow())
+        assertEquals(MEDIA_COMPOSITION, result.getOrThrow().mediaComposition)
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertEquals("${deviceCapabilities.drmVendor};${deviceCapabilities.drmSecurityLevel}", requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -121,7 +121,7 @@ class HttpMediaCompositionTest {
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(MEDIA_COMPOSITION, result.getOrThrow())
+        assertEquals(MEDIA_COMPOSITION, result.getOrThrow().mediaComposition)
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertEquals("${deviceCapabilities.drmVendor};${deviceCapabilities.drmSecurityLevel}", requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -159,7 +159,10 @@ class HttpMediaCompositionTest {
         val service = HttpMediaCompositionService(client, deviceCapabilities)
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(result.getOrThrow().mainChapter.listResource?.size, 1) // best resource retrieved by the server, no more than 1 item
+        assertEquals(
+            result.getOrThrow().mediaComposition.mainChapter.listResource?.size,
+            1
+        ) // best resource retrieved by the server, no more than 1 item
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertEquals("${deviceCapabilities.drmVendor};${deviceCapabilities.drmSecurityLevel}", requestedUrl.queryParameter("drmPlayerCapabilities"))
@@ -177,7 +180,10 @@ class HttpMediaCompositionTest {
         // The URN is not in the local media compositions, so the request falls back to HTTP and reaches the integration layer
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
 
-        assertEquals(result.getOrThrow().mainChapter.listResource?.size, 2) // server cannot identify the best resource, more than 1 item
+        assertEquals(
+            result.getOrThrow().mediaComposition.mainChapter.listResource?.size,
+            2
+        ) // server cannot identify the best resource, more than 1 item
         val requestedUrl = interceptor.requestedUrls.single()
         assertEquals(deviceCapabilities.platform, requestedUrl.queryParameter("playerPlatform"))
         assertNull(requestedUrl.queryParameter("drmPlayerCapabilities"))

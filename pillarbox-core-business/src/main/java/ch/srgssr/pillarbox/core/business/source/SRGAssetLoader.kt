@@ -121,14 +121,14 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         checkNotNull(mediaItem.localConfiguration)
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri)
-            .getOrElse {
-                when (it) {
-                    is HttpResultException -> throw it
-                    is SerializationException -> throw DataParsingException(it)
-                    else -> throw IOException(it.message)
-                }
+        val resultWithHeaders = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+            when (it) {
+                is HttpResultException -> throw it
+                is SerializationException -> throw DataParsingException(it)
+                else -> throw IOException(it.message)
             }
+        }
+        val result = resultWithHeaders.mediaComposition
 
         val chapter = result.mainChapter
         chapter.getBlockReasonExceptionOrNull()?.let {
@@ -164,6 +164,7 @@ class SRGAssetLoader internal constructor(
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
             }.build(),
+            responseHeaders = resultWithHeaders.headers,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
                 chapters = ChapterAdapter.getChapters(result, ilHost),

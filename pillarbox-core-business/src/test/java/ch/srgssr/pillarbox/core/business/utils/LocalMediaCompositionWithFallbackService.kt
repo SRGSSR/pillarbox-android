@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.utils
 import android.content.Context
 import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.player.network.jsonSerializer
@@ -22,11 +23,11 @@ internal class LocalMediaCompositionWithFallbackService(
         mediaCompositions = jsonSerializer.decodeFromString(json)
     }
 
-    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
         val urn = uri.lastPathSegment
         val mediaComposition = mediaCompositions.firstOrNull { it.chapterUrn == urn }
         return if (mediaComposition != null) {
-            Result.success(mediaComposition)
+            Result.success(MediaCompositionResponse(mediaComposition))
         } else {
             fallbackService.fetchMediaComposition(uri)
         }
