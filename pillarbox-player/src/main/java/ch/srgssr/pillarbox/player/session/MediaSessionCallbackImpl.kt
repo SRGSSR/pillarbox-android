@@ -115,7 +115,6 @@ internal open class MediaSessionCallbackImpl(
         mediaSession.connectedControllersWithImageOutput.remove(controller)
     }
 
-    // TODO MBO refactor to merge handleCommandEnableScrubbingMode, handleCommandEnableTracker, handleCommandSeekParameters?
     private fun handleCommandEnableScrubbingMode(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
         if (args.containsKey(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED)) {
             player.setScrubbingModeEnabled(args.getBoolean(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED))

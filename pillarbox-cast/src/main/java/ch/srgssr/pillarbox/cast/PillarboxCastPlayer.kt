@@ -259,7 +259,7 @@ class PillarboxCastPlayer internal constructor(
      * @see castSessionAvailable
      */
     fun isCastSessionAvailable(): Boolean {
-        return castSessionAvailable.value // TODO MBO  return remoteMediaClient != null ?
+        return castSessionAvailable.value
     }
 
     override fun isScrubbingModeEnabled(): Boolean = false
