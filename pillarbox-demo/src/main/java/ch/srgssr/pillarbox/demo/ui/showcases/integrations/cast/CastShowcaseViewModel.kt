@@ -28,6 +28,7 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
     private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
 
+// TODO MBO check class in branch
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */

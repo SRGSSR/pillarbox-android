@@ -34,6 +34,7 @@ android {
 dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
     implementation(libs.androidx.media3.datasource)

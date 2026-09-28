@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
@@ -23,6 +24,13 @@ interface PillarboxPlayer : Player {
      * A listener for events specific to Pillarbox.
      */
     interface Listener : Player.Listener {
+
+        /**
+         * Called when the smooth seeking enabled state changes.
+         *
+         * @param smoothSeekingEnabled Whether smooth seeking is enabled.
+         */
+        fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {}
 
         /**
          * Called when the tracking state changes.
@@ -67,6 +75,17 @@ interface PillarboxPlayer : Player {
     }
 
     /**
+     * Controls whether smooth seeking behavior is enabled.
+     *
+     * When this property is `true`, subsequent seek events are sent only after the current seek operation is completed.
+     *
+     * For optimal results, it is important to:
+     * 1. Pause the player during seek operations.
+     * 2. Set the player's seek parameters to [SeekParameters.CLOSEST_SYNC] using [setSeekParameters].
+     */
+    var smoothSeekingEnabled: Boolean
+
+    /**
      * Controls whether media item tracking is enabled.
      */
     var trackingEnabled: Boolean
@@ -81,6 +100,11 @@ interface PillarboxPlayer : Player {
      * Even if this is `true`, [getCurrentMetrics] may return `null`.
      */
     val isMetricsAvailable: Boolean
+
+    /**
+     * Whether [setSeekParameters] is supported.
+     */
+    val isSeekParametersAvailable: Boolean
 
     /**
      * The current [PillarboxMetadata] for the currently playing media item.
@@ -154,6 +178,20 @@ interface PillarboxPlayer : Player {
     fun getCurrentPlaybackSessionId(): String? = getCurrentMetrics()?.sessionId
 
     /**
+     * Sets the parameters that control how seek operations are performed.
+     *
+     * This method must only be called if [isSeekParametersAvailable] returns `true`.
+     *
+     * @param seekParameters The seek parameters, or `null` to use the defaults.
+     */
+    fun setSeekParameters(seekParameters: SeekParameters?)
+
+    /**
+     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is `true`.
+     * */
+    fun getSeekParameters(): SeekParameters
+
+    /**
      * Sets the [ImageOutput] where rendered images will be forwarded.
      * This method does nothing if the player doesn't render anything.
      * @param imageOutput The [ImageOutput] to forward image to.
@@ -217,6 +255,11 @@ interface PillarboxPlayer : Player {
          * Event indicating that the media item [tracking state][trackingEnabled] has changed.
          */
         const val EVENT_TRACKING_ENABLED_CHANGED = 103
+
+        /**
+         * Event indicating that the [Pillarbox metadata][currentPillarboxMetadata] has changed.
+         */
+        const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = 104
 
         /**
          * Event indicating that the [Pillarbox metadata][currentPillarboxMetadata] has changed.

@@ -10,7 +10,6 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 
 internal class BlockedTimeRangeTracker(
     private val callback: (BlockedTimeRange) -> Unit
@@ -39,7 +38,7 @@ internal class BlockedTimeRangeTracker(
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
-        val blockedInterval = timeRanges?.firstOrNullAtPosition(player.currentPosition)
+        val blockedInterval = this.player.getBlockedTimeRangeAtPosition(player.currentPosition)
         blockedInterval?.let {
             // Ignore blocked time ranges that end at the same time as the media. Otherwise, infinite seeks operations.
             if (player.currentPosition >= player.duration) return@let

@@ -127,7 +127,7 @@ fun PlaylistView(
                         player.prepare()
                     }
                 },
-                key = player::getUniqueKeyForMediaItemIndex,
+                key = player::getUniqueKeyForMediaItemIndex, // TODO MBO check this line on branch
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
                 onAddClick = { showAddItemsDialog = true },
