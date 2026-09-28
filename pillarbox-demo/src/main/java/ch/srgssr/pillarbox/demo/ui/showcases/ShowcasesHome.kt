@@ -34,6 +34,7 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto.MediaBrowserActivity
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.AspectRatioSwitchActivity
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
@@ -231,7 +232,7 @@ fun ShowcasesHome(navController: NavController) {
         )
 
         DemoListSectionView(
-            modifier = sectionModifier(miscDestinations.size),
+            modifier = sectionModifier(miscDestinations.size + 1),
         ) {
             miscDestinations.forEachIndexed { index, (label, destination) ->
                 DemoListItemView(
@@ -240,10 +241,17 @@ fun ShowcasesHome(navController: NavController) {
                     onClick = { navController.navigate(destination) }
                 )
 
-                if (index < miscDestinations.lastIndex) {
-                    HorizontalDivider()
-                }
+                HorizontalDivider()
             }
+
+            DemoListItemView(
+                title = stringResource(R.string.showcase_aspect_ratio_switch),
+                modifier = itemModifier(miscDestinations.size),
+                onClick = {
+                    val intent = Intent(context, AspectRatioSwitchActivity::class.java)
+                    context.startActivity(intent)
+                }
+            )
         }
     }
 }

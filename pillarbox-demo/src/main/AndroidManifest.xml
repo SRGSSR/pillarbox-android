@@ -66,6 +66,11 @@
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true" />
 
+        <activity
+            android:name=".ui.showcases.misc.AspectRatioSwitchActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
+            android:exported="false" />
+
         <service
             android:name=".service.DemoMediaSessionService"
             android:exported="true"
