@@ -42,7 +42,8 @@ class IlUrlTest {
         val vector = Vector.TV
         val ilLocation = IlLocation.WW
         val uri = Uri.parse(
-            "${host.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=$vector&forceLocation=$ilLocation"
+            "${host.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=$vector&forceLocation=$ilLocation" +
+                "&playerPlatform=android"
         )
         val expected = IlUrl(host = host, urn = urn, vector = vector, forceSAM = true, ilLocation = ilLocation)
         assertEquals(expected, uri.toIlUrl())
