@@ -49,10 +49,9 @@ data class IlUrl(
 
         appendQueryParameter(PARAM_PLAYER_PLATFORM, deviceCapabilities.platform)
 
-        val drmVendor = deviceCapabilities.drmVendor
         val drmSecurityLevel = deviceCapabilities.drmSecurityLevel
-        if (drmVendor != null && drmSecurityLevel != null) {
-            appendQueryParameter(PARAM_DRM_PLAYER_CAPABILITIES, "$drmVendor;$drmSecurityLevel")
+        if (drmSecurityLevel != null) {
+            appendQueryParameter(PARAM_DRM_PLAYER_CAPABILITIES, "${deviceCapabilities.drmVendor};$drmSecurityLevel")
         }
     }.build()
 

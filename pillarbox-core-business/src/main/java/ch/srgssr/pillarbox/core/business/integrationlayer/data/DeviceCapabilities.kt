@@ -19,12 +19,12 @@ import androidx.media3.common.C
  * The DRM capabilities are only sent to the integration layer when both [drmVendor] and [drmSecurityLevel] are known.
  *
  * @property platform The platform requesting the media composition.
- * @property drmVendor The Widevine vendor of the device, or `null` if Widevine is unavailable.
+ * @property drmVendor The Widevine vendor requesting the media composition, or `null` if Widevine is unavailable.
  * @property drmSecurityLevel The Widevine security level of the device, or `null` if Widevine is unavailable.
  */
 class DeviceCapabilities(
     val platform: String = PLATFORM_ANDROID,
-    val drmVendor: String? = null,
+    val drmVendor: String = VENDOR_ANDROID,
     val drmSecurityLevel: String? = null,
 ) {
     companion object {
@@ -32,6 +32,11 @@ class DeviceCapabilities(
          * The platform value identifying Android clients to the integration layer.
          */
         const val PLATFORM_ANDROID = "android"
+
+        /**
+         * The vendor value identifying Android clients to the integration layer.
+         */
+        const val VENDOR_ANDROID = "com.widevine.alpha"
 
         private const val TAG = "DeviceCapabilities"
 
@@ -59,7 +64,6 @@ class DeviceCapabilities(
                 mediaDrm = drm
 
                 DeviceCapabilities(
-                    drmVendor = drm.getPropertyString(MediaDrm.PROPERTY_VENDOR).takeIf { it.isNotBlank() },
                     drmSecurityLevel = drm.getPropertyString(PROPERTY_SECURITY_LEVEL).takeIf { it.isNotBlank() },
                 )
             }
