@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.net.Uri
 import androidx.core.net.toUri
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 
 /**
@@ -14,6 +15,8 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
  * @property vector The [Vector] to use.
  * @property forceSAM Force SAM usage.
  * @property ilLocation The [IlLocation] of the request.
+ * @param deviceCapabilities Describes the playback capabilities of the device, so that the integration layer only returns resources that the
+ * device is actually able to play. Defaults to [DeviceCapabilities.device], whose Widevine properties are read the first time it is used.
  */
 data class IlUrl(
     val host: IlHost,
@@ -21,6 +24,7 @@ data class IlUrl(
     val vector: Vector,
     val forceSAM: Boolean = false,
     val ilLocation: IlLocation? = null,
+    private val deviceCapabilities: DeviceCapabilities = DeviceCapabilities.device
 ) {
 
     init {
@@ -42,6 +46,14 @@ data class IlUrl(
         }
         appendQueryParameter(PARAM_VECTOR, vector.toString())
         appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
+
+        appendQueryParameter(PARAM_PLAYER_PLATFORM, deviceCapabilities.platform)
+
+        val drmVendor = deviceCapabilities.drmVendor
+        val drmSecurityLevel = deviceCapabilities.drmSecurityLevel
+        if (drmVendor != null && drmSecurityLevel != null) {
+            appendQueryParameter(PARAM_DRM_PLAYER_CAPABILITIES, "$drmVendor;$drmSecurityLevel")
+        }
     }.build()
 
     internal companion object {
@@ -50,6 +62,8 @@ data class IlUrl(
         private const val PARAM_FORCE_LOCATION = "forceLocation"
         private const val PARAM_VECTOR = "vector"
         private const val PATH = "integrationlayer/2.1/mediaComposition/byUrn/"
+        const val PARAM_PLAYER_PLATFORM = "playerPlatform"
+        const val PARAM_DRM_PLAYER_CAPABILITIES = "drmPlayerCapabilities"
 
         /**
          * Converts an [Uri] into a valid [IlUrl].

@@ -45,7 +45,7 @@ class HttpMediaCompositionTest {
             drmSecurityLevel = "L1",
         )
         val context: Context = ApplicationProvider.getApplicationContext()
-        val service = LocalMediaCompositionWithFallbackService(context, HttpMediaCompositionService(client, deviceCapabilities))
+        val service = LocalMediaCompositionWithFallbackService(context, HttpMediaCompositionService(client))
 
         // The URN is not in the local media compositions, so the request falls back to HTTP and reaches the integration layer
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
@@ -79,7 +79,7 @@ class HttpMediaCompositionTest {
             drmVendor = "com.google.android.widevine",
             drmSecurityLevel = "L1",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
@@ -98,7 +98,7 @@ class HttpMediaCompositionTest {
             drmVendor = "Google",
             drmSecurityLevel = "L1",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
@@ -117,7 +117,7 @@ class HttpMediaCompositionTest {
             drmVendor = "com.google.android.widevine",
             drmSecurityLevel = "L1",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
 
         val result = service.fetchMediaComposition(MEDIA_COMPOSITION_URL.toUri())
 
@@ -136,7 +136,7 @@ class HttpMediaCompositionTest {
             drmVendor = "com.google.android.widevine",
             drmSecurityLevel = "L1",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
 
         // The URN is not in the local media compositions, so the request falls back to HTTP, where it is aborted by the interceptor
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
@@ -156,7 +156,7 @@ class HttpMediaCompositionTest {
             drmVendor = "com.google.android.widevine",
             drmSecurityLevel = "L1",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
 
         assertEquals(
@@ -175,7 +175,7 @@ class HttpMediaCompositionTest {
         val deviceCapabilities = DeviceCapabilities(
             platform = "",
         )
-        val service = HttpMediaCompositionService(client, deviceCapabilities)
+        val service = HttpMediaCompositionService(client)
 
         // The URN is not in the local media compositions, so the request falls back to HTTP and reaches the integration layer
         val result = service.fetchMediaComposition(REMOTE_MEDIA_COMPOSITION_URL.toUri())
