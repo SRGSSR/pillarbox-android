@@ -65,10 +65,10 @@ fun rememberPipManager(
     val pipManager = remember(activity, player) { PipManagerImpl(activity, player) }
 
     DisposableEffect(pipManager) {
-        pipManager.attach()
+        pipManager.startObserving()
 
         onDispose {
-            pipManager.detach()
+            pipManager.stopObserving()
         }
     }
 
@@ -221,13 +221,13 @@ private class PipManagerImpl(
         }
     }
 
-    fun attach() {
+    fun startObserving() {
         player?.addListener(playerListener)
         activity?.addOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         updatePictureInPictureParams()
     }
 
-    fun detach() {
+    fun stopObserving() {
         activity?.removeOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         player?.removeListener(playerListener)
     }
