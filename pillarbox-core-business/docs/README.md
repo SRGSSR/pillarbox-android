@@ -100,31 +100,23 @@ player.addListener(object : Player.Listener {
 
 ### Device capabilities
 
-By default, the [MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition] is fetched with
-[HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService], which sends the
-[DeviceCapabilities][ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities] of the device (platform and Widevine vendor and
-security level) to the integration layer. The integration layer then returns the resources the device is able to play, ordered by preference, and
-the first one is played.
+The URL of a [MediaItem][androidx.media3.common.MediaItem] created with [SRGMediaItem][ch.srgssr.pillarbox.core.business.SRGMediaItem] contains the
+[DeviceCapabilities][ch.srgssr.pillarbox.core.business.integrationlayer.data.DeviceCapabilities] of the device, as query parameters:
 
-You can advertise other capabilities by providing your own instance:
+- `playerPlatform`: always `android`.
+- `drmPlayerCapabilities`: the Widevine vendor and security level, for example `com.widevine.alpha;L1`. It is only sent when the security level of
+  the device can be read.
 
-```kotlin
-val player = PillarboxExoPlayer(context) {
-    srgAssetLoader(context) {
-        mediaCompositionService(
-            HttpMediaCompositionService(
-                deviceCapabilities = DeviceCapabilities(drmVendor = "Google", drmSecurityLevel = "L3"),
-            )
-        )
-    }
-}
-```
+The integration layer then returns the resources the device is able to play, ordered by preference, and the first one is played. If no resources
+are returned, a [ResourceNotFoundException][ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException] is thrown.
 
 ### Custom MediaCompositionService
 
 [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] factory can be created with a
 [MediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService], which can be used to retrieve a
-[MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]. You can create and provide your own implementation.
+[MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition], wrapped in a
+[MediaCompositionResponse][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse] alongside the response headers. You can
+create and provide your own implementation.
 
 The simplest way is to delegate the network request to
 [HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService]:
