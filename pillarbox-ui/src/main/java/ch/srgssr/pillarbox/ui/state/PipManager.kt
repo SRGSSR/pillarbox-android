@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
 import androidx.media3.common.Player
@@ -54,6 +55,10 @@ fun rememberPipManager(
     player: Player? = null,
     autoEnterEnabled: Boolean = false,
 ): PipManager {
+    // There is no Activity in Compose Previews, so return a no-op implementation to keep them rendering.
+    val isInPreviewMode = LocalInspectionMode.current
+    if (isInPreviewMode) return PipManager.Dummy
+
     val activity = checkNotNull(LocalActivity.current as? ComponentActivity) {
         "rememberPipManager() requires the local Activity to be a ComponentActivity"
     }
@@ -123,6 +128,21 @@ interface PipManager {
      * Enter Picture-in-Picture mode. It does nothing when [isSupported] is `false`.
      */
     fun enter()
+
+    /**
+     * A no-op [PipManager] for Compose Previews, where there is no [Activity]. [rememberPipManager] returns it in Preview mode.
+     */
+    object Dummy : PipManager {
+        override val isSupported = true
+        override val isAllowed = true
+        override val isInPictureInPicture = false
+        override val isTransitioning = false
+        override var sourceRect: Rect? = null
+        override var ratio: Rational? = null
+        override var autoEnterEnabled = false
+
+        override fun enter() = Unit
+    }
 }
 
 private class PipManagerImpl(activity: ComponentActivity) : PipManager {
