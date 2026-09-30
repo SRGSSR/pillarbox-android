@@ -57,8 +57,6 @@ class DeviceCapabilities(
         private fun readDeviceCapabilities(): DeviceCapabilities {
             var mediaDrm: MediaDrm? = null
 
-            // Probing Widevine is best effort: any failure, be it a device without Widevine or a vendor specific MediaDrm error, must degrade
-            // to unknown capabilities rather than break playback, including for DRM-free content.
             val capabilities = runCatching {
                 val drm = MediaDrm(C.WIDEVINE_UUID)
                 mediaDrm = drm
