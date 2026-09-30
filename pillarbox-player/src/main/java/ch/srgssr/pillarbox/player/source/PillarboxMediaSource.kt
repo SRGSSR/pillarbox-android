@@ -212,15 +212,15 @@ class PillarboxMediaSource internal constructor(
         val currentTimeMark = timeSource.markNow()
         val mediaUri = mediaItem.localConfiguration?.uri ?: Uri.EMPTY
 
-        return LoadEventInfo.Builder(
+        return LoadEventInfo(
             loadTaskId,
             DataSpec(mediaUri),
-            currentTimeMark.elapsedNow().inWholeMilliseconds
+            mediaUri,
+            responseHeaders.orEmpty(),
+            currentTimeMark.elapsedNow().inWholeMilliseconds,
+            startTimeMark?.let { (it.elapsedNow() - currentTimeMark.elapsedNow()).inWholeMilliseconds } ?: 0L,
+            0L,
         )
-            .setResponseHeaders(responseHeaders ?: emptyMap())
-            .setLoadDurationMs(startTimeMark?.let { (it.elapsedNow() - currentTimeMark.elapsedNow()).inWholeMilliseconds } ?: 0L)
-            .setBytesLoaded(0L)
-            .build()
     }
 
     companion object {
