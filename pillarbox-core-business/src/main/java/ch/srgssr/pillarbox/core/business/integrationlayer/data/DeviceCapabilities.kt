@@ -13,13 +13,13 @@ import androidx.media3.common.C
  * Describes the playback capabilities of the device, so that the integration layer only returns resources that the device is actually able to
  * play.
  *
- * Use [DeviceCapabilities.device] to get the capabilities of the current device, and pass a custom instance to
- * [HttpMediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService] to advertise something else.
+ * Use [DeviceCapabilities.device] to get the capabilities of the current device. They are sent to the integration layer as query parameters of
+ * the [IlUrl][ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl].
  *
- * The DRM capabilities are only sent to the integration layer when both [drmVendor] and [drmSecurityLevel] are known.
+ * The DRM capabilities are only sent to the integration layer when [drmSecurityLevel] is known.
  *
  * @property platform The platform requesting the media composition.
- * @property drmVendor The Widevine vendor requesting the media composition, or `null` if Widevine is unavailable.
+ * @property drmVendor The DRM vendor requesting the media composition.
  * @property drmSecurityLevel The Widevine security level of the device, or `null` if Widevine is unavailable.
  */
 class DeviceCapabilities(
@@ -48,8 +48,8 @@ class DeviceCapabilities(
         /**
          * The capabilities of the device Pillarbox is currently running on.
          *
-         * The Widevine properties are read from [MediaDrm] once, the first time this property is accessed, as they cannot change during the
-         * lifetime of the process. They are `null` on devices without Widevine support, in which case the integration layer falls back to
+         * The Widevine security level is read from [MediaDrm] once, the first time this property is accessed, as it cannot change during the
+         * lifetime of the process. It is `null` on devices without Widevine support, in which case the integration layer falls back to
          * DRM-free resources.
          */
         val device: DeviceCapabilities by lazy { readDeviceCapabilities() }
