@@ -62,10 +62,10 @@ fun rememberPipManager(
     val activity = checkNotNull(LocalActivity.current as? ComponentActivity) {
         "rememberPipManager() requires the local Activity to be a ComponentActivity"
     }
-    val pipManager = remember(activity) { PipManagerImpl(activity) }
+    val pipManager = remember(activity, player) { PipManagerImpl(activity, player) }
 
-    DisposableEffect(pipManager, player) {
-        pipManager.attach(player)
+    DisposableEffect(pipManager) {
+        pipManager.attach()
 
         onDispose {
             pipManager.detach()
@@ -145,7 +145,10 @@ interface PipManager {
     }
 }
 
-private class PipManagerImpl(activity: ComponentActivity) : PipManager {
+private class PipManagerImpl(
+    activity: ComponentActivity,
+    private val player: Player?,
+) : PipManager {
     private val activityRef = WeakReference(activity)
     private val pictureInPictureModeObserver = Consumer<PictureInPictureModeChangedInfo> { changedInfo ->
         isInPictureInPicture = changedInfo.isInPictureInPictureMode
@@ -157,9 +160,7 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
             updatePictureInPictureParams()
         }
     }
-
-    private var player: Player? = null
-    private var playerRatio: Rational? = null
+    private var playerRatio: Rational? = player?.videoSize?.toRational()
     private var ratioOverride: Rational? = null
 
     private val activity: ComponentActivity?
@@ -220,9 +221,7 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
         }
     }
 
-    fun attach(player: Player?) {
-        this.player = player
-        playerRatio = player?.videoSize?.toRational()
+    fun attach() {
         player?.addListener(playerListener)
         activity?.addOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         updatePictureInPictureParams()
@@ -231,7 +230,6 @@ private class PipManagerImpl(activity: ComponentActivity) : PipManager {
     fun detach() {
         activity?.removeOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         player?.removeListener(playerListener)
-        player = null
     }
 
     private fun updatePictureInPictureParams() {
