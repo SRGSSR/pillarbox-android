@@ -298,6 +298,7 @@ class PillarboxCastReceiverPlayer(
         castReceiverContext.unregisterEventCallback(eventCallback)
         mediaManager.setSessionCompatToken(null)
         player.release()
+        removeListener(pillarboxMediaCommand)
     }
 
     override fun getAudioSessionId(): Int {
