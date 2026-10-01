@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
@@ -17,6 +18,8 @@ dependencies {
     implementation(libs.androidx.collection.jvm)
     implementation(libs.guava)
     api(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.core)
 
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
