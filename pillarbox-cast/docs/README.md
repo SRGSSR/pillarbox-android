@@ -185,9 +185,31 @@ val castSynchronizer = CastPlayerSynchronizer(
 )
 ```
 
+## Chapters
+
+[PillarboxCastPlayer][ch.srgssr.pillarbox.cast.PillarboxCastPlayer] exposes the chapters of the current item through
+`currentPillarboxMetadata`, and notifies `PillarboxPlayer.Listener.onPillarboxMetadataChanged` when they change.
+
+Chapters are read from the `chapters` array of the `MediaInfo.customData` sent by the receiver (SRG SSR web receiver or
+`PillarboxCastReceiverPlayer`):
+
+```json
+{
+    "chapters": [
+        {
+            "startTime": 81000,
+            "endTime": 170800,
+            "identifier": "urn:rts:video:14827730",
+            "posterUrl": "https://img.rts.ch/medias/2024/image/elrzeb-28465583.image/16x9",
+            "title": "Chapter title"
+        }
+    ]
+}
+```
+
 ## Road map
 
-- Handle Pillarbox metadata such as chapters, blocked time range and credits.
+- Handle Pillarbox metadata such as blocked time ranges and credits.
 
 ## Additional resources
 
