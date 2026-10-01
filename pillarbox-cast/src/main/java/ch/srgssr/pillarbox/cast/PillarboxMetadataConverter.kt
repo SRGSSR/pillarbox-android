@@ -6,31 +6,35 @@
 package ch.srgssr.pillarbox.cast
 
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import ch.srgssr.pillarbox.player.asset.timeRange.jsonTimeRanges
-import kotlinx.serialization.json.Json
+import ch.srgssr.pillarbox.player.network.jsonSerializer
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Adapter for Cast that converts [PillarboxMetadata] to and from JSONObject.
+ * Adapter for Cast that converts [PillarboxMetadata] to and from a Cast `customData` [JSONObject].
+ *
+ * Chapters are stored under the `chapters` key, using the same format as the SRG SSR web receiver.
  */
 object PillarboxMetadataConverter {
-    internal const val KEY_PILLARBOX = "pillarbox"
+    internal const val KEY_CHAPTERS = "chapters"
 
     /**
-     * Extension function to add [PillarboxMetadata] to [JSONObject].
+     * Writes the chapters of this [PillarboxMetadata] into [customData], replacing any existing chapters.
      */
-    fun PillarboxMetadata.appendToCustomData(customData: JSONObject) = runCatching {
-        val jsonObj = jsonTimeRanges.encodeToString(this)
-        customData.put(KEY_PILLARBOX, JSONObject(jsonObj))
+    fun PillarboxMetadata.appendToCustomData(customData: JSONObject) {
+        if (chapters.isNotEmpty()) {
+            val castChapters = chapters.map(CastChapter::fromChapter)
+            customData.put(KEY_CHAPTERS, JSONArray(jsonSerializer.encodeToString(castChapters)))
+        }
     }
 
     /**
      * Decode [List<CastChapter>?] from [JSONObject].
      */
     internal fun decodeCastChapters(customData: JSONObject): List<CastChapter>? {
+        val chaptersJson = customData.optJSONArray(KEY_CHAPTERS) ?: return null
         return runCatching {
-            val chaptersJson = customData.getJSONArray("chapters")
-            return Json.decodeFromString<List<CastChapter>>(chaptersJson.toString())
+            jsonSerializer.decodeFromString<List<CastChapter>>(chaptersJson.toString())
         }.getOrNull()
     }
 }
