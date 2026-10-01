@@ -118,6 +118,7 @@ class PillarboxCastReceiverPlayer(
             mediaManager.setMediaStatusInterceptor(LogMediaStatusInterceptor)
         }
         player.setRemoteReceiver(hasSenders())
+        addListener(pillarboxMediaCommand)
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {

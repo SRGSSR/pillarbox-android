@@ -11,6 +11,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM
 import androidx.media3.common.Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
+import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter.appendToCustomData
 import ch.srgssr.pillarbox.cast.TracksConverter
 import ch.srgssr.pillarbox.cast.receiver.extensions.contains
 import ch.srgssr.pillarbox.cast.receiver.extensions.getItemIndex
@@ -19,6 +20,8 @@ import ch.srgssr.pillarbox.cast.receiver.extensions.insert
 import ch.srgssr.pillarbox.cast.receiver.extensions.move
 import ch.srgssr.pillarbox.cast.receiver.extensions.queueSize
 import ch.srgssr.pillarbox.cast.receiver.extensions.remove
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
@@ -37,8 +40,8 @@ import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
 import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import org.json.JSONObject
 import java.util.Collections
-import kotlin.collections.forEach
 import kotlin.math.absoluteValue
 
 /**
@@ -52,7 +55,7 @@ internal class MediaCommandCallbackImpl(
     private val tracksConverter: TracksConverter,
     private val mediaManager: MediaManager = CastReceiverContext.getInstance().mediaManager,
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager,
-) : MediaCommandCallback() {
+) : MediaCommandCallback(), PillarboxPlayer.Listener {
 
     override fun onQueueInsert(senderId: String?, requestData: QueueInsertRequestData): Task<Void?> {
         with(requestData) {
@@ -225,6 +228,18 @@ internal class MediaCommandCallbackImpl(
             player.setPlaybackSpeed(it)
         }
         return voidTask()
+    }
+
+    override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+        val currentItemIndex = player.currentMediaItemIndex
+        mediaQueueManager.queueItems?.getOrNull(currentItemIndex)?.let {
+            val customData = it.media?.customData ?: JSONObject()
+            pillarboxMetadata.appendToCustomData(customData)
+            it.media?.writer?.setCustomData(customData)
+            mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+            mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(it.media)
+        }
+        mediaManager.broadcastMediaStatus()
     }
 
     companion object {
