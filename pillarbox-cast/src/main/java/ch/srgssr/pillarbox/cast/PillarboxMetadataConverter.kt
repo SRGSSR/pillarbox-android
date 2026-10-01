@@ -20,6 +20,7 @@ object PillarboxMetadataConverter {
 
     /**
      * Writes the chapters of this [PillarboxMetadata] into [customData], replacing any existing chapters.
+     * If there are no chapters, [customData] is left unchanged.
      */
     fun PillarboxMetadata.appendToCustomData(customData: JSONObject) {
         if (chapters.isNotEmpty()) {
