@@ -121,8 +121,8 @@ fun MyPlayer(player: Player) {
     Box {
         PillarboxPlayerSurface(player = player)
 
-        // Only display the controls when the Activity is neither in Picture-in-Picture, nor animating into it.
-        if (!pipManager.isInPictureInPicture && !pipManager.isTransitioning) {
+        // Only display the controls when the Activity is not in Picture-in-Picture.
+        if (!pipManager.isInPictureInPicture) {
             MyControls(
                 // Only display the button when Picture-in-Picture is available.
                 isPictureInPictureEnabled = pipManager.isSupported && pipManager.isAllowed,
@@ -138,8 +138,7 @@ fun MyPlayer(player: Player) {
   to decide whether to display a Picture-in-Picture button.
 - [enter()][ch.srgssr.pillarbox.ui.state.PipManager.enter] enters Picture-in-Picture mode, for example from that button.
 - [isInPictureInPicture][ch.srgssr.pillarbox.ui.state.PipManager.isInPictureInPicture] tells whether the [Activity][android.app.Activity] is
-  currently in Picture-in-Picture mode, and [isTransitioning][ch.srgssr.pillarbox.ui.state.PipManager.isTransitioning] whether it is animating
-  into it. Hide the controls in both cases, so that they don't show up in the Picture-in-Picture window or during the transition.
+  currently in Picture-in-Picture mode. Hide the controls in that case, so that they don't show up in the Picture-in-Picture window.
 - [ratio][ch.srgssr.pillarbox.ui.state.PipManager.ratio] overrides the aspect ratio of the Picture-in-Picture window, which is otherwise the
   aspect ratio of the video being played.
 

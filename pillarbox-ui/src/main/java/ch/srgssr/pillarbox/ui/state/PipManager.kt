@@ -103,11 +103,6 @@ interface PipManager {
     val isInPictureInPicture: Boolean
 
     /**
-     * Represents whether the [Activity] is currently going to Picture-in-Picture mode.
-     */
-    val isTransitioning: Boolean
-
-    /**
      * Represents the bounds, in window coordinates, of the content that the system animates into and out of the Picture-in-Picture window,
      * or `null` if they are not known yet.
      */
@@ -136,7 +131,6 @@ interface PipManager {
         override val isSupported = true
         override val isAllowed = true
         override val isInPictureInPicture = false
-        override val isTransitioning = false
         override var sourceRect: Rect? = null
         override var ratio: Rational? = null
         override var autoEnterEnabled = false
@@ -152,7 +146,6 @@ private class PipManagerImpl(
     private val activityRef = WeakReference(activity)
     private val pictureInPictureModeObserver = Consumer<PictureInPictureModeChangedInfo> { changedInfo ->
         isInPictureInPicture = changedInfo.isInPictureInPictureMode
-        isTransitioning = false
     }
     private val playerListener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -174,9 +167,6 @@ private class PipManagerImpl(
     override var isInPictureInPicture by mutableStateOf(
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity.isInPictureInPictureMode,
     )
-        private set
-
-    override var isTransitioning by mutableStateOf(false)
         private set
 
     override var sourceRect: Rect? = null
@@ -209,7 +199,6 @@ private class PipManagerImpl(
         isAllowed = this.activity?.isPictureInPictureAllowed() == true
         if (!isAllowed) return
         activity?.runCatchingPictureInPicture {
-            isTransitioning = true
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 enterPictureInPictureMode(pictureInPictureParams())
             } else {

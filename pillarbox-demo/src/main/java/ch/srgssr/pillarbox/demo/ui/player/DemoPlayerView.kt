@@ -26,6 +26,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -126,8 +127,12 @@ private fun PlayerContent(
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     val isInPictureInPicture = pipManager?.isInPictureInPicture == true
-    val isPipTransitioning = pipManager?.isTransitioning == true
-    val showControls = !isInPictureInPicture && !isPipTransitioning
+    // Hide the controls as soon as Picture-in-Picture is requested from the button, so that they don't show up during the transition.
+    var isEnteringPictureInPicture by remember { mutableStateOf(false) }
+    LaunchedEffect(isInPictureInPicture) {
+        isEnteringPictureInPicture = false
+    }
+    val showControls = !isInPictureInPicture && !isEnteringPictureInPicture
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -174,7 +179,10 @@ private fun PlayerContent(
                 onRepeatClick = repeatButtonState::onClick,
                 isPictureInPictureEnabled = pipManager?.let { it.isSupported && it.isAllowed } == true,
                 isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = { pipManager?.enter() },
+                onPictureInPictureClick = {
+                    isEnteringPictureInPicture = true
+                    pipManager?.enter()
+                },
                 isInFullscreen = fullscreenButtonState.isInFullscreen,
                 onFullscreenClick = fullscreenButtonState::onClick,
                 onSettingsClick = onSettingsClick,
