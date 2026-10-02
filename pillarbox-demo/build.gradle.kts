@@ -46,7 +46,6 @@ dependencies {
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.animation.core)
     implementation(platform(libs.androidx.compose.bom))
@@ -66,7 +65,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.common)
-    implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
