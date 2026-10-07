@@ -31,8 +31,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
-import ch.srgssr.pillarbox.player.extension.toRational
 import java.lang.ref.WeakReference
+import kotlin.math.roundToInt
 
 /**
  * Remembers the value of a [PipManager] created based on the passed [Player] and launches a
@@ -112,6 +112,7 @@ interface PipManager {
 
     /**
      * Represents the aspect ratio of the Picture-in-Picture window. It is coerced between 1:2.39 and 2.39:1, the range supported by the system.
+     * When it is `null`, for example before the [Player] knows the video size, the system uses its default aspect ratio.
      */
     var ratio: Rational?
 
@@ -159,11 +160,11 @@ private class PipManagerImpl(
     }
     private val playerListener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
-            playerRatio = videoSize.toRational()
+            playerRatio = videoSize.toDisplayRational()
             updatePictureInPictureParams()
         }
     }
-    private var playerRatio: Rational? = player?.videoSize?.toRational()
+    private var playerRatio: Rational? = player?.videoSize?.toDisplayRational()
     private var ratioOverride: Rational? = null
     private var isObserving = false
 
@@ -290,6 +291,18 @@ private class PipManagerImpl(
         }.getOrNull() ?: AppOpsManager.MODE_ALLOWED
 
         return mode == AppOpsManager.MODE_ALLOWED
+    }
+
+    /**
+     * Converts this [VideoSize] to the aspect ratio at which the video is displayed, taking non-square pixels into account.
+     *
+     * @return The display aspect ratio, or `null` when the size is not known yet, so that the system uses its default aspect ratio.
+     */
+    private fun VideoSize.toDisplayRational(): Rational? {
+        if (width <= 0 || height <= 0) return null
+
+        val pixelRatio = pixelWidthHeightRatio.takeIf { it > 0f } ?: 1f
+        return Rational((width * pixelRatio).roundToInt(), height)
     }
 
     companion object {
