@@ -12,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.state.PipManager
 import ch.srgssr.pillarbox.ui.state.rememberPipManager
 
 /**
@@ -55,9 +57,15 @@ class SimplePlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
+                val pipManager = rememberPipManager(player = playerViewModel.player, autoEnterEnabled = true)
+
                 Scaffold(containerColor = Color.Black) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainContent(playerViewModel.player)
+                    // There are no system bars in Picture-in-Picture, but the insets are only updated after the first layout in the
+                    // Picture-in-Picture window, which would shrink the video during the transition.
+                    val contentPadding = if (pipManager.isInPictureInPicture) PaddingValues() else innerPadding
+
+                    Box(modifier = Modifier.padding(contentPadding)) {
+                        MainContent(playerViewModel.player, pipManager)
                     }
                 }
             }
@@ -65,10 +73,10 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun MainContent(player: PillarboxPlayer) {
+    private fun MainContent(player: PillarboxPlayer, pipManager: PipManager) {
         DemoPlayerView(
             player = player,
-            pipManager = rememberPipManager(player = player, autoEnterEnabled = true),
+            pipManager = pipManager,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
     }
