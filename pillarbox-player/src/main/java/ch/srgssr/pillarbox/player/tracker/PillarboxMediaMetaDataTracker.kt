@@ -47,11 +47,13 @@ internal class PillarboxMediaMetaDataTracker(
     override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
         if (currentChapterTracker?.timeRanges != pillarboxMetadata.chapters) {
             currentChapterTracker?.clear()
+            // TODO MBO double check, callback if broken
             currentChapterTracker = Tracker(player = player, timeRanges = pillarboxMetadata.chapters, callback = onChapterChange)
         }
 
         if (currentCreditTracker?.timeRanges != pillarboxMetadata.credits) {
             currentCreditTracker?.clear()
+            // TODO MBO double check, callback if broken
             currentCreditTracker = Tracker(player = player, timeRanges = pillarboxMetadata.credits, callback = onCreditChange)
         }
     }

@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player.asset.timeRange
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a time range that is blocked for playback. When the player reaches the [start] time of a blocked range, it will immediately seek to the
@@ -17,6 +18,7 @@ import kotlinx.parcelize.Parcelize
  * @property id An optional unique identifier for the block.
  */
 @Parcelize
+@Serializable
 data class BlockedTimeRange(
     override val start: Long,
     override val end: Long,

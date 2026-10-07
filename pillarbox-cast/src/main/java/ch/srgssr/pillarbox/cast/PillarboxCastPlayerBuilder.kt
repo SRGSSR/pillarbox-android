@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.cast
 import android.content.Context
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
+import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxDsl
@@ -26,6 +27,8 @@ abstract class PillarboxCastPlayerBuilder {
     private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
     private var tracksConverter: TracksConverter = DefaultTracksConverter()
+    private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
+    private var onCastSessionUnavailable: (PillarboxCastPlayer.() -> Unit)? = null
 
     /**
      * @param seekBackIncrement The [PillarboxCastPlayer.seekBack] increment.
@@ -88,7 +91,18 @@ abstract class PillarboxCastPlayerBuilder {
             maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector = trackSelector,
             tracksConverter = tracksConverter,
-        )
+        ).apply {
+            if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
+            setSessionAvailabilityListener(object : SessionAvailabilityListener {
+                override fun onCastSessionAvailable() {
+                    onCastSessionAvailable?.invoke(this@apply)
+                }
+
+                override fun onCastSessionUnavailable() {
+                    onCastSessionUnavailable?.invoke(this@apply)
+                }
+            })
+        }
     }
 }
 

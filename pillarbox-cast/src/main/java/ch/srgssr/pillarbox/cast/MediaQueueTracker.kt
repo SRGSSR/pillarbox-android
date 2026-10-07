@@ -79,9 +79,6 @@ internal class MediaQueueTracker(
      */
     override fun mediaQueueChanged() {
         DebugLogger.debug(TAG, "mediaQueueChanged #${mediaQueue.itemCount}")
-        /*lastMediaStatus?.let {
-            updateWithMediaStatus(it)
-        }*/
         update()
     }
 

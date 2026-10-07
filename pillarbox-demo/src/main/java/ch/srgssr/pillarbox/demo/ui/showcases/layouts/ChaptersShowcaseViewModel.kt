@@ -26,6 +26,7 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Player
      */
+
     val player = PillarboxExoPlayer(application)
 
     /**
