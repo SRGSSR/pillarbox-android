@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.extension.toRational
@@ -109,7 +111,7 @@ interface PipManager {
     var sourceRect: Rect?
 
     /**
-     * Represents the aspect ratio of the Picture-in-Picture window.
+     * Represents the aspect ratio of the Picture-in-Picture window. It is coerced between 1:2.39 and 2.39:1, the range supported by the system.
      */
     var ratio: Rational?
 
@@ -120,9 +122,11 @@ interface PipManager {
     var autoEnterEnabled: Boolean
 
     /**
-     * Enter Picture-in-Picture mode. It does nothing when [isSupported] is `false`.
+     * Enter Picture-in-Picture mode. It does nothing when [isSupported] or [isAllowed] is `false`.
+     *
+     * @return `true` if the system accepted the request to enter Picture-in-Picture, `false` otherwise.
      */
-    fun enter()
+    fun enter(): Boolean
 
     /**
      * A no-op [PipManager] for Compose Previews, where there is no [Activity]. [rememberPipManager] returns it in Preview mode.
@@ -135,7 +139,7 @@ interface PipManager {
         override var ratio: Rational? = null
         override var autoEnterEnabled = false
 
-        override fun enter() = Unit
+        override fun enter() = false
     }
 }
 
@@ -147,6 +151,12 @@ private class PipManagerImpl(
     private val pictureInPictureModeObserver = Consumer<PictureInPictureModeChangedInfo> { changedInfo ->
         isInPictureInPicture = changedInfo.isInPictureInPictureMode
     }
+    private val lifecycleObserver = LifecycleEventObserver { _, event ->
+        // The user can change the Picture-in-Picture permission from the system settings while the Activity is in the background.
+        if (event == Lifecycle.Event.ON_RESUME) {
+            isAllowed = this.activity?.isPictureInPictureAllowed() == true
+        }
+    }
     private val playerListener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             playerRatio = videoSize.toRational()
@@ -155,6 +165,7 @@ private class PipManagerImpl(
     }
     private var playerRatio: Rational? = player?.videoSize?.toRational()
     private var ratioOverride: Rational? = null
+    private var isObserving = false
 
     private val activity: ComponentActivity?
         get() = activityRef.get()
@@ -194,11 +205,10 @@ private class PipManagerImpl(
             updatePictureInPictureParams()
         }
 
-    override fun enter() {
-        if (!isSupported) return
+    override fun enter(): Boolean {
         isAllowed = this.activity?.isPictureInPictureAllowed() == true
-        if (!isAllowed) return
-        activity?.runCatchingPictureInPicture {
+        if (!isSupported || !isAllowed) return false
+        return activity?.runCatchingPictureInPicture {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 enterPictureInPictureMode(pictureInPictureParams())
             } else {
@@ -206,19 +216,26 @@ private class PipManagerImpl(
                     @Suppress("DEPRECATION")
                     enterPictureInPictureMode()
                 }
+                true
             }
-        }
+        } == true
     }
 
     fun startObserving() {
+        isObserving = true
         player?.addListener(playerListener)
         activity?.addOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
+        activity?.lifecycle?.addObserver(lifecycleObserver)
         updatePictureInPictureParams()
     }
 
     fun stopObserving() {
+        isObserving = false
+        activity?.lifecycle?.removeObserver(lifecycleObserver)
         activity?.removeOnPictureInPictureModeChangedListener(pictureInPictureModeObserver)
         player?.removeListener(playerListener)
+        // The Activity keeps the last Picture-in-Picture parameters, so disable auto-enter now that the player is no longer displayed.
+        updatePictureInPictureParams()
     }
 
     private fun updatePictureInPictureParams() {
@@ -232,11 +249,11 @@ private class PipManagerImpl(
     @RequiresApi(Build.VERSION_CODES.O)
     private fun pictureInPictureParams(): PictureInPictureParams {
         return PictureInPictureParams.Builder()
-            .setAspectRatio(ratio)
+            .setAspectRatio(ratio?.coerceIn(MIN_ASPECT_RATIO, MAX_ASPECT_RATIO))
             .setSourceRectHint(sourceRect)
             .apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    setAutoEnterEnabled(autoEnterEnabled)
+                    setAutoEnterEnabled(autoEnterEnabled && isObserving)
                 }
             }
             .build()
@@ -246,11 +263,12 @@ private class PipManagerImpl(
      * The Picture-in-Picture APIs throw when the [Activity] is not declared with `android:supportsPictureInPicture="true"`, which can only
      * be detected this way: [ActivityInfo][android.content.pm.ActivityInfo] does not expose that flag publicly.
      */
-    private inline fun ComponentActivity.runCatchingPictureInPicture(block: ComponentActivity.() -> Unit) {
-        try {
+    private inline fun <T> ComponentActivity.runCatchingPictureInPicture(block: ComponentActivity.() -> T): T? {
+        return try {
             block()
         } catch (exception: IllegalStateException) {
             Log.w(TAG, "Picture-in-Picture is not available. Is android:supportsPictureInPicture=\"true\" set for this Activity?", exception)
+            null
         }
     }
 
@@ -276,5 +294,12 @@ private class PipManagerImpl(
 
     companion object {
         private const val TAG = "PipManager"
+
+        /**
+         * The system throws when the Picture-in-Picture aspect ratio is outside of this range, for example with ultra-wide or tall videos.
+         * The bounds are those of [PictureInPictureParams.Builder.setAspectRatio].
+         */
+        private val MIN_ASPECT_RATIO = Rational(100, 239)
+        private val MAX_ASPECT_RATIO = Rational(239, 100)
     }
 }

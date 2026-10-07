@@ -180,8 +180,7 @@ private fun PlayerContent(
                 isPictureInPictureEnabled = pipManager?.let { it.isSupported && it.isAllowed } == true,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = {
-                    isEnteringPictureInPicture = true
-                    pipManager?.enter()
+                    isEnteringPictureInPicture = pipManager?.enter() == true
                 },
                 isInFullscreen = fullscreenButtonState.isInFullscreen,
                 onFullscreenClick = fullscreenButtonState::onClick,
