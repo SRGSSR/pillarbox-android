@@ -13,7 +13,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
-import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
@@ -182,7 +181,6 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
             commanderActTrackerFactory = commanderActTrackerFactory,
             comscoreTrackerFactory = comscoreTrackerFactory,
             mediaCompositionService = mediaCompositionService,
-            resourceSelector = ResourceSelector(),
             spriteSheetLoader = spriteSheetLoader,
             spriteSheetLoaderCoroutineContext = spriteSheetLoaderCoroutineContext
         )

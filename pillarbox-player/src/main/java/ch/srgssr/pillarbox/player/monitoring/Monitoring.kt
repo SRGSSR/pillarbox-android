@@ -64,6 +64,7 @@ internal class Monitoring(
             },
         )
         var assetUrl: String? = null
+        var responseHeaders: Map<String, List<String>>? = null
         var qoeTimings = Timings.QoE()
         var qosTimings = Timings.QoS()
         var error: PlaybackException? = null
@@ -158,7 +159,6 @@ internal class Monitoring(
                 metadata = metadataLoadingTime?.inWholeMilliseconds,
                 total = loadDuration.timeToReady?.inWholeMilliseconds,
             )
-
             sendStartEvent(sessionHolder = holder)
             holder.state = SessionHolder.State.STARTED
         }
@@ -170,6 +170,17 @@ internal class Monitoring(
 
     override fun onLoadCanceled(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
         setAssetUrlForEventTime(eventTime, loadEventInfo, mediaLoadData)
+    }
+
+    override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        if (eventTime.timeline.isEmpty || (mediaLoadData.dataType != C.DATA_TYPE_MEDIA && mediaLoadData.dataType != C.DATA_TYPE_MANIFEST)) return
+        val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
+
+        sessionHolders[session.sessionId]?.let { holder ->
+            if (holder.responseHeaders.isNullOrEmpty() && loadEventInfo.responseHeaders.isNotEmpty()) {
+                holder.responseHeaders = loadEventInfo.responseHeaders
+            }
+        }
     }
 
     override fun onLoadError(
@@ -297,6 +308,8 @@ internal class Monitoring(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
+                    metadataHeaders = sessionHolder.responseHeaders?.filterKeys { key -> MONITORED_METADATA_HEADERS.contains(key) }
+                        ?.mapValues { (_, value) -> value.joinToString() },
                 ),
                 qoeTimings = sessionHolder.qoeTimings,
                 qosTimings = sessionHolder.qosTimings,
@@ -308,6 +321,15 @@ internal class Monitoring(
         private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "Monitoring"
 
+        /**
+         * The names of the response headers needed for analytics/monitoring
+         */
+        private val MONITORED_METADATA_HEADERS = listOf(
+            "akamai-grn",
+            "x-location-info",
+            "x-proxy-detection-info",
+            "x-tracing-id",
+        )
         internal val List<Track>.selectedLanguage: String?
             get() = find { it.isSelected }?.format?.language
 

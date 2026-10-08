@@ -65,7 +65,7 @@ class PillarboxMediaSource internal constructor(
         runBlocking {
             try {
                 val asset = assetLoader.loadAsset(mediaItem)
-                dispatchLoadCompleted()
+                dispatchLoadCompleted(asset.responseHeaders)
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItemTrackerData = asset.trackersData
@@ -190,10 +190,10 @@ class PillarboxMediaSource internal constructor(
         eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET, 0)
     }
 
-    private fun dispatchLoadCompleted() {
+    private fun dispatchLoadCompleted(responseHeaders: Map<String, List<String>>? = null) {
         val startTimeMark = timeMarkLoadStart ?: return
 
-        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark), DATA_TYPE_CUSTOM_ASSET)
+        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark, responseHeaders), DATA_TYPE_CUSTOM_ASSET)
 
         loadTaskId = 0L
         timeMarkLoadStart = null
@@ -208,7 +208,7 @@ class PillarboxMediaSource internal constructor(
         timeMarkLoadStart = null
     }
 
-    private fun createLoadEventInfo(startTimeMark: TimeMark? = null): LoadEventInfo {
+    private fun createLoadEventInfo(startTimeMark: TimeMark? = null, responseHeaders: Map<String, List<String>>? = null): LoadEventInfo {
         val currentTimeMark = timeSource.markNow()
         val mediaUri = mediaItem.localConfiguration?.uri ?: Uri.EMPTY
 
@@ -216,7 +216,7 @@ class PillarboxMediaSource internal constructor(
             loadTaskId,
             DataSpec(mediaUri),
             mediaUri,
-            emptyMap(),
+            responseHeaders.orEmpty(),
             currentTimeMark.elapsedNow().inWholeMilliseconds,
             startTimeMark?.let { (it.elapsedNow() - currentTimeMark.elapsedNow()).inWholeMilliseconds } ?: 0L,
             0L,

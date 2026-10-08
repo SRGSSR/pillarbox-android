@@ -37,7 +37,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
             configureKotlinModule()
 
-            defaultConfig{
+            defaultConfig {
                 minSdk = AppConfig.appMinSdk
             }
 
@@ -59,7 +59,10 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
             signingConfigs {
                 register("release") {
-                    val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
+
+                    val password = providers.environmentVariable("DEMO_KEY_PASSWORD")
+                        .orElse(providers.gradleProperty("pillarbox.keystore.password"))
+                        .orNull
 
                     storeFile = rootProject.projectDir.resolve("config/keystore/demo.keystore")
                     storePassword = password

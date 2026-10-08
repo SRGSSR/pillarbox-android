@@ -61,6 +61,8 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient.ProgressLis
 import com.google.android.gms.common.api.PendingResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.IOException
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
@@ -153,11 +155,13 @@ class PillarboxCastPlayer internal constructor(
 
     private var castSession: CastSession? = null
         set(value) {
-            field?.removeCastListener(castListener)
-            value?.addCastListener(castListener)
-            field = value
+            if (field != value) {
+                field?.removeCastListener(castListener)
+                value?.addCastListener(castListener)
+                field = value
 
-            remoteMediaClient = value?.remoteMediaClient
+                remoteMediaClient = value?.remoteMediaClient
+            }
         }
 
     private var deviceInfo = if (isMediaRouter2Available()) checkNotNull(mediaRouter).fetchDeviceInfo() else DEVICE_INFO_REMOTE_EMPTY
@@ -171,6 +175,12 @@ class PillarboxCastPlayer internal constructor(
     private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
+    private val _castSessionAvailable = MutableStateFlow(false)
+
+    /**
+     * Returns whether a cast session is available.
+     */
+    val castSessionAvailable = _castSessionAvailable.asStateFlow()
 
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
@@ -189,17 +199,15 @@ class PillarboxCastPlayer internal constructor(
                 field?.addProgressListener(positionSupplier, 1000L)
                 field?.requestStatus()
                 invalidateState()
-                if (field == null) {
-                    sessionAvailabilityListener?.onCastSessionUnavailable()
-                } else {
-                    sessionAvailabilityListener?.onCastSessionAvailable()
-                }
             }
         }
 
     init {
         castContext.sessionManager.addSessionManagerListener(sessionListener, CastSession::class.java)
-        castSession = castContext.sessionManager.currentCastSession
+        castSession = castContext.sessionManager.currentCastSession.also {
+            _castSessionAvailable.value = it != null
+        }
+
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
@@ -221,18 +229,11 @@ class PillarboxCastPlayer internal constructor(
     }
 
     /**
-     * Returns whether a cast session is available.
-     */
-    fun isCastSessionAvailable(): Boolean {
-        return remoteMediaClient != null
-    }
-
-    /**
      * Sets a listener for updates on the cast session availability.
      *
      * @param listener The [SessionAvailabilityListener], or null to clear the listener.
      */
-    fun setSessionAvailabilityListener(listener: SessionAvailabilityListener?) {
+    internal fun setSessionAvailabilityListener(listener: SessionAvailabilityListener?) {
         sessionAvailabilityListener = listener
     }
 
@@ -571,6 +572,25 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
+    private fun setSessionAvailable(isSessionAvailable: Boolean) {
+        if (castSessionAvailable.value != isSessionAvailable) {
+            if (isSessionAvailable) {
+                sessionAvailabilityListener?.onCastSessionAvailable()
+            } else {
+                sessionAvailabilityListener?.onCastSessionUnavailable()
+            }
+        }
+        _castSessionAvailable.value = isSessionAvailable
+    }
+
+    /**
+     * @return `true` when a cast session is available
+     * @see castSessionAvailable
+     */
+    fun isCastSessionAvailable(): Boolean {
+        return castSessionAvailable.value
+    }
+
     private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback() {
         // RemoteClient Callback
 
@@ -621,11 +641,13 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.i(TAG, "onSessionEnded ${session.sessionId} with error = $error")
+            setSessionAvailable(false)
             castSession = null
         }
 
         override fun onSessionEnding(session: CastSession) {
             Log.i(TAG, "onSessionEnding ${session.sessionId}")
+            setSessionAvailable(false)
             sessionAvailabilityListener?.onCastSessionUnavailable()
         }
 
@@ -636,6 +658,7 @@ class PillarboxCastPlayer internal constructor(
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.i(TAG, "onSessionResumed ${session.sessionId} wasSuspended = $wasSuspended")
             castSession = session
+            setSessionAvailable(true)
         }
 
         override fun onSessionResuming(session: CastSession, sessionId: String) {
@@ -649,6 +672,7 @@ class PillarboxCastPlayer internal constructor(
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             Log.i(TAG, "onSessionStarted ${session.sessionId} sessionId = $sessionId")
             castSession = session
+            setSessionAvailable(true)
         }
 
         override fun onSessionStarting(session: CastSession) {
@@ -657,6 +681,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionSuspended(session: CastSession, reason: Int) {
             Log.i(TAG, "onSessionSuspended ${session.sessionId} with reason = $reason")
+            setSessionAvailable(false)
             castSession = null
         }
     }

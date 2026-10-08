@@ -19,7 +19,6 @@ import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.extension.commandersActSource
 import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
-import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -101,7 +100,6 @@ class SRGAssetLoader internal constructor(
     private val comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data>,
     private val customTrackerData: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)?,
     private val customMediaMetadata: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)?,
-    private val resourceSelector: ResourceSelector,
     private val spriteSheetLoader: SpriteSheetLoader,
     private val spriteSheetLoaderCoroutineContext: CoroutineContext,
 ) : AssetLoader(
@@ -123,20 +121,20 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         checkNotNull(mediaItem.localConfiguration)
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+        val resultWithHeaders = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
                 is HttpResultException -> throw it
                 is SerializationException -> throw DataParsingException(it)
                 else -> throw IOException(it.message)
             }
         }
+        val result = resultWithHeaders.mediaComposition
 
         val chapter = result.mainChapter
         chapter.getBlockReasonExceptionOrNull()?.let {
             throw it
         }
-
-        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
+        val resource = chapter.listResource?.firstOrNull() ?: throw ResourceNotFoundException() // backend should always return the best resource
         var uri = resource.url.toUri()
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
@@ -166,6 +164,7 @@ class SRGAssetLoader internal constructor(
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
             }.build(),
+            responseHeaders = resultWithHeaders.headers,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
                 chapters = ChapterAdapter.getChapters(result, ilHost),

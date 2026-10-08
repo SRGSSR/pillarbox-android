@@ -168,6 +168,22 @@ To start using Pillarbox in your project, you can check each module's documentat
 - [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
 - [`pillarbox-ui`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-ui/docs/README.md)
 
+## Release process
+
+Pillarbox is released via the CI pipeline hosted in [GitHub Actions](https://github.com/SRGSSR/pillarbox-android/actions). A release is triggered by pushing a tag in the format `X.Y.Z` (e.g. `2.1.0`).
+
+Pushing such a tag runs the [Release Pillarbox](https://github.com/SRGSSR/pillarbox-android/actions/workflows/release.yml) workflow, which:
+
+1. Runs pre-release checks
+2. Publishes packages
+3. Uploads the demo app to Firebase App Distribution
+4. Creates a GitHub Release
+5. Publishes the documentation
+
+Once the workflow completes, the Pillarbox team reviews the generated release notes and finalizes them.
+
+Past releases are available in the [release history](https://github.com/SRGSSR/pillarbox-android/releases).
+
 ## Contributing
 
 If you want to contribute to the project have a look at our [contributing guide](CONTRIBUTING.md).

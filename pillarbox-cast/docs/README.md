@@ -13,6 +13,12 @@ implementation("ch.srgssr.pillarbox:pillarbox-cast:<pillarbox_version>")
 The main goal of this module is to be able to build a user interface that can be used with a [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] or [PillarboxCastPlayer][ch.srgssr.pillarbox.cast.PillarboxCastPlayer]. Both
 implementations are based on the [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] interface.
 
+> [!CAUTION]  
+> Required since Android 17 (target API 37) to discover and connect to Cast receivers on the LAN.
+>
+> [Request runtime permission](https://developer.android.com/training/permissions/requesting):
+`<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />`
+
 ## Getting started
 
 ### Setup [CastContext][cast-context]
