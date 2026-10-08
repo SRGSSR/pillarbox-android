@@ -36,6 +36,10 @@ Templates are available when you want to contribute:
 
 We currently have no formal code conventions, but we try to keep our codebase consistent. In general, having a look at the code itself should be enough for you to discover how you should write your changes.
 
+## AI-assisted contributions
+
+If you use [Claude Code](https://docs.claude.com/en/docs/claude-code), the repository ships shared permission rules that block access to secrets and require confirmation before publishing actions. See [`.claude/README.md`](../.claude/README.md) for details.
+
 ## Code review
 
 Pull requests, once complete, can be submitted for review by our team. Depending on the complexity of the involved changes, a few iterations might be needed. Once a pull request has been approved, it will be rebased, merged back into the development trunk and delivered with the next release.
