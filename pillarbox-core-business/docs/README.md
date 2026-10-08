@@ -61,13 +61,22 @@ player.setMediaItem(mediaItem)
 [CommandersActSource][ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource] can be passed to `SRGMediaItem` to forward labels to Commanders Act.
 
 ```kotlin
-val customMediaItem: MediaItem = SRGMediaItem("urn:rts:video:12345") {
+val mediaItem: MediaItem = SRGMediaItem("urn:rts:video:12345") {
     commandersActSource(CommandersActSource(pageId = "pageId", sectionId = "sectionId"))
 }
 
 // Give the MediaItem to the player so it can be played
 player.setMediaItem(mediaItem)
+
+// Read the CommandersActSource back from the MediaItem
+val source: CommandersActSource? = mediaItem.commandersActSource
 ```
+
+> [!NOTE]
+> The [CommandersActSource][ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource] is stored in the
+> [MediaMetadata.extras][androidx.media3.common.MediaMetadata.extras] using only platform types. Those extras are shared with other processes
+> through the media session (e.g. Bluetooth), which can't load custom [Parcelable][android.os.Parcelable] classes. If you add your own data to
+> the extras, only use platform types, otherwise system processes may crash on Android 12 and lower.
 
 ### Handle error
 
@@ -148,7 +157,9 @@ val player = PillarboxExoPlayer(context) {
 }
 ```
 
+[android.os.Parcelable]: https://developer.android.com/reference/android/os/Parcelable
 [androidx.media3.common.MediaItem]: https://developer.android.com/reference/androidx/media3/common/MediaItem
+[androidx.media3.common.MediaMetadata.extras]: https://developer.android.com/reference/androidx/media3/common/MediaMetadata#extras()
 [androidx.media3.common.PlaybackException]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
 [androidx.media3.exoplayer.source.MediaSource]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
 [ch.srgssr.pillarbox.core.business.exception.BlockReasonException]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/BlockReasonException.kt
@@ -163,4 +174,4 @@ val player = PillarboxExoPlayer(context) {
 [ch.srgssr.pillarbox.player.source.PillarboxMediaSource]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.source/-pillarbox-media-source/index.html
 [kotlin.Exception]: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.analytics.commandersact/-commanders-act-source/index.html
+[ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics.commandersact/-commanders-act-source/index.html
