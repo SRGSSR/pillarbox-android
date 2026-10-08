@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.core.business.extension
 
-import androidx.core.os.BundleCompat
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder.Companion.EXTRAS_KEY_COMMANDERS_ACT_SOURCE
@@ -14,5 +13,5 @@ import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder.Companion.EXTRAS_KE
  */
 val MediaItem.commandersActSource: CommandersActSource?
     get() {
-        return mediaMetadata.extras?.let { BundleCompat.getParcelable(it, EXTRAS_KEY_COMMANDERS_ACT_SOURCE, CommandersActSource::class.java) }
+        return mediaMetadata.extras?.getBundle(EXTRAS_KEY_COMMANDERS_ACT_SOURCE)?.toCommandersActSource()
     }

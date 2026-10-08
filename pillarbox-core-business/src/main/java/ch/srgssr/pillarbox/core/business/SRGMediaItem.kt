@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource
 import ch.srgssr.pillarbox.core.business.extension.commandersActSource
+import ch.srgssr.pillarbox.core.business.extension.toBundle
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
@@ -191,14 +192,14 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
         if (extras == null) {
             commandersActSource?.let {
                 val newExtras = Bundle().apply {
-                    putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, commandersActSource)
+                    putBundle(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, it.toBundle())
                 }
                 mediaMetadataBuilder.setExtras(newExtras)
             }
         } else {
             extras.remove(EXTRAS_KEY_COMMANDERS_ACT_SOURCE)
             commandersActSource?.let {
-                extras.putParcelable(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, it)
+                extras.putBundle(EXTRAS_KEY_COMMANDERS_ACT_SOURCE, it.toBundle())
             }
             mediaMetadataBuilder.setExtras(extras)
         }
