@@ -5,14 +5,27 @@
       "Bash(git push)",
       "Bash(git push *)",
       "Bash(git reset --hard)",
-      "Bash(git reset --hard *)"
+      "Bash(git reset --hard *)",
+      "Bash(./gradlew *publish*)",
+      "Bash(./gradlew *appDistributionUpload*)",
+      "Bash(gh release *)",
+      "Bash(gh pr merge *)",
+      "Edit(.github/workflows/**)",
+      "Edit(gradle/wrapper/**)",
+      "Edit(gradlew)",
+      "Edit(gradlew.bat)",
+      "Edit(gradle/libs.versions.toml)"
     ],
     "deny": [
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Read(./**/local.properties)",
       "Read(./**/*.keystore)",
-      "Read(./**/*.jks)"
+      "Read(./**/*.jks)",
+      "Read(./**/*.p12)",
+      "Read(./**/google-services.json)",
+      "Read(./**/*service-account*.json)",
+      "Read(~/.gradle/gradle.properties)"
     ]
   }
 }
