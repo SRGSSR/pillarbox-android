@@ -118,6 +118,7 @@ class PillarboxCastReceiverPlayer(
             mediaManager.setMediaStatusInterceptor(LogMediaStatusInterceptor)
         }
         player.setRemoteReceiver(hasSenders())
+        addListener(pillarboxMediaCommand)
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {
@@ -297,6 +298,7 @@ class PillarboxCastReceiverPlayer(
         castReceiverContext.unregisterEventCallback(eventCallback)
         mediaManager.setSessionCompatToken(null)
         player.release()
+        removeListener(pillarboxMediaCommand)
     }
 
     override fun getAudioSessionId(): Int {
