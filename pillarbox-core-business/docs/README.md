@@ -72,6 +72,11 @@ player.setMediaItem(mediaItem)
 val source: CommandersActSource? = mediaItem.commandersActSource
 ```
 
+> [!NOTE]
+> The CommandersActSource is stored in the [MediaMetadata.extras][androidx.media3.common.MediaMetadata.extras] using only platform types. 
+> Those extras are shared with other processes through the media session (e.g. Bluetooth), which can't load custom Parcelable classes. 
+> If you add your own data to the extras, only use platform types, otherwise system processes may crash on Android 12 and lower.
+
 ### Handle error
 
 All exceptions thrown by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] are caught by the player inside a
