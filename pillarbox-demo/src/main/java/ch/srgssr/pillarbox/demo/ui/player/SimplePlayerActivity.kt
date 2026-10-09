@@ -4,35 +4,30 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import ch.srgssr.pillarbox.ui.state.PipManager
+import ch.srgssr.pillarbox.ui.state.rememberPipManager
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -59,22 +54,18 @@ class SimplePlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         readIntent(intent)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            lifecycleScope.launch {
-                playerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
-                    val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(it)
-                        .build()
-                    setPictureInPictureParams(params)
-                }
-            }
-        }
 
         setContent {
             PillarboxTheme {
+                val pipManager = rememberPipManager(player = playerViewModel.player, autoEnterEnabled = true)
+
                 Scaffold(containerColor = Color.Black) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainContent(playerViewModel.player)
+                    // There are no system bars in Picture-in-Picture, but the insets are only updated after the first layout in the
+                    // Picture-in-Picture window, which would shrink the video during the transition.
+                    val contentPadding = if (pipManager.isInPictureInPicture) PaddingValues() else innerPadding
+
+                    Box(modifier = Modifier.padding(contentPadding)) {
+                        MainContent(playerViewModel.player, pipManager)
                     }
                 }
             }
@@ -82,22 +73,10 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun MainContent(player: PillarboxPlayer) {
-        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            rememberPictureInPictureButtonState {
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-                    .build()
-            }
-        } else {
-            rememberPictureInPictureButtonState()
-        }
-
+    private fun MainContent(player: PillarboxPlayer, pipManager: PipManager) {
         DemoPlayerView(
             player = player,
-            isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
-            isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
-            onPictureInPictureClick = pictureInPictureButtonState::onClick,
+            pipManager = pipManager,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
     }

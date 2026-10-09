@@ -6,7 +6,6 @@
 
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -27,6 +26,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,15 +48,14 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.state.PipManager
 
 /**
  * Demo player
  *
  * @param player The [Player] to observe.
  * @param modifier The [Modifier] to be applied to the layout.
- * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
- * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
- * @param onPictureInPictureClick The Picture-in-Picture button action.
+ * @param pipManager The [PipManager] to drive the Picture-in-Picture button with, or `null` to hide it.
  * @param displayPlaylist If it displays the playlist UI or not.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
@@ -64,9 +63,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 fun DemoPlayerView(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
-    isPictureInPictureEnabled: Boolean = false,
-    isInPictureInPicture: Boolean = false,
-    onPictureInPictureClick: () -> Unit = {},
+    pipManager: PipManager? = null,
     displayPlaylist: Boolean = false,
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
@@ -81,9 +78,7 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                isPictureInPictureEnabled = isPictureInPictureEnabled,
-                isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = onPictureInPictureClick,
+                pipManager = pipManager,
                 onSettingsClick = { showSettings = !showSettings },
                 displayPlaylist = displayPlaylist,
             )
@@ -103,9 +98,7 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
-            isPictureInPictureEnabled = isPictureInPictureEnabled,
-            isInPictureInPicture = isInPictureInPicture,
-            onPictureInPictureClick = onPictureInPictureClick,
+            pipManager = pipManager,
             onSettingsClick = { showSettingsSheet = true },
             displayPlaylist = displayPlaylist,
         )
@@ -125,9 +118,7 @@ private fun PlayerContent(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory()),
-    isPictureInPictureEnabled: Boolean,
-    isInPictureInPicture: Boolean,
-    onPictureInPictureClick: () -> Unit,
+    pipManager: PipManager?,
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
 ) {
@@ -135,6 +126,13 @@ private fun PlayerContent(
     val repeatButtonState = rememberRepeatButtonState(player)
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
+    val isInPictureInPicture = pipManager?.isInPictureInPicture == true
+    // Hide the controls as soon as Picture-in-Picture is requested from the button, so that they don't show up during the transition.
+    var isEnteringPictureInPicture by remember { mutableStateOf(false) }
+    LaunchedEffect(isInPictureInPicture) {
+        isEnteringPictureInPicture = false
+    }
+    val showControls = !isInPictureInPicture && !isEnteringPictureInPicture
 
     Column(modifier = modifier) {
         var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
@@ -157,8 +155,8 @@ private fun PlayerContent(
                 .weight(1f)
                 .then(scalableModifier),
             player = player,
-            controlsToggleable = !isInPictureInPicture,
-            controlsVisible = !isInPictureInPicture,
+            controlsToggleable = showControls,
+            controlsVisible = showControls,
             contentScale = pinchContentScale,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
@@ -169,6 +167,7 @@ private fun PlayerContent(
                     AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
                 },
             ),
+            pipManager = pipManager,
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
@@ -178,15 +177,18 @@ private fun PlayerContent(
                 isRepeatEnabled = repeatButtonState.isEnabled,
                 repeatMode = repeatButtonState.repeatModeState,
                 onRepeatClick = repeatButtonState::onClick,
-                isPictureInPictureEnabled = isPictureInPictureEnabled,
+                isPictureInPictureEnabled = pipManager?.let { it.isSupported && it.isAllowed } == true,
                 isInPictureInPicture = isInPictureInPicture,
-                onPictureInPictureClick = onPictureInPictureClick,
+                onPictureInPictureClick = {
+                    isEnteringPictureInPicture = true
+                    pipManager?.enter()
+                },
                 isInFullscreen = fullscreenButtonState.isInFullscreen,
                 onFullscreenClick = fullscreenButtonState::onClick,
                 onSettingsClick = onSettingsClick,
             )
         }
-        if (displayPlaylist && !isInPictureInPicture && !fullscreenButtonState.isInFullscreen) {
+        if (displayPlaylist && showControls && !fullscreenButtonState.isInFullscreen) {
             PlaylistView(
                 modifier = Modifier
                     .weight(1f)

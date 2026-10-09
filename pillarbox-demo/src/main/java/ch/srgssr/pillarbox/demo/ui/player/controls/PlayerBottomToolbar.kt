@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 import android.app.Activity
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.visible
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
@@ -91,6 +92,7 @@ fun PlayerBottomToolbar(
                 enabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
                 onClick = onPictureInPictureClick,
+                modifier = Modifier.visible(isPictureInPictureEnabled)
             )
 
             FullscreenButton(
