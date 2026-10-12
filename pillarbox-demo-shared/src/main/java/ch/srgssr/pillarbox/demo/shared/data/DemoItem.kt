@@ -9,6 +9,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSource
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
@@ -103,6 +104,7 @@ sealed class DemoItem(
                 host(host)
                 forceSAM(forceSAM)
                 ilLocation(ilLocation)
+                commandersActSource(DemoCommandersActSource)
                 mediaMetadata {
                     setTitle(title)
                     setDescription(description)
@@ -120,5 +122,10 @@ sealed class DemoItem(
     companion object {
         @Suppress("ConstPropertyName")
         private const val serialVersionUID: Long = 1
+
+        private val DemoCommandersActSource = CommandersActSource(
+            pageId = "pillarbox-demo",
+            sectionId = "demo-items",
+        )
     }
 }
