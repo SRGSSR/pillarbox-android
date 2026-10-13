@@ -151,7 +151,15 @@ class PillarboxCastPlayer internal constructor(
      */
     override val isImageOutputAvailable: Boolean = false
 
-    override val currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+    override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+        private set(value) {
+            if (value != field) {
+                field = value
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
+                    listener.onPillarboxMetadataChanged(value)
+                }
+            }
+        }
 
     private var castSession: CastSession? = null
         set(value) {
@@ -251,6 +259,11 @@ class PillarboxCastPlayer internal constructor(
         val deviceVolume = castSession?.let {
             (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
+        val castChapters = remoteMediaClient.mediaStatus?.mediaInfo?.customData?.let {
+            PillarboxMetadataConverter.decodeCastChapters(it)
+        }
+        currentPillarboxMetadata =
+            if (castChapters == null) PillarboxMetadata.EMPTY else PillarboxMetadata(chapters = castChapters.map { c -> c.toChapter() })
 
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
