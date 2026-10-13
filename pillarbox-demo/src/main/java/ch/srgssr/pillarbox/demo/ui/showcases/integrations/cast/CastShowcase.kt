@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
@@ -29,8 +27,8 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
  */
 @Composable
 fun CastShowcase() {
-    val mainViewModel: CastShowcaseViewModel = viewModel()
-    val player by mainViewModel.currentPlayer.collectAsStateWithLifecycle()
+    val showcaseViewModel: CastShowcaseViewModel = viewModel()
+    val player = showcaseViewModel.currentPlayer
 
     Column {
         Box(
@@ -45,7 +43,7 @@ fun CastShowcase() {
             )
             MediaRouteButton(
                 modifier = Modifier.align(Alignment.TopEnd),
-                routeSelector = mainViewModel.routeSelector,
+                routeSelector = showcaseViewModel.routeSelector,
                 colors = IconButtonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.White,

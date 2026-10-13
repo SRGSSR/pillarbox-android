@@ -101,24 +101,25 @@ id or a URI. Its responsibility is to provide a [MediaSource][androidx.media3.ex
 
 - Is playable by the player;
 - Contains [tracking data][pillarbox-tracking-data];
-- Provides optional media metadata.
+- Provides optional media metadata;
+- Provides optional Pillarbox metadata (chapters, credits and blocked time ranges);
+- Provides optional response headers of the metadata request, used by the monitoring.
 
 ```kotlin
 class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
-        return mediaItem.localConfigruation?.uri?.scheme == "custom"
+        return mediaItem.localConfiguration?.uri?.scheme == "custom"
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val data = service.fetchData(mediaItem.localConfigruation!!.uri)
+        val response = service.fetchData(mediaItem.localConfiguration!!.uri)
+        val data = response.data
         val trackerData = MutableMediaItemTrackerData()
         trackerData[KEY] = FactoryData(CustomMediaItemTracker.Factory(), CustomTrackerData("CustomData"))
 
         val mediaMetadata = MediaMetadata.Builder()
             .setTitle(data.title)
             .setArtworkUri(data.imageUri)
-            .setChapters(data.chapters)
-            .setCredits(data.credits)
             .build()
         val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
 
@@ -126,7 +127,12 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
             mediaMetadata = mediaMetadata,
-            blockedTimeRanges = emptyList(),
+            pillarboxMetadata = PillarboxMetadata(
+                chapters = data.chapters,
+                credits = data.credits,
+                blockedTimeRanges = emptyList(),
+            ),
+            responseHeaders = response.headers,
         )
     }
 }

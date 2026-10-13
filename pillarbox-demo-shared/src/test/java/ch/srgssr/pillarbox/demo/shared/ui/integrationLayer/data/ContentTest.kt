@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 class ContentTest {
     @Test
     fun getMediaDate() {
-        Locale.setDefault(Locale("fr", "CH"))
+        Locale.setDefault(Locale.Builder().setLanguage("fr").setRegion("CH").build())
 
         val media = Media(
             id = "id",

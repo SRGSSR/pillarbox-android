@@ -105,7 +105,7 @@ class SRGMediaItemBuilderTest {
     fun `Check uri from existing MediaItem`() {
         val urn = "urn:rts:audio:3262363"
         val inputMediaItem = MediaItem.Builder()
-            .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
+            .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}&playerPlatform=android")
             .build()
         val mediaItem = SRGMediaItemBuilder(inputMediaItem).build()
         val localConfiguration = mediaItem.localConfiguration
@@ -121,7 +121,7 @@ class SRGMediaItemBuilderTest {
     fun `Check uri from existing MediaItem changing parameters`() {
         val urn = "urn:rts:audio:3262363"
         val inputMediaItem = MediaItem.Builder()
-            .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
+            .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}&playerPlatform=android")
             .build()
         val urn2 = "urn:rts:audio:123456"
         val mediaItem = inputMediaItem.buildUpon {
@@ -162,7 +162,7 @@ class SRGMediaItemBuilderTest {
         val ilHost = IlHost.STAGE
         val forceSAM = true
         val inputMediaItem = MediaItem.Builder()
-            .setUri("https://il-stage.srgssr.ch/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true")
+            .setUri("https://il-stage.srgssr.ch/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true&playerPlatform=android")
             .build()
         val mediaItem = SRGMediaItemBuilder(inputMediaItem).apply {
             host(ilHost)
@@ -208,6 +208,7 @@ class SRGMediaItemBuilderTest {
                 if (ilLocation != null) "forceLocation" to ilLocation else null,
                 "vector" to vector,
                 "onlyChapters" to true,
+                "playerPlatform" to "android",
             ).joinToString(separator = "&") { (name, value) ->
                 "$name=$value"
             }
