@@ -116,6 +116,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     SamplesSRG.MultiAudioWithAccessibility,
                     SamplesSRG.BlockedSegment,
                     SamplesSRG.OverlapinglockedSegments,
+                    SamplesSRG.ClosingCredits,
                 ),
             ),
             SamplesGoogle.All,

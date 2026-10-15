@@ -5,6 +5,9 @@
 
 package ch.srgssr.pillarbox.cast
 
+import ch.srgssr.pillarbox.cast.data.CastBlockedSegment
+import ch.srgssr.pillarbox.cast.data.CastTimeRange
+import ch.srgssr.pillarbox.cast.data.PillarboxCastCustomData
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.network.jsonSerializer
 import org.json.JSONArray
@@ -17,6 +20,8 @@ import org.json.JSONObject
  */
 object PillarboxMetadataConverter {
     internal const val KEY_CHAPTERS = "chapters"
+    internal const val KEY_BLOCKED_SEGMENT = "blockedSegments"
+    internal const val KEY_TIME_RANGES = "timeRanges"
 
     /**
      * Writes the chapters of this [PillarboxMetadata] into [customData], replacing any existing chapters.
@@ -27,15 +32,22 @@ object PillarboxMetadataConverter {
             val castChapters = chapters.map(CastChapter::fromChapter)
             customData.put(KEY_CHAPTERS, JSONArray(jsonSerializer.encodeToString(castChapters)))
         }
+        if (blockedTimeRanges.isNotEmpty()) {
+            val castBlockedTimeRanges = blockedTimeRanges.map(CastBlockedSegment::fromBlockedTimeRange)
+            customData.put(KEY_BLOCKED_SEGMENT, JSONArray(jsonSerializer.encodeToString(castBlockedTimeRanges)))
+        }
+        if (credits.isNotEmpty()) {
+            val credits = credits.map(CastTimeRange::fromCredit)
+            customData.put(KEY_TIME_RANGES, JSONArray(jsonSerializer.encodeToString(credits)))
+        }
     }
 
     /**
-     * Decode [List<CastChapter>?] from [JSONObject].
+     * Decode [PillarboxCastCustomData] from [JSONObject].
      */
-    internal fun decodeCastChapters(customData: JSONObject): List<CastChapter>? {
-        val chaptersJson = customData.optJSONArray(KEY_CHAPTERS) ?: return null
+    internal fun decodeCustomData(customData: JSONObject): PillarboxCastCustomData? {
         return runCatching {
-            jsonSerializer.decodeFromString<List<CastChapter>>(chaptersJson.toString())
+            jsonSerializer.decodeFromString<PillarboxCastCustomData>(customData.toString())
         }.getOrNull()
     }
 }
