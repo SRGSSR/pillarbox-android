@@ -86,6 +86,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 media-maestro = { module = "ch.srgssr.media.maestro:media-maestro", version.ref = "media-maestro" }
 play-services-cast = { module = "com.google.android.gms:play-services-cast", version.ref = "play-services-cast" }
+play-services-cast-framework = { module = "com.google.android.gms:play-services-cast-framework", version.ref = "play-services-cast" }
 play-services-cast-tv = { module = "com.google.android.gms:play-services-cast-tv", version.ref = "play-services-cast-tv" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
