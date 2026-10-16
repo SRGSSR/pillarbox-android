@@ -259,11 +259,9 @@ class PillarboxCastPlayer internal constructor(
         val deviceVolume = castSession?.let {
             (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
-        val castChapters = remoteMediaClient.mediaStatus?.mediaInfo?.customData?.let {
-            PillarboxMetadataConverter.decodeCastChapters(it)
-        }
-        currentPillarboxMetadata =
-            if (castChapters == null) PillarboxMetadata.EMPTY else PillarboxMetadata(chapters = castChapters.map { c -> c.toChapter() })
+        currentPillarboxMetadata = remoteMediaClient.mediaStatus?.mediaInfo?.customData?.let {
+            PillarboxMetadataConverter.decodeCustomData(it).toPillarboxMetadata()
+        } ?: PillarboxMetadata.EMPTY
 
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))

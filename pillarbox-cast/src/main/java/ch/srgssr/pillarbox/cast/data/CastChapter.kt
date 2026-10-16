@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.cast
+package ch.srgssr.pillarbox.cast.data
 
 import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata

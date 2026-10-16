@@ -157,6 +157,13 @@ object SamplesSRG {
         languageTag = "en-CH",
     )
 
+    val ClosingCredits = DemoItem.URN(
+        title = "Closing credits",
+        urn = "urn:rts:video:13091479",
+        imageUri = "https://img.rts.ch/medias/2022/image/aptj4i-26843558.image/16x9",
+        languageTag = "fr-CH",
+    )
+
     val MultiAudioWithAccessibility = DemoItem.URN(
         title = "Bonjour la Suisse (5/5) - Que du bonheur?",
         description = "Multi audio with AD track",
@@ -323,6 +330,7 @@ object SamplesSRG {
             Unknown,
             BlockedSegment,
             OverlapinglockedSegments,
+            ClosingCredits,
             MultiAudioWithAccessibility,
         ) + StoryVideoUrns.items,
     )
