@@ -150,7 +150,12 @@ private fun PlayerContent(
                 var lastZoomValue = 1f
                 detectTransformGestures(true) { _, _, zoom, _ ->
                     lastZoomValue *= zoom
-                    pinchContentScale = if (lastZoomValue < 1f) ContentScale.Fit else ContentScale.Crop
+                    // A single finger drag (e.g. the swipe home gesture) is reported with a zoom of 1, which must not change the scale
+                    if (lastZoomValue < 1f) {
+                        pinchContentScale = ContentScale.Fit
+                    } else if (lastZoomValue > 1f) {
+                        pinchContentScale = ContentScale.Crop
+                    }
                 }
             }
         } else {

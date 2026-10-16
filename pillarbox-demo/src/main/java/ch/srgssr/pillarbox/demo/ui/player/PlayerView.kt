@@ -23,9 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toAndroidRect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
@@ -64,6 +68,7 @@ import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import coil3.compose.AsyncImage
+import kotlin.math.min
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -106,7 +111,7 @@ fun PlayerView(
                     modifier = Modifier
                         .matchParentSize()
                         .onGloballyPositioned {
-                            pipManager.sourceRect = it.boundsInWindow().roundToIntRect().toAndroidRect()
+                            pipManager.sourceRect = it.visibleVideoBoundsInWindow().roundToIntRect().toAndroidRect()
                         }
                 )
             }
@@ -186,6 +191,25 @@ fun PlayerView(
             controlsContent = content,
         )
     }
+}
+
+/**
+ * The visible part of the video, in window coordinates, with the video aspect ratio.
+ *
+ * When the video is cropped (e.g. with [ContentScale.Crop]), its visible bounds have the aspect ratio of the player instead of the video's.
+ * The system rejects such a Picture-in-Picture source rect hint, and animates the app icon instead of the video.
+ */
+private fun LayoutCoordinates.visibleVideoBoundsInWindow(): Rect {
+    val visibleBounds = boundsInWindow()
+    if (size.width == 0 || size.height == 0 || visibleBounds.isEmpty) return visibleBounds
+
+    val videoAspectRatio = size.width.toFloat() / size.height
+    val width = min(visibleBounds.width, visibleBounds.height * videoAspectRatio)
+    val height = width / videoAspectRatio
+    return Rect(
+        offset = Offset(visibleBounds.center.x - width / 2, visibleBounds.center.y - height / 2),
+        size = Size(width, height),
+    )
 }
 
 @Composable
