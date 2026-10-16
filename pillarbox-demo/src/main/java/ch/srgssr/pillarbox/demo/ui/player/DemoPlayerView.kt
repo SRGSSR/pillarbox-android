@@ -46,6 +46,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
+import ch.srgssr.pillarbox.demo.ui.player.state.FullscreenButtonState
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.state.PipManager
@@ -57,6 +58,7 @@ import ch.srgssr.pillarbox.ui.state.PipManager
  * @param modifier The [Modifier] to be applied to the layout.
  * @param pipManager The [PipManager] to drive the Picture-in-Picture button with, or `null` to hide it.
  * @param displayPlaylist If it displays the playlist UI or not.
+ * @param fullscreenButtonState The [FullscreenButtonState] driving the fullscreen button.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +67,7 @@ fun DemoPlayerView(
     modifier: Modifier = Modifier,
     pipManager: PipManager? = null,
     displayPlaylist: Boolean = false,
+    fullscreenButtonState: FullscreenButtonState = rememberFullscreenButtonState(),
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
@@ -93,6 +96,7 @@ fun DemoPlayerView(
                 }
             },
             displayPlaylist = displayPlaylist,
+            fullscreenButtonState = fullscreenButtonState,
         )
 
         if (useSidePanel) {
@@ -124,10 +128,10 @@ private fun PlayerContent(
     pipManager: PipManager?,
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
+    fullscreenButtonState: FullscreenButtonState,
 ) {
     val shuffleButtonState = rememberShuffleButtonState(player)
     val repeatButtonState = rememberRepeatButtonState(player)
-    val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     val isInPictureInPicture = pipManager?.isInPictureInPicture == true
     // Hide the controls as soon as Picture-in-Picture is requested from the button, so that they don't show up during the transition.

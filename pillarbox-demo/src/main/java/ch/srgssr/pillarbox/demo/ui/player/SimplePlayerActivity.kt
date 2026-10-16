@@ -24,6 +24,8 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
+import ch.srgssr.pillarbox.demo.ui.player.state.FullscreenButtonState
+import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.state.PipManager
@@ -58,14 +60,18 @@ class SimplePlayerActivity : ComponentActivity() {
         setContent {
             PillarboxTheme {
                 val pipManager = rememberPipManager(player = playerViewModel.player, autoEnterEnabled = true)
+                val fullscreenButtonState = rememberFullscreenButtonState()
 
                 Scaffold(containerColor = Color.Black) { innerPadding ->
                     // There are no system bars in Picture-in-Picture, but the insets are only updated after the first layout in the
                     // Picture-in-Picture window, which would shrink the video during the transition.
-                    val contentPadding = if (pipManager.isInPictureInPicture) PaddingValues() else innerPadding
+                    // In fullscreen, the system bars are drawn over the video. They are shown again when Picture-in-Picture is requested,
+                    // so following the insets would shrink the video, and its source rect, during the transition.
+                    val ignoreInsets = pipManager.isInPictureInPicture || fullscreenButtonState.isInFullscreen
+                    val contentPadding = if (ignoreInsets) PaddingValues() else innerPadding
 
                     Box(modifier = Modifier.padding(contentPadding)) {
-                        MainContent(playerViewModel.player, pipManager)
+                        MainContent(playerViewModel.player, pipManager, fullscreenButtonState)
                     }
                 }
             }
@@ -73,11 +79,12 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun MainContent(player: PillarboxPlayer, pipManager: PipManager) {
+    private fun MainContent(player: PillarboxPlayer, pipManager: PipManager, fullscreenButtonState: FullscreenButtonState) {
         DemoPlayerView(
             player = player,
             pipManager = pipManager,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
+            fullscreenButtonState = fullscreenButtonState,
         )
     }
 
