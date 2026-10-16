@@ -69,46 +69,49 @@ fun DemoPlayerView(
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
-    if (useSidePanel) {
-        var showSettings by remember { mutableStateOf(false) }
+    var showSettingsPanel by remember { mutableStateOf(false) }
+    var showSettingsSheet by remember { mutableStateOf(false) }
 
-        Row(modifier = modifier.displayCutoutPadding()) {
-            PlayerContent(
-                player = player,
-                modifier = Modifier
+    // PlayerContent must stay at the same place in the composition for both layouts. Otherwise, switching layout (e.g. when entering
+    // Picture-in-Picture from landscape) recreates the player surface, which flashes the shutter during the transition.
+    Row(modifier = if (useSidePanel) modifier.displayCutoutPadding() else modifier) {
+        PlayerContent(
+            player = player,
+            modifier = if (useSidePanel) {
+                Modifier
                     .animateContentSize()
-                    .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                pipManager = pipManager,
-                onSettingsClick = { showSettings = !showSettings },
-                displayPlaylist = displayPlaylist,
-            )
+                    .then(if (showSettingsPanel) Modifier.weight(0.66f) else Modifier)
+            } else {
+                Modifier.fillMaxSize()
+            },
+            pipManager = pipManager,
+            onSettingsClick = {
+                if (useSidePanel) {
+                    showSettingsPanel = !showSettingsPanel
+                } else {
+                    showSettingsSheet = true
+                }
+            },
+            displayPlaylist = displayPlaylist,
+        )
 
+        if (useSidePanel) {
             AnimatedVisibility(
-                visible = showSettings,
-                modifier = if (showSettings) Modifier.weight(0.33f) else Modifier,
+                visible = showSettingsPanel,
+                modifier = if (showSettingsPanel) Modifier.weight(0.33f) else Modifier,
                 enter = fadeIn() + slideInHorizontally { it },
                 exit = fadeOut() + slideOutHorizontally { it },
             ) {
                 PlaybackSettingsContent(player = player)
             }
         }
-    } else {
-        var showSettingsSheet by remember { mutableStateOf(false) }
+    }
 
-        PlayerContent(
-            player = player,
-            modifier = Modifier.fillMaxSize(),
-            pipManager = pipManager,
-            onSettingsClick = { showSettingsSheet = true },
-            displayPlaylist = displayPlaylist,
-        )
-
-        if (showSettingsSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showSettingsSheet = false },
-            ) {
-                PlaybackSettingsContent(player = player)
-            }
+    if (!useSidePanel && showSettingsSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSettingsSheet = false },
+        ) {
+            PlaybackSettingsContent(player = player)
         }
     }
 }
