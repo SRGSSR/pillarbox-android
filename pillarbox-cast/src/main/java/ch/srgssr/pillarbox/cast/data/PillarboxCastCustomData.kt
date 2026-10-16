@@ -4,25 +4,21 @@
  */
 package ch.srgssr.pillarbox.cast.data
 
-import ch.srgssr.pillarbox.cast.CastChapter
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import kotlinx.serialization.Serializable
 
 /**
- * Custom Data representation exchanged in the Cast `customData`, shared with the SRG SSR web receiver.
+ * Pillarbox metadata decoded from the Cast `customData`, shared with the SRG SSR web receiver.
  */
-@Serializable
 internal data class PillarboxCastCustomData(
-    val server: String? = null,
-    val blockedSegments: List<CastBlockedSegment>? = null,
-    val chapters: List<CastChapter>? = null,
-    val timeRanges: List<CastTimeRange>? = null,
+    val chapters: List<CastChapter> = emptyList(),
+    val blockedSegments: List<CastBlockedSegment> = emptyList(),
+    val timeRanges: List<CastTimeRange> = emptyList(),
 ) {
     fun toPillarboxMetadata(): PillarboxMetadata {
         return PillarboxMetadata(
-            chapters = chapters?.map { c -> c.toChapter() } ?: emptyList(),
-            credits = timeRanges?.mapNotNull { c -> c.toCredit() } ?: emptyList(),
-            blockedTimeRanges = blockedSegments?.map { c -> c.toBlockedTimeRange() } ?: emptyList(),
+            chapters = chapters.map(CastChapter::toChapter),
+            credits = timeRanges.mapNotNull(CastTimeRange::toCredit),
+            blockedTimeRanges = blockedSegments.map(CastBlockedSegment::toBlockedTimeRange),
         )
     }
 }
