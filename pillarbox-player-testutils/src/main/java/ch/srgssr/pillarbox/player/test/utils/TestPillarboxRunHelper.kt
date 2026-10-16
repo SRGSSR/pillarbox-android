@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.os.Looper
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import androidx.media3.common.util.Assertions
 import androidx.media3.common.util.Clock
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeClock
@@ -23,7 +22,7 @@ object TestPillarboxRunHelper {
     }
 
     private fun verifyPlaybackThreadIsAlive(player: ExoPlayer) {
-        Assertions.checkState(player.playbackLooper.thread.isAlive, "Playback thread is not alive, has the player been released?")
+        check(player.playbackLooper.thread.isAlive) { "Playback thread is not alive, has the player been released?" }
     }
 
     /**
