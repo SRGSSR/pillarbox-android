@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,12 +18,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +58,7 @@ import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
@@ -80,14 +82,30 @@ fun ChapterShowcase(modifier: Modifier = Modifier) {
     val currentChapter by showCaseViewModel.currentChapter.collectAsState()
     val configuration = LocalConfiguration.current
     Column(modifier = modifier) {
-        PlayerView(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .weight(1f),
-            player = showCaseViewModel.player,
-            progressTracker = showCaseViewModel.progressTracker
-        )
+                .weight(1f)
+                .background(color = Color.Black),
+        ) {
+            PlayerView(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                player = showCaseViewModel.player,
+                progressTracker = showCaseViewModel.progressTracker
+            )
+            MediaRouteButton(
+                modifier = Modifier.align(Alignment.TopEnd),
+                routeSelector = showCaseViewModel.routeSelector,
+                colors = IconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.White,
+                ),
+            )
+        }
+
         AnimatedVisibility(
             modifier = Modifier
                 .fillMaxWidth()

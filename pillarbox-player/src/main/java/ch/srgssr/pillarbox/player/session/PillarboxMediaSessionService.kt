@@ -56,6 +56,30 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
     /**
      * Set player to use with this Service.
      * @param player [PillarboxPlayer] to link to this service.
+     * @param builder The [PillarboxMediaSession.Builder].
+     */
+    fun setPlayer(
+        player: PillarboxPlayer,
+        builder: PillarboxMediaSession.Builder.() -> Unit,
+    ) {
+        if (this.mediaSession == null) {
+            player.setHandleAudioFocus(true)
+            mediaSession = PillarboxMediaSession.Builder(this, player)
+                .apply {
+                    sessionActivity()?.let {
+                        setSessionActivity(it)
+                    }
+                }
+                .apply(builder)
+                .build()
+        } else {
+            mediaSession?.player = player
+        }
+    }
+
+    /**
+     * Set player to use with this Service.
+     * @param player [PillarboxPlayer] to link to this service.
      * @param mediaSessionCallback The [PillarboxMediaSession.Callback]
      * @param sessionId The ID. Must be unique among all sessions per package.
      */
@@ -64,19 +88,11 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
         mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default,
         sessionId: String? = null,
     ) {
-        if (this.mediaSession == null) {
-            player.setHandleAudioFocus(true)
-            mediaSession = PillarboxMediaSession.Builder(this, player).apply {
-                sessionActivity()?.let {
-                    setSessionActivity(it)
-                }
-                setCallback(mediaSessionCallback)
-                sessionId?.let {
-                    setId(it)
-                }
-            }.build()
-        } else {
-            mediaSession?.player = player
+        setPlayer(player) {
+            sessionId?.let {
+                setId(it)
+            }
+            setCallback(mediaSessionCallback)
         }
     }
 

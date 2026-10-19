@@ -10,10 +10,8 @@ import java.io.IOException
 /**
  * This exception is thrown when a playable resource cannot be found for a given content.
  *
- * This typically occurs in scenarios where:
- *
- * - A [Chapter] does not have a playable resource.
- * - The [Chapter.listResource] is `null` or empty.
+ * This occurs when the [Chapter.listResource] returned by the integration layer is `null` or empty. The integration layer is responsible for
+ * returning the resources playable by the device, based on the device capabilities sent with the request.
  *
  * @param message A descriptive message about the exception.
  */

@@ -39,7 +39,7 @@ object SamplesSRG {
 
     val DvrVideoHLS = DemoItem.URL(
         title = "Couleur 3 en vidéo (DVR)",
-        uri = "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+        uri = "https://visualradio-rts-couleur3-d.akamaized.net/out/v1/lsvs/visual-radio-rts-couleur-3/cmaf/hls-master.m3u8",
         description = "Video livestream with DVR - HLS",
         imageUri = "https://il.srgssr.ch/images/?imageUrl=https%3A%2F%2Fwww.rts.ch%2F2020%2F05%2F18%2F14%2F20%2F11333286.image%2F16x9&format=jpg&width=960",
         languageTag = "fr-CH",
@@ -63,7 +63,7 @@ object SamplesSRG {
 
     val DvrAudioHLS = DemoItem.URL(
         title = "Couleur 3 (DVR)",
-        uri = "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+        uri = "https://visualradio-rts-couleur3-d.akamaized.net/out/v1/lsvs/visual-radio-rts-couleur-3/cmaf/hls-master.m3u8",
         description = "Audio livestream - HLS",
         imageUri = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
         languageTag = "fr-CH",
@@ -85,8 +85,8 @@ object SamplesSRG {
 
     val OnDemandVerticalVideo = DemoItem.URN(
         title = "Vertical video",
-        urn = "urn:rts:video:13444390",
-        imageUri = "https://www.rts.ch/2022/10/06/17/32/13444380.image/4x5",
+        urn = "urn:rts:video:13950405",
+        imageUri = "https://img.rts.ch/medias/2023/image/w2e9c5-26920079.image/9x16",
         languageTag = "en-CH",
     )
 
@@ -201,59 +201,80 @@ object SamplesSRG {
         urn = "urn:rts:video:13752646",
         languageTag = "fr-CH",
     )
+    val Tataki_7 = DemoItem.URN(
+        title = "La banane la plus chère du monde",
+        description = "Tataki 7",
+        urn = "urn:rts:video:15429800",
+        languageTag = "fr-CH",
+    )
+    val Tataki_8 = DemoItem.URN(
+        title = "La trend Chill Guy",
+        description = "Tataki 8",
+        urn = "urn:rts:video:15429899",
+        languageTag = "fr-CH",
+    )
+
+    val Tataki_URL_1 = DemoItem.URL(
+        title = "Mario vs Sonic",
+        description = "Tataki 1",
+        uri = "https://rts-vod-amd.akamaized.net/ww/13950405/fa79f98c-9e72-32c4-812e-aa5ba94cd568/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2023/image/w2e9c5-26920079.image/9x16",
+    )
+
+    val Tataki_URL_2 = DemoItem.URL(
+        title = "Pourquoi Beyoncé fait de la country",
+        description = "Tataki 2",
+        uri = "https://rts-vod-amd.akamaized.net/ww/14815579/fec583e8-5d42-3994-8f76-70c550a2ae8e/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/articles/2024/image/qnlaj9-28459373.image/9x16"
+    )
+    val Tataki_URL_3 = DemoItem.URL(
+        title = "L'île North Sentinel",
+        description = "Tataki 3",
+        uri = "https://rts-vod-amd.akamaized.net/ww/13795051/86f7f1f6-9857-3aa7-8de6-c23247a307f0/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2023/image/980y7j-26893198.image/9x16"
+    )
+    val Tataki_URL_4 = DemoItem.URL(
+        title = "Mourir pour ressembler à une idole",
+        description = "Tataki 4",
+        uri = "https://rts-vod-amd.akamaized.net/ww/14020134/f47b0e62-5fb9-3ce9-b587-3b3a0113ba11/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2023/image/wj60ay-26924320.image/9x16",
+    )
+    val Tataki_URL_5 = DemoItem.URL(
+        title = "Pourquoi les gens mangent des insectes ?",
+        description = "Tataki 5",
+        uri = "https://rts-vod-amd.akamaized.net/ww/12631996/15de3331-6b0c-3890-a59d-5b09453c58f8/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2021/image/3x2fjd-26802538.image/9x16"
+    )
+    val Tataki_URL_6 = DemoItem.URL(
+        title = "Le concert de Beyoncé à Dubai",
+        description = "Tataki 6",
+        uri = "https://rts-vod-amd.akamaized.net/ww/13752646/c4c1d901-0690-3cb5-a1d2-626449f0f096/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2021/image/3x2fjd-26802538.image/9x16"
+    )
+    val Tataki_URL_7 = DemoItem.URL(
+        title = "La banane la plus chère du monde",
+        description = "Tataki 7",
+        uri = "https://rts-vod-amd.akamaized.net/ww/15429800/9ecf5358-8e65-3cd4-8071-086089b99bb6/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2025/image/isycon-28764683.image/9x16"
+    )
+    val Tataki_URL_8 = DemoItem.URL(
+        title = "La trend Chill Guy",
+        description = "Tataki 8",
+        uri = "https://rts-vod-amd.akamaized.net/ww/15429899/9913ec6b-6386-3805-9c3a-12f32048e046/master.m3u8",
+        languageTag = "fr-CH",
+        imageUri = "https://img.rts.ch/medias/2025/image/zbmhip-28764736.image/9x16"
+    )
 
     val StoryVideoUrls = Playlist(
         title = "Video urls",
-        items = listOf(
-            DemoItem.URL(
-                title = "Le R. - Légumes trop chers",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8",
-                description = "Playlist item 1",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Production de légumes bio",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8",
-                description = "Playlist item 2",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Endométriose",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8",
-                description = "Playlist item 3",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Prix Nobel de littérature 2022",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444447/c1d17174-ad2f-31c2-a084-846a9247fd35/master.m3u8",
-                description = "Playlist item 4",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Femme, vie, liberté",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444352/32145dc0-b5f8-3a14-ae11-5fc6e33aaaa4/master.m3u8",
-                description = "Playlist item 5",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Attaque en Thaïlande",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444409/23f808a4-b14a-3d3e-b2ed-fa1279f6cf01/master.m3u8",
-                description = "Playlist item 6",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Douches et vestiaires non genrés",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444371/3f26467f-cd97-35f4-916f-ba3927445920/master.m3u8",
-                description = "Playlist item 7",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URL(
-                title = "Le R. - Prends soin de toi, des autres et à demain",
-                uri = "https://rts-vod-amd.akamaized.net/ww/13444428/857d97ef-0b8e-306e-bf79-3b13e8c901e4/master.m3u8",
-                description = "Playlist item 8",
-                languageTag = "fr-CH",
-            )
-        ),
+        items = listOf(Tataki_URL_1, Tataki_URL_2, Tataki_URL_3, Tataki_URL_4, Tataki_URL_5, Tataki_URL_6, Tataki_URL_7, Tataki_URL_8),
         languageTag = "en-CH",
     )
 
@@ -266,54 +287,8 @@ object SamplesSRG {
             Tataki_4,
             Tataki_5,
             Tataki_6,
-            DemoItem.URN(
-                title = "Le R. - Légumes trop chers",
-                urn = "urn:rts:video:13444390",
-                description = "Playlist item 1",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Production de légumes bio",
-                urn = "urn:rts:video:13444333",
-                description = "Playlist item 2",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Endométriose",
-                urn = "urn:rts:video:13444466",
-                description = "Playlist item 3",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Prix Nobel de littérature 2022",
-                urn = "urn:rts:video:13444447",
-                description = "Playlist item 4",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Femme, vie, liberté",
-                urn = "urn:rts:video:13444352",
-                description = "Playlist item 5",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Attaque en Thailande",
-                urn = "urn:rts:video:13444409",
-                description = "Playlist item 6",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Douches et vestinaires non genrés",
-                urn = "urn:rts:video:13444371",
-                description = "Playlist item 7",
-                languageTag = "fr-CH",
-            ),
-            DemoItem.URN(
-                title = "Le R. - Prend soin de toi des autres et à demain",
-                urn = "urn:rts:video:13444428",
-                description = "Playlist item 8",
-                languageTag = "fr-CH",
-            )
+            Tataki_7,
+            Tataki_8
         ),
         languageTag = "en-CH",
     )

@@ -31,7 +31,7 @@
                 },
                 "resourceList": [
                     {
-                        "url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+                        "url": "https://visualradio-rts-couleur3-d.akamaized.net/out/v1/lsvs/visual-radio-rts-couleur-3/cmaf/hls-master.m3u8",
                         "quality": "HD",
                         "protocol": "HLS-DVR",
                         "encoding": "H264",
@@ -45,7 +45,7 @@
                         "videoCodec": "H264",
                         "tokenType": "NONE",
                         "analyticsMetadata": {
-                            "media_url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+                            "media_url": "https://visualradio-rts-couleur3-d.akamaized.net/out/v1/lsvs/visual-radio-rts-couleur-3/cmaf/hls-master.m3u8",
                             "media_streaming_quality": "HD",
                             "media_special_format": "DEFAULT"
                         },
@@ -479,7 +479,7 @@
                 },
                 "resourceList": [
                     {
-                        "url": "https://rts-vod-amd.akamaized.net/ww/13444428/857d97ef-0b8e-306e-bf79-3b13e8c901e4/master.m3u8",
+                        "url": "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8",
                         "quality": "HD",
                         "protocol": "HLS",
                         "encoding": "H264",

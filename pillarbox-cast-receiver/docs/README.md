@@ -131,6 +131,9 @@ val player : PillarboxPlayer = PillarboxCastReceiverPlayer(
 val mediaSession = PillarboxMediaSession.Builder(this, player).build()
 ```
 
+The chapters of the current item are automatically sent to the senders in the `chapters` array of the `MediaInfo.customData`, using the same format
+as the SRG SSR web receiver.
+
 Link the player `MediaSession` with the `CastReceiverContext`
 
 ```kotlin

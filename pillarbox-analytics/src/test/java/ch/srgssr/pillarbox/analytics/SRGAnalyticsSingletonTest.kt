@@ -8,6 +8,7 @@ import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.analytics.commandersact.TestUtils
 import com.comscore.Analytics
 import io.mockk.clearAllMocks
 import io.mockk.mockkStatic
@@ -19,11 +20,7 @@ import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
 class SRGAnalyticsSingletonTest {
-    private val config = AnalyticsConfig(
-        vendor = AnalyticsConfig.Vendor.SRG,
-        appSiteName = "pillarbox-test-android",
-        sourceKey = SourceKey.DEVELOPMENT
-    )
+    private val config = TestUtils.analyticsConfig
 
     private lateinit var context: Context
 

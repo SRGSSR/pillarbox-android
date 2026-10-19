@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player.network
 
 import androidx.annotation.RestrictTo
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

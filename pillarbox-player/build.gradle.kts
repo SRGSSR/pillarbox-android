@@ -60,6 +60,7 @@ dependencies {
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
@@ -73,6 +74,7 @@ dependencies {
     androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.kotlin.test)
+    androidTestImplementation(libs.kotlin.test.junit)
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
 }

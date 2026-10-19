@@ -32,6 +32,7 @@ class MyApplication : Application() {
         val config = AnalyticsConfig(
             vendor = AnalyticsConfig.Vendor.SRG,
             appSiteName = "Your AppSiteName here",
+            platformId = "Your platform id",
             sourceKey = SourceKey.DEVELOPMENT,
             nonLocalizedApplicationName = "Your non-localized AppSiteName here",
         )
@@ -57,6 +58,7 @@ val userConsent = UserConsent(
 val config = AnalyticsConfig(
     vendor = AnalyticsConfig.Vendor.SRG,
     appSiteName = "Your AppSiteName here",
+    platformId = "Your platform id",
     sourceKey = SourceKey.DEVELOPMENT,
     nonLocalizedApplicationName = "Your non-localized AppSiteName here",
     userConsent = userConsent,

@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
  * @property appSiteName The name of the app/site being tracked, given by the analytics team.
  * @property sourceKey The CommandersAct source key. Production apps should use [SourceKey.PRODUCTION], and apps in development should use
  * [SourceKey.DEVELOPMENT].
+ * @property platformId Unique ID of the platform defined at https://srgssr-ch.atlassian.net/wiki/spaces/RN/pages/2655846518/Reference+tables#Platform_i,
  * @property nonLocalizedApplicationName The non-localized name of the application. By default, the application name defined in the manifest is used.
  * @property userConsent The user consent to transmit to ComScore and Commanders Act.
  * @property comScorePersistentLabels The initial persistent labels for ComScore analytics.
@@ -27,6 +28,7 @@ data class AnalyticsConfig(
     val vendor: Vendor,
     val appSiteName: String,
     val sourceKey: SourceKey,
+    val platformId: String,
     val nonLocalizedApplicationName: String? = null,
     val userConsent: UserConsent = UserConsent(),
     val comScorePersistentLabels: Map<String, String>? = null,

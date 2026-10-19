@@ -95,7 +95,6 @@ class MonitoringTest {
         val qoeTimings1 = player.monitoring.getCurrentQoETimings()
         val qosTimings1 = player.monitoring.getCurrentQoSTimings()
 
-        TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings2 = player.monitoring.getCurrentQoETimings()
@@ -180,7 +179,7 @@ class MonitoringTest {
     }
 
     private companion object {
-        private const val VOD1 = "https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8"
-        private const val VOD2 = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8"
+        private const val VOD1 = "https://rts-vod-amd.akamaized.net/ww/13950405/fa79f98c-9e72-32c4-812e-aa5ba94cd568/master.m3u8"
+        private const val VOD2 = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
     }
 }

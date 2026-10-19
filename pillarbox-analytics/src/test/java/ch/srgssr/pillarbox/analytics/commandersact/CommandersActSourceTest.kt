@@ -52,7 +52,7 @@ class CommandersActSourceTest {
             "section_id" to "section_id_value",
             "section_version" to "section_version_value",
             "section_position_in_page" to 1,
-            "item_position_in section" to 2,
+            "item_position_in_section" to 2,
             "custom_label" to "custom_value"
         )
         assertEquals(expectedProperties, event.additionalProperties)

@@ -70,4 +70,8 @@ internal class PillarboxMediaPeriod(
     override fun getStreamKeys(trackSelections: List<ExoTrackSelection>): List<StreamKey> {
         return mediaPeriod.getStreamKeys(trackSelections)
     }
+
+    override fun setEndPositionUs(endPositionUs: Long): Long {
+        return mediaPeriod.setEndPositionUs(endPositionUs)
+    }
 }

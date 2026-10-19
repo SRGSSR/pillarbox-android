@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.cast
 import android.content.Context
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
-import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxDsl
@@ -26,8 +25,6 @@ abstract class PillarboxCastPlayerBuilder {
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
     private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
-    private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
-    private var onCastSessionUnavailable: (PillarboxCastPlayer.() -> Unit)? = null
     private var tracksConverter: TracksConverter = DefaultTracksConverter()
 
     /**
@@ -64,24 +61,6 @@ abstract class PillarboxCastPlayerBuilder {
     }
 
     /**
-     * On cast session available
-     *
-     * @param onCastSessionAvailable The method to invoke when [SessionAvailabilityListener.onCastSessionAvailable] is called.
-     */
-    fun onCastSessionAvailable(onCastSessionAvailable: PillarboxCastPlayer.() -> Unit) {
-        this.onCastSessionAvailable = onCastSessionAvailable
-    }
-
-    /**
-     * On cast session unavailable
-     *
-     * @param onCastSessionUnavailable The method to invoke when [SessionAvailabilityListener.onCastSessionUnavailable] is called.
-     */
-    fun onCastSessionUnavailable(onCastSessionUnavailable: PillarboxCastPlayer.() -> Unit) {
-        this.onCastSessionUnavailable = onCastSessionUnavailable
-    }
-
-    /**
      * Media item converter
      *
      * @param mediaItemConverter The [MediaItemConverter] to use.
@@ -109,18 +88,7 @@ abstract class PillarboxCastPlayerBuilder {
             maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector = trackSelector,
             tracksConverter = tracksConverter,
-        ).apply {
-            if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
-            setSessionAvailabilityListener(object : SessionAvailabilityListener {
-                override fun onCastSessionAvailable() {
-                    onCastSessionAvailable?.invoke(this@apply)
-                }
-
-                override fun onCastSessionUnavailable() {
-                    onCastSessionUnavailable?.invoke(this@apply)
-                }
-            })
-        }
+        )
     }
 }
 

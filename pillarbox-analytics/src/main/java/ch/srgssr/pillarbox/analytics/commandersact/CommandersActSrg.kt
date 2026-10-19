@@ -22,13 +22,15 @@ import com.tagcommander.lib.serverside.schemas.TCDevice
  * @param tcServerSide TCServiceSide to use.
  * @param config analytics config.
  * @param navigationDevice The navigation device.
+ * @param vectorId The vector id, https://srgssr-ch.atlassian.net/wiki/spaces/RN/pages/2655846518/Reference+tables#Vector_id
  *
  * @constructor
  */
 internal class CommandersActSrg(
     private val tcServerSide: TCServerSide,
     private val config: AnalyticsConfig,
-    navigationDevice: String
+    navigationDevice: String,
+    vectorId: String,
 ) : CommandersAct {
 
     init {
@@ -42,6 +44,8 @@ internal class CommandersActSrg(
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
         tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, navigationDevice)
+        tcServerSide.addPermanentData(VECTOR_ID, vectorId)
+        tcServerSide.addPermanentData(PLATFORM_ID, config.platformId)
 
         setConsentServices(config.userConsent.commandersActConsentServices)
         setProfileIdentifier(config.profileIdentifier)
@@ -53,7 +57,8 @@ internal class CommandersActSrg(
     ) : this(
         tcServerSide = TCServerSide(SITE_SRG, config.sourceKey.key, appContext),
         config = config,
-        navigationDevice = appContext.getString(R.string.tc_analytics_device)
+        navigationDevice = appContext.getString(R.string.tc_analytics_device),
+        vectorId = appContext.getString(R.string.tc_vector_id)
     ) {
         workaroundUniqueIdV4Tov5()
     }
@@ -141,5 +146,8 @@ internal class CommandersActSrg(
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
         private const val NAVIGATION_DEVICE = "navigation_device"
+
+        private const val PLATFORM_ID = "platform_id"
+        private const val VECTOR_ID = "vector_id"
     }
 }
