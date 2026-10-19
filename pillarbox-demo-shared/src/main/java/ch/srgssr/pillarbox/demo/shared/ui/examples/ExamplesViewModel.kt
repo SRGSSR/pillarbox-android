@@ -163,6 +163,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeAtStartAndEnd,
                     BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeOverlaps,
                     BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeIncluded,
+                    BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeWithCredits,
                 ),
                 languageTag = "en-CH",
             ),

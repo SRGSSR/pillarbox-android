@@ -22,12 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.C
 import androidx.media3.common.Timeline.Window
+import ch.srgssr.pillarbox.demo.shared.ui.components.HighlightedRange
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
+import ch.srgssr.pillarbox.player.currentPillarboxMetadataAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -40,6 +43,9 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
+
+private val BlockedTimeRangeColor = Color(0xFF941100).copy(alpha = 0.5f)
+private val CreditColor = Color(0xFFFFA500).copy(alpha = 0.5f)
 
 /**
  * Component used to display the time progression of the media being played, and manually changing the progression, if supported.
@@ -65,6 +71,17 @@ fun PlayerTimeSlider(
     val currentProgress by rememberedProgressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
+    val pillarboxMetadata by remember(player) { player.currentPillarboxMetadataAsFlow() }
+        .collectAsState(initial = player.currentPillarboxMetadata)
+    val highlightedRangesPercent = remember(pillarboxMetadata, durationMs) {
+        val durationForRatio = durationMs.coerceAtLeast(1).toFloat()
+        fun TimeRange.toHighlightedRange(color: Color): HighlightedRange {
+            return HighlightedRange(range = (start / durationForRatio)..(end / durationForRatio), color = color)
+        }
+
+        pillarboxMetadata.credits.map { it.toHighlightedRange(CreditColor) } +
+            pillarboxMetadata.blockedTimeRanges.map { it.toHighlightedRange(BlockedTimeRangeColor) }
+    }
     val availableCommands by player.availableCommandsAsState()
     val formatter = duration.getFormatter()
     val isDragged = interactionSource != null && interactionSource.collectIsDraggedAsState().value
@@ -97,6 +114,7 @@ fun PlayerTimeSlider(
             compactMode = compactSlider,
             modifier = Modifier.weight(1f),
             secondaryValue = bufferPercentage,
+            highlightedRanges = highlightedRangesPercent,
             enabled = availableCommands.canSeek(),
             thumbColorEnabled = Color.White,
             thumbColorDisabled = Color.White,

@@ -13,6 +13,7 @@ import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -26,15 +27,19 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+        val id = mediaItem.localConfiguration?.uri?.toString().orEmpty()
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL)),
-            pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId)),
+            pillarboxMetadata = PillarboxMetadata(
+                credits = createCreditsFromId(id),
+                blockedTimeRanges = createBlockedTimeRangesFromId(id),
+            ),
         )
     }
 
     @Suppress("MagicNumber")
-    private fun createBlockedTimeRangesFromId(mediaId: String): List<BlockedTimeRange> {
-        return when (mediaId) {
+    private fun createBlockedTimeRangesFromId(id: String): List<BlockedTimeRange> {
+        return when (id) {
             ID_START_END -> {
                 listOf(
                     BlockedTimeRange(
@@ -76,6 +81,39 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
                 )
             }
 
+            ID_WITH_CREDITS -> {
+                listOf(
+                    BlockedTimeRange(
+                        start = 5.minutes.inWholeMilliseconds,
+                        end = 6.minutes.inWholeMilliseconds,
+                    ),
+                    BlockedTimeRange(
+                        start = 15.minutes.inWholeMilliseconds,
+                        end = 16.5.minutes.inWholeMilliseconds,
+                    ),
+                )
+            }
+
+            else -> emptyList()
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun createCreditsFromId(id: String): List<Credit> {
+        return when (id) {
+            ID_WITH_CREDITS -> {
+                listOf(
+                    Credit.Opening(
+                        start = 0L,
+                        end = 1.5.minutes.inWholeMilliseconds,
+                    ),
+                    Credit.Closing(
+                        start = 28.minutes.inWholeMilliseconds,
+                        end = videoDuration.inWholeMilliseconds,
+                    ),
+                )
+            }
+
             else -> emptyList()
         }
     }
@@ -89,6 +127,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         private const val ID_START_END = "blocked://StartEnd"
         private const val ID_OVERLAP = "blocked://Overlap"
         private const val ID_INCLUDED = "blocked://Included"
+        private const val ID_WITH_CREDITS = "blocked://WithCredits"
 
         /**
          * [DemoItem] to test [BlockedTimeRange] at start and end of the media.
@@ -117,6 +156,16 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
             title = "Blocked time range is included in an other one",
             uri = ID_INCLUDED,
             description = "Blocked times ranges at 00:15 - 00:30 and 00:10 - 01:00",
+            languageTag = "en-CH",
+        )
+
+        /**
+         * [DemoItem] to test [BlockedTimeRange] alongside opening and closing [Credit].
+         */
+        val DemoItemBlockedTimeRangeWithCredits = DemoItem.URL(
+            title = "Blocked time ranges and credits",
+            uri = ID_WITH_CREDITS,
+            description = "Blocked times ranges at 05:00 - 06:00 and 15:00 - 16:30, credits at 00:00 - 01:30 and 28:00 - 30:00",
             languageTag = "en-CH",
         )
     }

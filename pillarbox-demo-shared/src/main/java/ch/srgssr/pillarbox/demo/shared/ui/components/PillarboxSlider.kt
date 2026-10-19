@@ -28,14 +28,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
@@ -110,6 +117,7 @@ fun PillarboxSlider(
             )
         },
         secondaryValueWeight = secondaryValue?.let { it / range.last.toFloat() },
+        highlightedRangeWeights = emptyList(),
         enabled = enabled,
         thumbColorEnabled = thumbColorEnabled,
         thumbColorDisabled = thumbColorDisabled,
@@ -137,6 +145,7 @@ fun PillarboxSlider(
  * @param compactMode If `true`, the slider will be thinner.
  * @param modifier The [Modifier] to apply to the layout.
  * @param secondaryValue An optional second value to display on the slider.
+ * @param highlightedRanges Ranges of values to highlight on the slider, drawn on top of the track in list order.
  * @param enabled Whether this slider is enabled.
  * @param thumbColorEnabled The thumb color when the component is enabled.
  * @param thumbColorDisabled The thumb color when the component is disabled.
@@ -160,6 +169,7 @@ fun PillarboxSlider(
     compactMode: Boolean,
     modifier: Modifier = Modifier,
     secondaryValue: Float? = null,
+    highlightedRanges: List<HighlightedRange> = emptyList(),
     enabled: Boolean = true,
     thumbColorEnabled: Color,
     thumbColorDisabled: Color,
@@ -185,6 +195,9 @@ fun PillarboxSlider(
             )
         },
         secondaryValueWeight = secondaryValue?.let { it / range.endInclusive },
+        highlightedRangeWeights = highlightedRanges.map {
+            it.copy(range = (it.range.start / range.endInclusive)..(it.range.endInclusive / range.endInclusive))
+        },
         enabled = enabled,
         thumbColorEnabled = thumbColorEnabled,
         thumbColorDisabled = thumbColorDisabled,
@@ -204,12 +217,26 @@ fun PillarboxSlider(
     )
 }
 
+private val ThumbSpacing = 6.dp
+
+/**
+ * A range of values to highlight on a [PillarboxSlider].
+ *
+ * @property range The range of values to highlight, in the same unit as the slider value.
+ * @property color The color used to draw the range.
+ */
+data class HighlightedRange(
+    val range: ClosedRange<Float>,
+    val color: Color,
+)
+
 @Composable
 private fun PillarboxSliderInternal(
     activeTrackWeight: Float,
     compactMode: Boolean,
     modifier: Modifier = Modifier,
     secondaryValueWeight: Float?,
+    highlightedRangeWeights: List<HighlightedRange>,
     enabled: Boolean,
     thumbColorEnabled: Color,
     thumbColorDisabled: Color,
@@ -248,11 +275,17 @@ private fun PillarboxSliderInternal(
         label = "secondary_track_color",
     )
 
+    var thumbBounds by remember { mutableStateOf(Rect.Zero) }
+
     Row(
         modifier = modifier
             .semantics(mergeDescendants = true) {}
             .padding(vertical = verticalPadding)
             .height(seekBarHeight)
+            .drawHighlightedRanges(
+                highlightedRangeWeights = highlightedRangeWeights,
+                thumbBounds = { thumbBounds },
+            )
             .then(
                 if (interactionSource != null) {
                     Modifier
@@ -270,7 +303,7 @@ private fun PillarboxSliderInternal(
                     Modifier
                 }
             ),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(ThumbSpacing),
     ) {
         Track(
             weight = animatedActiveTrackWeight,
@@ -279,6 +312,7 @@ private fun PillarboxSliderInternal(
 
         Thumb(
             color = thumbColor,
+            modifier = Modifier.onPlaced { thumbBounds = it.boundsInParent() },
             enabled = enabled && !isTouchExplorationEnabled,
             onSeekBack = onSeekBack,
             onSeekForward = onSeekForward,
@@ -298,6 +332,38 @@ private fun PillarboxSliderInternal(
                     Track(
                         weight = secondaryValueWeight / inactiveTrackWeight,
                         color = secondaryTrackColor,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Draws [highlightedRangeWeights] on top of the content, split around the thumb so the thumb and the transparent gaps around it stay visible.
+ */
+private fun Modifier.drawHighlightedRanges(
+    highlightedRangeWeights: List<HighlightedRange>,
+    thumbBounds: () -> Rect,
+): Modifier {
+    return this then Modifier.drawWithContent {
+        drawContent()
+        val thumbSpacingPx = ThumbSpacing.toPx()
+        val excludedStart = thumbBounds().left - thumbSpacingPx
+        val excludedEnd = thumbBounds().right + thumbSpacingPx
+        highlightedRangeWeights.forEach { highlightedRange ->
+            val start = highlightedRange.range.start.coerceIn(0f, 1f) * size.width
+            val end = highlightedRange.range.endInclusive.coerceIn(0f, 1f) * size.width
+            listOf(
+                start to minOf(end, excludedStart),
+                maxOf(start, excludedEnd) to end,
+            ).forEach { (partStart, partEnd) ->
+                if (partEnd > partStart) {
+                    drawRoundRect(
+                        color = highlightedRange.color,
+                        topLeft = Offset(partStart, 0f),
+                        size = Size(partEnd - partStart, size.height),
+                        cornerRadius = CornerRadius(size.height / 2f),
                     )
                 }
             }
