@@ -23,12 +23,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toAndroidRect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.roundToIntRect
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
 import androidx.media3.ui.compose.state.rememberPresentationState
@@ -55,10 +63,12 @@ import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.state.CreditState
+import ch.srgssr.pillarbox.ui.state.PipManager
 import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import coil3.compose.AsyncImage
+import kotlin.math.min
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -73,6 +83,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param progressTracker The progress tracker.
  * @param overlayOptions The [MetricsOverlayOptions].
  * @param overlayEnabled true to display the metrics overlay.
+ * @param pipManager The [PipManager] to report the video surface bounds to, so that the Picture-in-Picture transition animates from the video.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -85,6 +96,7 @@ fun PlayerView(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
+    pipManager: PipManager? = null,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val presentationState = rememberPresentationState(player, keepContentOnReset = false)
@@ -93,6 +105,17 @@ fun PlayerView(
         player = player,
         contentScale = contentScale,
         presentationState = presentationState,
+        surface = pipManager?.let { pipManager ->
+            {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .onGloballyPositioned {
+                            pipManager.sourceRect = it.visibleVideoBoundsInWindow().roundToIntRect().toAndroidRect()
+                        }
+                )
+            }
+        },
         shutter = {
             val deviceInfo by player.getDeviceInfoAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()
@@ -170,6 +193,25 @@ fun PlayerView(
     }
 }
 
+/**
+ * The visible part of the video, in window coordinates, with the video aspect ratio.
+ *
+ * When the video is cropped (e.g. with [ContentScale.Crop]), its visible bounds have the aspect ratio of the player instead of the video's.
+ * The system rejects such a Picture-in-Picture source rect hint, and animates the app icon instead of the video.
+ */
+private fun LayoutCoordinates.visibleVideoBoundsInWindow(): Rect {
+    val visibleBounds = boundsInWindow()
+    if (size.width == 0 || size.height == 0 || visibleBounds.isEmpty) return visibleBounds
+
+    val videoAspectRatio = size.width.toFloat() / size.height
+    val width = min(visibleBounds.width, visibleBounds.height * videoAspectRatio)
+    val height = width / videoAspectRatio
+    return Rect(
+        offset = Offset(visibleBounds.center.x - width / 2, visibleBounds.center.y - height / 2),
+        size = Size(width, height),
+    )
+}
+
 @Composable
 private fun PlayerOverlay(
     player: PillarboxPlayer,
@@ -209,7 +251,7 @@ private fun PlayerOverlay(
     ) {
         val creditState = rememberCreditState(player)
         AnimatedVisibility(
-            visible = creditState.isInCredit && !controlsVisibility.visible,
+            visible = controlsVisible && creditState.isInCredit && !controlsVisibility.visible,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(MaterialTheme.paddings.baseline),
@@ -220,6 +262,9 @@ private fun PlayerOverlay(
         }
 
         ProgressIndicator(player, isSliderDragged)
+
+        // When the controls are forced hidden (e.g. Picture-in-Picture), remove them immediately instead of playing the exit animation
+        if (!controlsVisible) return@Box
 
         DemoControls(
             modifier = Modifier
