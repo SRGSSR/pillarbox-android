@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.okhttp)
     implementation(libs.play.services.cast)
+    implementation(libs.play.services.cast.framework)
     implementation(libs.play.services.cast.tv)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
