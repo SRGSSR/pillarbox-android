@@ -120,6 +120,17 @@ To do this, you can use either:
 - The official [MediaRouteButton][media-route-button], best suited for application using AppCompat and XML `View`s.
 - [MediaMaestro][androidx-mediarouter-compose], which works best with Compose.
 
+#### Android 17+
+
+Applications targeting API 37 or later must declare the local network permission to discover Cast devices:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+```
+
+MediaMaestro's `MediaRouteButton` requests this permission at runtime when clicked. If you use another Cast button, you have to
+request it yourself.
+
 ## Local to remote playback
 
 [RemotePlayer][ch.srgssr.pillarbox.cast.RemotePlayer] provides an easy to use local to remote management. It forwards to the

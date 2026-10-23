@@ -34,5 +34,6 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.play.services.cast.framework)
     testRuntimeOnly(libs.robolectric)
 }
