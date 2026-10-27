@@ -69,9 +69,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.cast.getCastContext
-import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
@@ -112,8 +110,6 @@ fun AppSettingsView(
         )
 
         GitHubSection()
-
-        VersionInformationSection()
 
         Spacer(Modifier.height(MaterialTheme.paddings.baseline))
     }
@@ -160,25 +156,6 @@ private fun MetricsOverlaySettings(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun VersionInformationSection() {
-    SettingSection(title = stringResource(R.string.settings_version_information)) {
-        DemoListItemView(
-            leadingText = "Pillarbox",
-            trailingText = BuildConfig.VERSION_NAME,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        HorizontalDivider()
-
-        DemoListItemView(
-            leadingText = "Media3",
-            trailingText = MediaLibraryInfo.VERSION,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }
 

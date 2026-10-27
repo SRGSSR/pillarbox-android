@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,15 +22,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -69,23 +74,27 @@ import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.navigateTopLevel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
+import ch.srgssr.pillarbox.demo.ui.downloads.DownloadsHome
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.lists.listsNavGraph
+import ch.srgssr.pillarbox.demo.ui.menu.MainMenu
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.search.SearchHome
 import ch.srgssr.pillarbox.demo.ui.settings.AppSettingsView
 import ch.srgssr.pillarbox.demo.ui.showcases.showcasesNavGraph
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import kotlinx.coroutines.launch
 
 private val bottomNavItems =
-    listOf(HomeDestination.Examples, HomeDestination.Showcases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
+    listOf(HomeDestination.Examples, HomeDestination.Showcases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Downloads)
+private val titledDestinations = bottomNavItems + HomeDestination.Settings
 private val topLevelRoutes = listOf(
     NavigationRoutes.HomeSamples,
     NavigationRoutes.ShowcaseList,
     NavigationRoutes.ContentLists,
     NavigationRoutes.SearchHome,
-    NavigationRoutes.SettingsHome,
+    NavigationRoutes.DownloadsHome,
 )
 
 /**
@@ -103,87 +112,116 @@ fun MainNavigation() {
     var forceSAM by remember { mutableStateOf(false) }
     var ilLocation by remember { mutableStateOf<IlLocation?>(null) }
 
-    Scaffold(
-        topBar = {
-            currentDestination?.let {
-                TopAppBar(
-                    title = {
-                        Text(text = stringResource(id = currentDestination.getLabelResId()))
-                    },
-                    navigationIcon = {
-                        if (topLevelRoutes.none { currentDestination.hasRoute(it::class) }) {
-                            IconButton(onClick = navController::navigateUp) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.navigate_up)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerContent = {
+            MainMenu(
+                onSettingsClick = {
+                    coroutineScope.launch { drawerState.close() }
+                    navController.navigate(NavigationRoutes.SettingsHome) {
+                        launchSingleTop = true
+                    }
+                },
+            )
+        },
+        drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
+    ) {
+        Scaffold(
+            topBar = {
+                currentDestination?.let {
+                    TopAppBar(
+                        title = {
+                            Text(text = stringResource(id = currentDestination.getLabelResId()))
+                        },
+                        navigationIcon = {
+                            if (topLevelRoutes.none { currentDestination.hasRoute(it::class) }) {
+                                IconButton(onClick = navController::navigateUp) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = stringResource(R.string.navigate_up)
+                                    )
+                                }
+                            } else {
+                                IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = stringResource(R.string.open_menu)
+                                    )
+                                }
+                            }
+                        },
+                        actions = {
+                            if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
+                                ListsMenu(
+                                    currentServer = ilHost,
+                                    currentForceSAM = forceSAM,
+                                    currentLocation = ilLocation,
+                                    onServerSelected = { host, forceSam, location ->
+                                        ilHost = host
+                                        forceSAM = forceSam
+                                        ilLocation = location
+                                    },
                                 )
                             }
                         }
-                    },
-                    actions = {
-                        if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
-                            ListsMenu(
-                                currentServer = ilHost,
-                                currentForceSAM = forceSAM,
-                                currentLocation = ilLocation,
-                                onServerSelected = { host, forceSam, location ->
-                                    ilHost = host
-                                    forceSAM = forceSam
-                                    ilLocation = location
-                                },
-                            )
-                        }
-                    }
-                )
-            }
-        },
-        bottomBar = {
-            DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
-        }
-    ) { innerPadding ->
-        val context = LocalContext.current
-        val listsIlRepository = remember(ilHost, forceSAM, ilLocation) {
-            PlayerModule.createIlRepository(context, ilHost, forceSAM, ilLocation)
-        }
-
-        NavHost(
-            navController = navController,
-            startDestination = NavigationRoutes.HomeSamples,
-            modifier = Modifier
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
-                .displayCutoutPadding(),
-        ) {
-            composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
-                ExamplesHome()
-            }
-
-            navigation<NavigationRoutes.HomeShowcases>(NavigationRoutes.ShowcaseList) {
-                showcasesNavGraph(navController)
-            }
-
-            navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
-                listsNavGraph(navController, listsIlRepository, ilHost, forceSAM, ilLocation)
-            }
-
-            composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
-                val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory())
-
-                AppSettingsView(appSettingsViewModel)
-            }
-
-            composable<NavigationRoutes.SearchHome>(DemoPageView("home", listOf("app", "pillarbox", "search"))) {
-                val ilRepository = PlayerModule.createIlRepository(context)
-                val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
-                SearchHome(searchViewModel = viewModel) {
-                    val item = DemoItem.URN(
-                        title = it.title,
-                        urn = it.urn,
-                        description = it.description,
-                        imageUri = it.imageUrl.decorated(width = ImageWidth.W480),
                     )
+                }
+            },
+            bottomBar = {
+                DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
+            }
+        ) { innerPadding ->
+            val context = LocalContext.current
+            val listsIlRepository = remember(ilHost, forceSAM, ilLocation) {
+                PlayerModule.createIlRepository(context, ilHost, forceSAM, ilLocation)
+            }
 
-                    SimplePlayerActivity.startActivity(context, item)
+            NavHost(
+                navController = navController,
+                startDestination = NavigationRoutes.HomeSamples,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .displayCutoutPadding(),
+            ) {
+                composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
+                    ExamplesHome()
+                }
+
+                navigation<NavigationRoutes.HomeShowcases>(NavigationRoutes.ShowcaseList) {
+                    showcasesNavGraph(navController)
+                }
+
+                navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
+                    listsNavGraph(navController, listsIlRepository, ilHost, forceSAM, ilLocation)
+                }
+
+                composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
+                    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory())
+
+                    AppSettingsView(appSettingsViewModel)
+                }
+
+                composable<NavigationRoutes.DownloadsHome>(DemoPageView("home", listOf("app", "pillarbox", "downloads"))) {
+                    DownloadsHome()
+                }
+
+                composable<NavigationRoutes.SearchHome>(DemoPageView("home", listOf("app", "pillarbox", "search"))) {
+                    val ilRepository = PlayerModule.createIlRepository(context)
+                    val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
+                    SearchHome(searchViewModel = viewModel) {
+                        val item = DemoItem.URN(
+                            title = it.title,
+                            urn = it.urn,
+                            description = it.description,
+                            imageUri = it.imageUrl.decorated(width = ImageWidth.W480),
+                        )
+
+                        SimplePlayerActivity.startActivity(context, item)
+                    }
                 }
             }
         }
@@ -374,7 +412,7 @@ private fun DemoBottomNavigationPreview() {
 }
 
 private fun NavDestination.getLabelResId(): Int {
-    val navItem: HomeDestination? = bottomNavItems.firstOrNull { destination ->
+    val navItem: HomeDestination? = titledDestinations.firstOrNull { destination ->
         hierarchy.any { it.hasRoute(destination.route::class) }
     }
     return navItem?.labelResId ?: ResourcesCompat.ID_NULL
