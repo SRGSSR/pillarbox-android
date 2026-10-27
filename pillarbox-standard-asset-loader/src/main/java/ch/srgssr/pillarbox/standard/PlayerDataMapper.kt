@@ -47,7 +47,7 @@ interface PlayerDataMapper<CustomData> {
                         chapter.endTime,
                         MediaMetadata.Builder().apply {
                             setTitle(chapter.title)
-                            setArtworkUri(chapter.title.toUri())
+                            chapter.posterUrl?.let { setArtworkUri(it.toUri()) }
                         }.build()
                     )
                 }
