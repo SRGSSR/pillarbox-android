@@ -36,7 +36,7 @@ class StandardAssetLoader<CustomData> constructor(
             setMimeType(mediaInfo.source.mimeType)
             setDrmConfiguration(mediaInfo.drm?.toDrmConfig())
         }.build()
-        val mutableMediaItemTrackerData = MutableMediaItemTrackerData.EMPTY
+        val mutableMediaItemTrackerData = MutableMediaItemTrackerData()
         with(playerDataMapper) {
             mediaInfo.mediaItemTrackerData(mutableMediaItemTrackerData)
         }
