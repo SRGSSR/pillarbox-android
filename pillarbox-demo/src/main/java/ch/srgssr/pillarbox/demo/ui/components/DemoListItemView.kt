@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
  * @param modifier The [Modifier] to apply to the root of the item.
  * @param subtitle The optional subtitle of the item.
  * @param languageTag The IETF BCP47 language tag of the title and subtitle.
+ * @param trailingContent The optional content displayed at the end of the item.
  * @param onClick The action to perform when an item is clicked.
  */
 @Composable
@@ -49,44 +50,50 @@ fun DemoListItemView(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     languageTag: String? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
     onClick: () -> Unit,
 ) {
-    Column(
+    Row(
         modifier = modifier
             .clickable { onClick() }
             .minimumInteractiveComponentSize()
             .padding(
                 horizontal = MaterialTheme.paddings.baseline,
                 vertical = MaterialTheme.paddings.small
-            )
+            ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        val localeList = languageTag?.let { LocaleList(Locale(languageTag)) }
+        Column(modifier = Modifier.weight(1f)) {
+            val localeList = languageTag?.let { LocaleList(Locale(languageTag)) }
 
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(localeList = localeList)) {
-                    append(title)
-                }
-            },
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        if (!subtitle.isNullOrBlank()) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(localeList = localeList)) {
-                        append(subtitle)
+                        append(title)
                     }
                 },
-                modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
-                color = MaterialTheme.colorScheme.outline,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
+
+            if (!subtitle.isNullOrBlank()) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(localeList = localeList)) {
+                            append(subtitle)
+                        }
+                    },
+                    modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
+                    color = MaterialTheme.colorScheme.outline,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
+
+        trailingContent?.invoke()
     }
 }
 

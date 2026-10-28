@@ -19,6 +19,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.NotificationUtil
 import androidx.media3.session.R
 import androidx.media3.ui.PlayerNotificationManager
+import ch.srgssr.pillarbox.demo.service.DownloadAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -40,7 +41,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = PlayerModule.provideDefaultPlayer(application)
+    val player = PlayerModule.provideDefaultPlayer(application, listOf(DownloadAssetLoader(application)))
 
     private val mediaSession = PillarboxMediaSession.Builder(application, player)
         .setSessionActivity(pendingIntent())

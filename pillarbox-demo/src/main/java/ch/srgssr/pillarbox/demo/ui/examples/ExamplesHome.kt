@@ -14,18 +14,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ch.srgssr.pillarbox.demo.service.DemoDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.examples.ExamplesViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.components.DownloadButton
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -40,6 +43,10 @@ fun ExamplesHome() {
     val examplesViewModel: ExamplesViewModel = viewModel()
     val context = LocalContext.current
     val playlists by examplesViewModel.contents.collectAsState()
+
+    LaunchedEffect(Unit) {
+        DemoDownloadService.start(context)
+    }
 
     ListStreamView(playlists = playlists) {
         SimplePlayerActivity.startActivity(context, it)
@@ -83,6 +90,12 @@ private fun ListStreamView(
                         modifier = Modifier.fillMaxWidth(),
                         subtitle = item.description,
                         languageTag = item.languageTag,
+                        trailingContent = {
+                            // Only URLs can be downloaded.
+                            if (item is DemoItem.URL) {
+                                DownloadButton(uri = item.uri)
+                            }
+                        },
                         onClick = { onItemClicked(item) },
                     )
 

@@ -2,12 +2,11 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.showcases.misc
+package ch.srgssr.pillarbox.demo.service
 
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import ch.srgssr.pillarbox.demo.service.DemoDownloadService
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 

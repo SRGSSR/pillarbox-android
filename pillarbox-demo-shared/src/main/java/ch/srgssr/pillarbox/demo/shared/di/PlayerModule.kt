@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PreloadConfiguration
+import ch.srgssr.pillarbox.player.asset.AssetLoader
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlin.time.Duration.Companion.seconds
@@ -27,11 +28,15 @@ import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
 object PlayerModule {
     /**
      * Provide default player that allow to play urls and urns content from the SRG
+     *
+     * @param context The context.
+     * @param assetLoaders Additional [AssetLoader]s, checked after the demo ones and before the default ones.
      */
-    fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
+    fun provideDefaultPlayer(context: Context, assetLoaders: List<AssetLoader> = emptyList()): PillarboxExoPlayer {
         return PillarboxExoPlayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
+            assetLoaders.forEach { +it }
             preloadConfiguration(PreloadConfiguration(10.seconds))
         }
     }
