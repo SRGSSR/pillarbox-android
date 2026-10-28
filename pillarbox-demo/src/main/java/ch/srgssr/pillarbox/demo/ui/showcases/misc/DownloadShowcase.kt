@@ -38,12 +38,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.media3.common.C
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.service.DemoDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -71,12 +69,9 @@ private val DownloadItems = listOf(
 fun DownloadShowcase() {
     val context = LocalContext.current
     val player = remember {
-        ExoPlayer.Builder(context)
-            .setMediaSourceFactory(
-                DefaultMediaSourceFactory(context)
-                    .setDataSourceFactory(DemoDownloadService.getCacheDataSourceFactory(context))
-            )
-            .build()
+        PillarboxExoPlayer(context) {
+            +DownloadAssetLoader(context)
+        }
     }
     DisposableEffect(player) {
         onDispose {
@@ -119,9 +114,7 @@ fun DownloadShowcase() {
                             download = download,
                             downloadEnabled = downloadEnabled,
                             onClick = {
-                                // The player's DefaultMediaSourceFactory already reads from the
-                                // download cache and infers the format (HLS, MP4, MP3...) from the URI.
-                                player.setMediaItem(MediaItem.fromUri(item.uri))
+                                player.setMediaItem(item.toMediaItem())
                                 player.prepare()
                                 player.play()
                             },
