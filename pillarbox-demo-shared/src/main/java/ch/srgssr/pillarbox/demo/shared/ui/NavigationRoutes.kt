@@ -95,4 +95,7 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object SignLanguageSwitchShowcase : NavigationRoutes
+
+    @Serializable
+    data object DownloadShowcase : NavigationRoutes
 }
