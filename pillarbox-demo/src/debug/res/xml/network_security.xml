@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<network-security-config>
+    <!-- Allow plain HTTP in debug builds, to play content from a local test server -->
+    <base-config cleartextTrafficPermitted="true" />
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trust user added CAs  -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

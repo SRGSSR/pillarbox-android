@@ -60,4 +60,5 @@
     <string name="settings_github_project">Project</string>
     <string name="showcase_video_audio_switch">Switch video/audio</string>
     <string name="showcase_sign_language_switch">Switch sign language</string>
+    <string name="showcase_live_to_vod_transition">Live to VOD transition</string>
 </resources>

@@ -122,6 +122,7 @@ fun ShowcasesHome(navController: NavController) {
             stringResource(R.string.showcase_countdown) to NavigationRoutes.CountdownShowcase,
             stringResource(R.string.showcase_video_audio_switch) to NavigationRoutes.AudioVideoSwitchShowcase,
             stringResource(R.string.showcase_sign_language_switch) to NavigationRoutes.SignLanguageSwitchShowcase,
+            stringResource(R.string.showcase_live_to_vod_transition) to NavigationRoutes.LiveToVodShowcase,
         )
 
         DemoListHeaderView(
