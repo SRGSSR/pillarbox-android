@@ -22,7 +22,7 @@ class LiveToVodViewModel(application: Application) : AndroidViewModel(applicatio
     /**
      * The player.
      */
-    val player: PillarboxPlayer = PlayerModule.provideDefaultPlayer(application)
+    val player: PillarboxPlayer = PlayerModule.provideStandardPlayer(application)
 
     private val content = DemoItem.URL(
         uri = URL_TEST,
@@ -86,9 +86,9 @@ class LiveToVodViewModel(application: Application) : AndroidViewModel(applicatio
 
     companion object {
         /**
-         * The URL of the content to play, served by a local test server.
+         * The URL of the metadata of the content to play, in the Pillarbox standard metadata format, served by a local test server.
          * 10.0.2.2 is the address of the host machine from the Android emulator.
          */
-        const val URL_TEST = "http://10.0.2.2:8080/hls/index.m3u8"
+        const val URL_TEST = "http://10.0.2.2:8080/metadata"
     }
 }

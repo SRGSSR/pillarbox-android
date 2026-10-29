@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.shared.di
 
 import android.content.Context
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
@@ -13,9 +14,12 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
+import ch.srgssr.pillarbox.demo.shared.source.UrlPlayerDataLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PreloadConfiguration
+import ch.srgssr.pillarbox.standard.PlayerDataMapper
+import ch.srgssr.pillarbox.standard.StandardAssetLoader
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlin.time.Duration.Companion.seconds
@@ -33,6 +37,19 @@ object PlayerModule {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
             preloadConfiguration(PreloadConfiguration(10.seconds))
+        }
+    }
+
+    /**
+     * Provide a player that plays http(s) URLs of metadata following the Pillarbox standard metadata format, with a [StandardAssetLoader].
+     */
+    fun provideStandardPlayer(context: Context): PillarboxExoPlayer {
+        return PillarboxExoPlayer(context = context) {
+            +StandardAssetLoader(
+                playerDataLoader = UrlPlayerDataLoader(),
+                playerDataMapper = PlayerDataMapper.Default(),
+                mediaSourceFactory = DefaultMediaSourceFactory(context),
+            )
         }
     }
 
