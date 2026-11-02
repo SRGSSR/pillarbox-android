@@ -2,7 +2,7 @@
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Pillarbox Demo</string>
     <string name="playlists">Playlists</string>
     <string name="add_to_playlist">Add to playlist</string>
@@ -34,6 +34,25 @@
     <string name="navigate_up">Navigate up</string>
     <string name="open_menu">Open menu</string>
     <string name="downloads_empty">No downloads yet</string>
+    <string name="downloads_empty_hint">Tap the download icon of an example to download it</string>
+    <string name="downloads_stored_in">Stored in <xliff:g example="/storage/emulated/0/Android/data/ch.srgssr.pillarbox.demo/files/pillarbox-downloads" id="directory">%1$s</xliff:g></string>
+    <string name="download_item">Download <xliff:g example="Tagesschau" id="title">%1$s</xliff:g></string>
+    <string name="download_added">Downloading <xliff:g example="Tagesschau" id="title">%1$s</xliff:g></string>
+    <string name="download_not_supported">Can\'t download: <xliff:g example="Live streams can\'t be downloaded" id="reason">%1$s</xliff:g></string>
+    <string name="download_failed">The download failed</string>
+    <string name="download_actions">Download actions</string>
+    <string name="download_pause">Pause</string>
+    <string name="download_resume">Resume</string>
+    <string name="download_restart">Restart</string>
+    <string name="download_cancel">Cancel</string>
+    <string name="download_remove">Remove</string>
+    <string name="download_state_queued">Queued</string>
+    <string name="download_state_downloading">Downloading</string>
+    <string name="download_state_paused">Paused</string>
+    <string name="download_state_completed">Downloaded</string>
+    <string name="download_state_failed">Failed</string>
+    <string name="download_state_removing">Removing</string>
+    <string name="download_state_restarting">Restarting</string>
     <string name="start_given_time_example">Start at given time (10min)</string>
     <string name="video_360">360°</string>
     <string name="showcase_playback_settings">Custom playback settings</string>
