@@ -52,21 +52,20 @@ thread. Add the same [AssetLoader][ch.srgssr.pillarbox.player.asset.AssetLoader]
 download.
 
 ```kotlin
-val downloadManager = PillarboxDownloadManager(context, MyDownloadService::class.java) {
-    +SRGAssetLoader(context)
-
+val downloadManager = PillarboxDownloadManager.Builder(context, MyDownloadService::class.java)
+    .addAssetLoader(SRGAssetLoader(context))
     // Optional customization
-    downloadDirectory(File(context.filesDir, "downloads"))
-    maxParallelDownloads(2)
-    requirements(Requirements(Requirements.NETWORK_UNMETERED))
-    trackSelectionParameters(
+    .setDownloadDirectory(File(context.filesDir, "downloads"))
+    .setMaxParallelDownloads(2)
+    .setRequirements(Requirements(Requirements.NETWORK_UNMETERED))
+    .setTrackSelectionParameters(
         DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS.buildUpon()
             .setMaxVideoSize(1280, 720)
             .build()
     )
     // SRG SSR streams may require an Akamai token
-    dataSourceFactory(AkamaiTokenDataSource.Factory())
-}
+    .setDataSourceFactory(AkamaiTokenDataSource.Factory())
+    .build()
 ```
 
 ### Play downloaded media offline

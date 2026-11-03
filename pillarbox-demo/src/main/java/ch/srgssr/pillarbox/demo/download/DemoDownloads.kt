@@ -38,25 +38,23 @@ object DemoDownloads {
     }
 
     private fun createDownloadManager(context: Context): PillarboxDownloadManager {
-        return PillarboxDownloadManager(context, DemoDownloadService::class.java) {
+        return PillarboxDownloadManager.Builder(context, DemoDownloadService::class.java)
             // Same asset loaders as the player, so that the media are downloaded in the same conditions as when they are streamed
-            +CustomAssetLoader(context)
-            +BlockedTimeRangeAssetLoader(context)
-            +SRGAssetLoader(context)
-
+            .addAssetLoader(CustomAssetLoader(context))
+            .addAssetLoader(BlockedTimeRangeAssetLoader(context))
+            .addAssetLoader(SRGAssetLoader(context))
             // Download a quality suited to phones, to save storage and data
-            trackSelectionParameters(
+            .setTrackSelectionParameters(
                 DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS.buildUpon()
                     .setMaxVideoSize(MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT)
                     .build()
             )
-
             // SRG SSR streams may require an Akamai token
-            dataSourceFactory(
+            .setDataSourceFactory(
                 AkamaiTokenDataSource.Factory(
                     defaultDataSourceFactory = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(PillarboxOkHttp())),
                 )
             )
-        }
+            .build()
     }
 }

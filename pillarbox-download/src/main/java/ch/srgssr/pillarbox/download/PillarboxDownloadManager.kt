@@ -10,9 +10,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadHelper
@@ -23,6 +25,7 @@ import androidx.media3.exoplayer.scheduler.Requirements
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.offline.DownloadedMediaProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import okhttp3.OkHttpClient
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.Executors
@@ -45,9 +49,9 @@ import kotlin.coroutines.resumeWithException
  * [DownloadedMediaProvider] then plays the downloaded media from the download cache.
  *
  * ```kotlin
- * val downloadManager = PillarboxDownloadManager(context, MyDownloadService::class.java) {
- *     +SRGAssetLoader(context)
- * }
+ * val downloadManager = PillarboxDownloadManager.Builder(context, MyDownloadService::class.java)
+ *     .addAssetLoader(SRGAssetLoader(context))
+ *     .build()
  * val player = PillarboxExoPlayer(context) {
  *     downloadedMediaProvider(downloadManager)
  * }
@@ -61,7 +65,7 @@ import kotlin.coroutines.resumeWithException
  * @property downloadDirectory The directory in which the downloads are stored.
  */
 @Suppress("LongParameterList", "TooManyFunctions")
-class PillarboxDownloadManager internal constructor(
+class PillarboxDownloadManager private constructor(
     private val context: Context,
     private val downloadServiceClass: Class<out DownloadService>,
     private val assetLoaders: List<AssetLoader>,
@@ -257,7 +261,126 @@ class PillarboxDownloadManager internal constructor(
             .sortedByDescending { it.startTimeMs }
     }
 
+    /**
+     * Builder of a [PillarboxDownloadManager].
+     *
+     * @param context The [Context].
+     * @param downloadServiceClass The [DownloadService] declared in your application manifest, that uses the built
+     * [PillarboxDownloadManager]. See [PillarboxDownloadService].
+     */
+    class Builder(context: Context, private val downloadServiceClass: Class<out DownloadService>) {
+        private val context = context.applicationContext
+        private val assetLoaders = mutableListOf<AssetLoader>()
+        private var downloadDirectory: File = File(this.context.getExternalFilesDir(null) ?: this.context.filesDir, DEFAULT_DOWNLOAD_DIRECTORY)
+        private var okHttpClient: OkHttpClient = PillarboxOkHttp()
+        private var dataSourceFactory: DataSource.Factory? = null
+        private var maxParallelDownloads: Int = DownloadManager.DEFAULT_MAX_PARALLEL_DOWNLOADS
+        private var requirements: Requirements = DownloadManager.DEFAULT_REQUIREMENTS
+        private var trackSelectionParameters: TrackSelectionParameters = DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS
+
+        /**
+         * Adds an [AssetLoader] used to resolve the stream of the media to download. They are checked in the order they are
+         * added; URLs are handled by default. Use the same [AssetLoader]s as your player.
+         *
+         * @param assetLoader The [AssetLoader] to add.
+         * @return this builder for convenience.
+         */
+        fun addAssetLoader(assetLoader: AssetLoader): Builder {
+            assetLoaders.add(assetLoader)
+            return this
+        }
+
+        /**
+         * Sets the directory in which the downloads are stored. By default, a `pillarbox-downloads` directory in the application specific
+         * external storage, or internal storage if not available.
+         *
+         * @param downloadDirectory The download directory.
+         * @return this builder for convenience.
+         */
+        fun setDownloadDirectory(downloadDirectory: File): Builder {
+            this.downloadDirectory = downloadDirectory
+            return this
+        }
+
+        /**
+         * Sets the [OkHttpClient] used to download the media.
+         *
+         * @param okHttpClient The [OkHttpClient].
+         * @return this builder for convenience.
+         */
+        fun setHttpClient(okHttpClient: OkHttpClient): Builder {
+            this.okHttpClient = okHttpClient
+            return this
+        }
+
+        /**
+         * Sets the [DataSource.Factory] used to download the media. By default, a [DefaultDataSource.Factory] using the [OkHttpClient] set
+         * with [setHttpClient].
+         *
+         * @param dataSourceFactory The [DataSource.Factory].
+         * @return this builder for convenience.
+         */
+        fun setDataSourceFactory(dataSourceFactory: DataSource.Factory): Builder {
+            this.dataSourceFactory = dataSourceFactory
+            return this
+        }
+
+        /**
+         * Sets the maximum number of downloads running in parallel.
+         *
+         * @param maxParallelDownloads The maximum number of parallel downloads. Must be greater than 0.
+         * @return this builder for convenience.
+         */
+        fun setMaxParallelDownloads(maxParallelDownloads: Int): Builder {
+            require(maxParallelDownloads > 0) { "maxParallelDownloads must be greater than 0" }
+            this.maxParallelDownloads = maxParallelDownloads
+            return this
+        }
+
+        /**
+         * Sets the [Requirements] to meet for the downloads to progress, for example [Requirements.NETWORK_UNMETERED] to download over
+         * Wi-Fi only.
+         *
+         * @param requirements The [Requirements].
+         * @return this builder for convenience.
+         */
+        fun setRequirements(requirements: Requirements): Builder {
+            this.requirements = requirements
+            return this
+        }
+
+        /**
+         * Sets the [TrackSelectionParameters] used to select the tracks to download.
+         *
+         * @param trackSelectionParameters The [TrackSelectionParameters].
+         * @return this builder for convenience.
+         */
+        fun setTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters): Builder {
+            this.trackSelectionParameters = trackSelectionParameters
+            return this
+        }
+
+        /**
+         * Builds the [PillarboxDownloadManager]. Only one instance should be created per download directory, see [PillarboxDownloadManager].
+         *
+         * @return A new [PillarboxDownloadManager].
+         */
+        fun build(): PillarboxDownloadManager {
+            return PillarboxDownloadManager(
+                context = context,
+                downloadServiceClass = downloadServiceClass,
+                assetLoaders = assetLoaders.toList(),
+                downloadDirectory = downloadDirectory,
+                dataSourceFactory = dataSourceFactory ?: DefaultDataSource.Factory(context, OkHttpDataSource.Factory(okHttpClient)),
+                trackSelectionParameters = trackSelectionParameters,
+                maxParallelDownloads = maxParallelDownloads,
+                requirements = requirements,
+            )
+        }
+    }
+
     companion object {
+        private const val DEFAULT_DOWNLOAD_DIRECTORY = "pillarbox-downloads"
         private const val DOWNLOAD_THREAD_COUNT = 6
         private const val MEDIA_DIRECTORY = "media"
         private const val PROGRESS_UPDATE_INTERVAL_MS = 500L
