@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
 dependencies {
@@ -17,4 +18,15 @@ dependencies {
     api(libs.androidx.media3.exoplayer)
     api(libs.kotlinx.coroutines.core)
     api(libs.okhttp)
+
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
+    testImplementation(libs.turbine)
 }
