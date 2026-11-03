@@ -16,31 +16,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.examples.ExamplesViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.downloads.DownloadButton
 import ch.srgssr.pillarbox.demo.ui.downloads.DownloadsViewModel
+import ch.srgssr.pillarbox.demo.ui.downloads.statusText
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -48,39 +46,63 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 /**
  * Examples home page.
  *
- * Display all the [DemoItem] in a List.
- *
- * @param onDownloadStarted Called when the download of an item is requested.
+ * Display all the [DemoItem] in a List, each with a button to download it showing the state of its download.
  */
 @Composable
-fun ExamplesHome(onDownloadStarted: () -> Unit = {}) {
+fun ExamplesHome() {
     val examplesViewModel: ExamplesViewModel = viewModel()
     val downloadsViewModel: DownloadsViewModel = viewModel()
     val context = LocalContext.current
     val playlists by examplesViewModel.contents.collectAsState()
+    val downloadsById by downloadsViewModel.downloadsById.collectAsStateWithLifecycle()
+    val preparingIds by downloadsViewModel.preparingIds.collectAsStateWithLifecycle()
+    val downloadIds = remember(playlists) {
+        playlists.flatMap { it.items }.associateWith { downloadsViewModel.getDownloadId(it) }
+    }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     ListStreamView(
         playlists = playlists,
         onItemClicked = { SimplePlayerActivity.startActivity(context, it) },
-        onDownloadClicked = { item ->
-            // The download progress is displayed in a notification
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-            ) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            downloadsViewModel.download(item)
-            onDownloadStarted()
+        itemStatus = { item -> downloadIds[item]?.let { downloadsById[it] }?.statusText() },
+        downloadButton = { item, title ->
+            val downloadId = downloadIds[item]
+            val download = downloadId?.let { downloadsById[it] }
+
+            DownloadButton(
+                title = title,
+                download = download,
+                isPreparing = downloadId in preparingIds,
+                onDownload = {
+                    // The download progress is also displayed in a notification
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                    downloadsViewModel.download(item)
+                },
+                onPause = { download?.let(downloadsViewModel::pause) },
+                onResume = { download?.let(downloadsViewModel::resume) },
+                onRestart = { download?.let(downloadsViewModel::restart) },
+                onRemove = { download?.let(downloadsViewModel::remove) },
+            )
         },
     )
 }
 
+/**
+ * @param playlists The playlists to display.
+ * @param onItemClicked Called when an item is clicked.
+ * @param itemStatus Returns the download status of an item, displayed instead of its description, or `null` if it isn't downloaded.
+ * @param downloadButton The download button of an item.
+ */
 @Composable
 private fun ListStreamView(
     playlists: List<Playlist>,
     onItemClicked: (item: DemoItem) -> Unit,
-    onDownloadClicked: (item: DemoItem) -> Unit,
+    itemStatus: @Composable (item: DemoItem) -> String?,
+    downloadButton: @Composable (item: DemoItem, title: String) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(MaterialTheme.paddings.baseline),
@@ -118,17 +140,12 @@ private fun ListStreamView(
                         DemoListItemView(
                             title = title,
                             modifier = Modifier.weight(1f),
-                            subtitle = item.description,
+                            subtitle = itemStatus(item) ?: item.description,
                             languageTag = item.languageTag,
                             onClick = { onItemClicked(item) },
                         )
 
-                        IconButton(onClick = { onDownloadClicked(item) }) {
-                            Icon(
-                                imageVector = Icons.Default.Download,
-                                contentDescription = stringResource(R.string.download_item, title),
-                            )
-                        }
+                        downloadButton(item, title)
                     }
 
                     if (index < playlist.items.lastIndex) {
@@ -157,7 +174,19 @@ private fun ListStreamPreview() {
         ListStreamView(
             playlists = playlists,
             onItemClicked = {},
-            onDownloadClicked = {},
+            itemStatus = { null },
+            downloadButton = { _, title ->
+                DownloadButton(
+                    title = title,
+                    download = null,
+                    isPreparing = false,
+                    onDownload = {},
+                    onPause = {},
+                    onResume = {},
+                    onRestart = {},
+                    onRemove = {},
+                )
+            },
         )
     }
 }

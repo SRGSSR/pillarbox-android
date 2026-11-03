@@ -16,10 +16,16 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.download.DownloadNotSupportedException
 import ch.srgssr.pillarbox.download.title
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 /**
@@ -37,9 +43,32 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     /**
+     * All the downloads, by download identifier.
+     */
+    val downloadsById: StateFlow<Map<String, Download>> = downloads
+        .map { downloads -> downloads.orEmpty().associateBy { it.request.id } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyMap())
+
+    private val _preparingIds = MutableStateFlow(emptySet<String>())
+
+    /**
+     * The identifiers of the downloads being prepared, i.e. requested with [download] but not yet added to the download manager.
+     */
+    val preparingIds: StateFlow<Set<String>> = _preparingIds.asStateFlow()
+
+    /**
      * The directory in which the downloads are stored.
      */
     val downloadDirectory: File = downloadManager.downloadDirectory
+
+    /**
+     * Returns the identifier of the download of [item].
+     *
+     * @param item The [DemoItem].
+     */
+    fun getDownloadId(item: DemoItem): String {
+        return downloadManager.getDownloadId(item.toMediaItem())
+    }
 
     /**
      * Downloads [item].
@@ -48,11 +77,17 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
      */
     fun download(item: DemoItem) {
         val application = getApplication<Application>()
+        val id = getDownloadId(item)
+        if (id in _preparingIds.value) return
 
+        _preparingIds.update { it + id }
         viewModelScope.launch {
             try {
                 downloadManager.download(item.toMediaItem())
-                showToast(application.getString(R.string.download_added, item.title.orEmpty()))
+                // Keep the item as preparing until the download is visible, so that the UI doesn't briefly show it as not downloaded
+                withTimeoutOrNull(ADDED_TIMEOUT_MS) {
+                    downloadsById.first { id in it }
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: DownloadNotSupportedException) {
@@ -60,6 +95,8 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 Log.e(TAG, "Unable to download ${item.uri}", e)
                 showToast(application.getString(R.string.download_failed))
+            } finally {
+                _preparingIds.update { it - id }
             }
         }
     }
@@ -106,6 +143,7 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private companion object {
+        private const val ADDED_TIMEOUT_MS = 5_000L
         private const val STOP_TIMEOUT_MS = 5_000L
         private const val TAG = "DownloadsViewModel"
     }

@@ -17,15 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -201,37 +197,15 @@ private fun DownloadActions(
             )
         }
 
-        DropdownMenu(
+        DownloadActionsMenu(
+            download = download,
             expanded = showMenu,
             onDismissRequest = { showMenu = false },
-        ) {
-            val actionItem: @Composable (Int, ImageVector, () -> Unit) -> Unit = { label, icon, action ->
-                DropdownMenuItem(
-                    text = { Text(stringResource(label)) },
-                    leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
-                    onClick = {
-                        showMenu = false
-                        action()
-                    },
-                )
-            }
-
-            when (download.state) {
-                Download.STATE_QUEUED,
-                Download.STATE_DOWNLOADING -> actionItem(R.string.download_pause, Icons.Default.Pause, onPause)
-
-                Download.STATE_STOPPED -> actionItem(R.string.download_resume, Icons.Default.Download, onResume)
-
-                else -> Unit
-            }
-
-            if (download.state != Download.STATE_REMOVING) {
-                actionItem(R.string.download_restart, Icons.Default.Refresh, onRestart)
-
-                val removeLabel = if (download.state == Download.STATE_COMPLETED) R.string.download_remove else R.string.download_cancel
-                actionItem(removeLabel, Icons.Default.Delete, onRemove)
-            }
-        }
+            onPause = onPause,
+            onResume = onResume,
+            onRestart = onRestart,
+            onRemove = onRemove,
+        )
     }
 }
 
@@ -265,8 +239,11 @@ private fun EmptyDownloads(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Returns a text describing the state and progress of this [Download].
+ */
 @Composable
-private fun Download.statusText(): String {
+internal fun Download.statusText(): String {
     val context = LocalContext.current
     val stateLabel = stringResource(state.labelResId())
     val size = contentLength.takeIf { it != C.LENGTH_UNSET.toLong() }?.let { Formatter.formatShortFileSize(context, it) }

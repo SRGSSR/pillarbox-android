@@ -188,9 +188,7 @@ fun MainNavigation() {
                     .displayCutoutPadding(),
             ) {
                 composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
-                    ExamplesHome(
-                        onDownloadStarted = { navController.navigateTopLevel(NavigationRoutes.DownloadsHome) },
-                    )
+                    ExamplesHome()
                 }
 
                 navigation<NavigationRoutes.HomeShowcases>(NavigationRoutes.ShowcaseList) {
