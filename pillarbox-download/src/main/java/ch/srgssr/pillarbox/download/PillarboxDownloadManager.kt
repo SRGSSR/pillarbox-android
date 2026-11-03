@@ -161,13 +161,21 @@ class PillarboxDownloadManager private constructor(
      * Downloads [mediaItem]. If it is already downloaded, the download is restarted.
      *
      * The media is first loaded with the configured [AssetLoader]s, to get the stream to download. Then the tracks to download are selected,
-     * and the download is added to the [DownloadService]. The title of the media is stored with the download.
+     * and the download is added to the [DownloadService]. The title of the media and [customData] are stored with the download, and can be
+     * read with [Download.title] and [Download.customData].
      *
      * @param mediaItem The [MediaItem] to download.
+     * @param trackSelectionParameters The [TrackSelectionParameters] used to select the tracks to download. By default, the ones set with
+     * [Builder.setTrackSelectionParameters].
+     * @param customData Application specific data to store with the download, for example the artwork URL of the media, or `null`.
      * @throws DownloadNotSupportedException If the media is DRM protected or is a live stream.
      * @throws IOException If the media can't be loaded.
      */
-    suspend fun download(mediaItem: MediaItem) {
+    suspend fun download(
+        mediaItem: MediaItem,
+        trackSelectionParameters: TrackSelectionParameters = this.trackSelectionParameters,
+        customData: ByteArray? = null,
+    ) {
         val id = getDownloadId(mediaItem)
         val assetLoader = assetLoaders.firstOrNull { it.canLoadAsset(mediaItem) } ?: defaultAssetLoader
         val asset = withContext(Dispatchers.IO) { assetLoader.loadAsset(mediaItem) }
@@ -190,7 +198,7 @@ class PillarboxDownloadManager private constructor(
                 .create(streamMediaItem)
             try {
                 downloadHelper.prepareAndAwait()
-                downloadHelper.getDownloadRequest(id, title?.encodeToByteArray())
+                downloadHelper.getDownloadRequest(id, DownloadData(title, customData).encode())
             } finally {
                 downloadHelper.release()
             }

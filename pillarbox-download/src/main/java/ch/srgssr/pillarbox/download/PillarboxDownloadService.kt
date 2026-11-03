@@ -38,7 +38,11 @@ abstract class PillarboxDownloadService : DownloadService(
     R.string.pillarbox_download_notification_channel_name,
     0,
 ) {
-    private val notificationHelper by lazy { DownloadNotificationHelper(this, NOTIFICATION_CHANNEL_ID) }
+    /**
+     * The [DownloadNotificationHelper] used to build the download notifications, posted to the [NOTIFICATION_CHANNEL_ID] channel. Use it
+     * to build your own notifications, for example in [getForegroundNotification] or when a download completes.
+     */
+    protected val notificationHelper by lazy { DownloadNotificationHelper(this, NOTIFICATION_CHANNEL_ID) }
 
     /**
      * The [PillarboxDownloadManager] whose downloads are run by this service. It should be an application wide singleton.
@@ -66,6 +70,11 @@ abstract class PillarboxDownloadService : DownloadService(
      */
     override fun getScheduler(): Scheduler? = null
 
+    /**
+     * Returns the notification shown while the downloads are running. By default, a progress notification using [notificationSmallIcon] and
+     * [createNotificationContentIntent]. Override it to customize the notification further; it must be posted to the
+     * [NOTIFICATION_CHANNEL_ID] channel.
+     */
     override fun getForegroundNotification(downloads: List<Download>, notMetRequirements: Int): Notification {
         return notificationHelper.buildProgressNotification(
             this,
@@ -77,8 +86,13 @@ abstract class PillarboxDownloadService : DownloadService(
         )
     }
 
-    private companion object {
+    companion object {
         private const val FOREGROUND_NOTIFICATION_ID = 0x5049_4C42
-        private const val NOTIFICATION_CHANNEL_ID = "pillarbox_download_channel"
+
+        /**
+         * The identifier of the notification channel of the download notifications. Its name is the
+         * `pillarbox_download_notification_channel_name` string resource, which can be overridden in your application.
+         */
+        const val NOTIFICATION_CHANNEL_ID = "pillarbox_download_channel"
     }
 }

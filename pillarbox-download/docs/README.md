@@ -45,6 +45,10 @@ Declare it in your `AndroidManifest.xml`:
 > [!TIP]
 > On Android 13+, request the `POST_NOTIFICATIONS` permission to display the download progress notification.
 
+The notification can be customized by overriding `notificationSmallIcon`, `createNotificationContentIntent()`, or
+`getForegroundNotification()` to build your own, posted to the `PillarboxDownloadService.NOTIFICATION_CHANNEL_ID` channel. The channel name
+is the `pillarbox_download_notification_channel_name` string resource, which you can override in your application.
+
 ### Create the download manager
 
 Create a single [PillarboxDownloadManager][ch.srgssr.pillarbox.download.PillarboxDownloadManager] for your application, from the main
@@ -89,20 +93,32 @@ coroutineScope.launch {
     downloadManager.download(mediaItem) // Throws DownloadNotSupportedException for DRM protected content and live streams
 }
 
+// Optionally, select the tracks of this download only, and store your own data with it
+coroutineScope.launch {
+    downloadManager.download(
+        mediaItem = mediaItem,
+        trackSelectionParameters = DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS.buildUpon()
+            .setPreferredAudioLanguage("fr")
+            .build(),
+        customData = artworkUrl.encodeToByteArray(),
+    )
+}
+
 downloadManager.pause(id)
 downloadManager.resume(id)
 coroutineScope.launch { downloadManager.restart(id) }
 downloadManager.remove(id) // Cancels the download if in progress, and deletes the downloaded data
 
 downloadManager.downloads.collect { downloads ->
-    // Each Media3 Download provides its state, progress and size; Pillarbox adds its title and whether it is paused
+    // Each Media3 Download provides its state, progress and size; Pillarbox adds its title, custom data and whether it is paused
     downloads.forEach { download ->
         println("${download.title}: ${download.state}, ${download.percentDownloaded}%, paused=${download.isPaused}")
+        val artworkUrl = download.customData?.decodeToString()
     }
 }
 ```
 
-The downloads and their state are persisted, and survive application restarts. Only the title of the media is stored with a download.
+The downloads and their state are persisted, and survive application restarts. The title of the media and the custom data passed to `download()` are stored with a download.
 
 ## Limitations
 
