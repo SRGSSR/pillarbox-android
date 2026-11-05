@@ -37,7 +37,7 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
     private val downloadManager = DemoDownloads.getDownloadManager(application)
 
     /**
-     * All the downloads, most recent first.
+     * All the downloads, sorted by start time, newest first.
      */
     val downloads: StateFlow<List<Download>?> = downloadManager.downloads
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)

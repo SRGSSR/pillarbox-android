@@ -110,6 +110,7 @@ coroutineScope.launch { downloadManager.restart(id) }
 downloadManager.remove(id) // Cancels the download if in progress, and deletes the downloaded data
 
 downloadManager.downloads.collect { downloads ->
+    // The downloads are sorted by start time, newest first, so pausing, resuming or completing a download doesn't change its position
     // Each Media3 Download provides its state, progress and size; Pillarbox adds its title, custom data and whether it is paused
     downloads.forEach { download ->
         println("${download.title}: ${download.state}, ${download.percentDownloaded}%, paused=${download.isPaused}")

@@ -96,7 +96,10 @@ class PillarboxDownloadManager private constructor(
     }
 
     /**
-     * All the downloads, most recent first, updated when a download changes and periodically while a download is in progress.
+     * All the downloads, updated when a download changes and periodically while a download is in progress.
+     *
+     * The downloads are sorted by [start time][Download.startTimeMs], newest first. Pausing, resuming or completing a download doesn't change
+     * its position, but restarting it may move it to the top.
      */
     val downloads: Flow<List<Download>> = channelFlow {
         val changes = Channel<Unit>(Channel.CONFLATED)
