@@ -60,10 +60,10 @@ fun DownloadsHome(
     val downloads by downloadsViewModel.downloads.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    when {
-        downloads == null -> Unit
-        downloads.isNullOrEmpty() -> EmptyDownloads(modifier = modifier)
-        else -> LazyColumn(
+    if (downloads.isNullOrEmpty()) {
+        EmptyDownloads(modifier = modifier)
+    } else {
+        LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(MaterialTheme.paddings.baseline),
         ) {
@@ -93,6 +93,7 @@ fun DownloadsHome(
 @Composable
 @Suppress("LongParameterList")
 private fun DownloadItemView(
+    modifier: Modifier = Modifier,
     download: Download,
     onClick: () -> Unit,
     onPause: () -> Unit,
@@ -104,7 +105,7 @@ private fun DownloadItemView(
     val title = download.title ?: download.request.id
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = isCompleted, onClick = onClick)
             .padding(start = MaterialTheme.paddings.baseline, top = MaterialTheme.paddings.small, bottom = MaterialTheme.paddings.small),
