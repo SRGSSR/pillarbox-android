@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.downloads
 import android.text.format.Formatter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,22 +16,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.C
 import androidx.media3.exoplayer.offline.Download
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -73,13 +67,6 @@ fun DownloadsHome(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(MaterialTheme.paddings.baseline),
         ) {
-            item {
-                DemoListHeaderView(
-                    title = stringResource(R.string.downloads_stored_in, downloadsViewModel.downloadDirectory.absolutePath),
-                    modifier = Modifier.padding(start = MaterialTheme.paddings.baseline),
-                )
-            }
-
             item {
                 DemoListSectionView {
                     val items = downloads.orEmpty()
@@ -114,6 +101,7 @@ private fun DownloadItemView(
     onRemove: () -> Unit,
 ) {
     val isCompleted = download.state == Download.STATE_COMPLETED
+    val title = download.title ?: download.request.id
 
     Row(
         modifier = Modifier
@@ -129,7 +117,7 @@ private fun DownloadItemView(
                 .semantics(mergeDescendants = true) {},
         ) {
             Text(
-                text = download.title ?: download.request.id,
+                text = title,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
                 style = MaterialTheme.typography.bodyMedium,
@@ -157,55 +145,28 @@ private fun DownloadItemView(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-
-            if (download.state.showsProgress()) {
-                val progress = download.percentDownloaded.coerceAtLeast(0f) / 100f
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = MaterialTheme.paddings.small),
-                )
-            }
         }
 
-        DownloadActions(
+        DownloadButton(
+            title = title,
             download = download,
+            isPreparing = false,
+            // The download already exists
+            onDownload = {},
             onPause = onPause,
             onResume = onResume,
             onRestart = onRestart,
-            onRemove = onRemove,
         )
-    }
-}
 
-@Composable
-private fun DownloadActions(
-    download: Download,
-    onPause: () -> Unit,
-    onResume: () -> Unit,
-    onRestart: () -> Unit,
-    onRemove: () -> Unit,
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box {
-        IconButton(onClick = { showMenu = true }) {
+        IconButton(
+            onClick = onRemove,
+            enabled = download.state != Download.STATE_REMOVING,
+        ) {
             Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.download_actions),
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.download_remove_item, title),
             )
         }
-
-        DownloadActionsMenu(
-            download = download,
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            onPause = onPause,
-            onResume = onResume,
-            onRestart = onRestart,
-            onRemove = onRemove,
-        )
     }
 }
 
@@ -288,11 +249,4 @@ private fun @Download.State Int.color() = when (this) {
     Download.STATE_COMPLETED -> MaterialTheme.colorScheme.primary
     Download.STATE_FAILED -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.outline
-}
-
-private fun @Download.State Int.showsProgress(): Boolean {
-    return this == Download.STATE_QUEUED ||
-        this == Download.STATE_DOWNLOADING ||
-        this == Download.STATE_STOPPED ||
-        this == Download.STATE_RESTARTING
 }

@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * [AndroidViewModel] handling the downloads of the demo.
@@ -57,11 +57,6 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
     val preparingIds: StateFlow<Set<String>> = _preparingIds.asStateFlow()
 
     /**
-     * The directory in which the downloads are stored.
-     */
-    val downloadDirectory: File = downloadManager.downloadDirectory
-
-    /**
      * Returns the identifier of the download of [item].
      *
      * @param item The [DemoItem].
@@ -85,7 +80,7 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
             try {
                 downloadManager.download(item.toMediaItem())
                 // Keep the item as preparing until the download is visible, so that the UI doesn't briefly show it as not downloaded
-                withTimeoutOrNull(ADDED_TIMEOUT_MS) {
+                withTimeoutOrNull(ADDED_TIMEOUT_MS.milliseconds) {
                     downloadsById.first { id in it }
                 }
             } catch (e: CancellationException) {

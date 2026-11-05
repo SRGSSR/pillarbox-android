@@ -10,30 +10,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DownloadDone
-import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,9 +50,10 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * - preparing, queued, restarting or removing: a spinning ring.
  * - downloading: a ring filling up with the progress around a pause icon, tap to pause.
  * - paused: the ring stopped at the current progress around a download icon, tap to resume.
- * - downloaded or failed: a done or error icon, tap to show the available actions.
+ * - downloaded: a done icon.
+ * - failed: a retry icon, tap to restart the download.
  *
- * A long press shows the available actions (pause, resume, restart, cancel or remove) in every state with an existing download.
+ * Only one icon is visible at a time, and a tap triggers the action it shows.
  *
  * @param title The title of the item, used for accessibility.
  * @param download The [Download] of the item, or `null` if it hasn't been downloaded.
@@ -69,7 +62,6 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * @param onPause Called to pause [download].
  * @param onResume Called to resume [download].
  * @param onRestart Called to restart [download].
- * @param onRemove Called to cancel or remove [download].
  * @param modifier The [Modifier] to apply to the layout.
  */
 @Composable
@@ -82,10 +74,8 @@ fun DownloadButton(
     onPause: () -> Unit,
     onResume: () -> Unit,
     onRestart: () -> Unit,
-    onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
     val buttonState = DownloadButtonState.from(download, isPreparing)
     val progress = download?.percentDownloaded?.takeIf { it != C.PERCENTAGE_UNSET.toFloat() }?.let { it / 100f }
     val animatedProgress by animateFloatAsState(targetValue = progress ?: 0f, label = "download_progress")
@@ -94,137 +84,61 @@ fun DownloadButton(
         DownloadButtonState.Idle -> onDownload
         DownloadButtonState.Pending, DownloadButtonState.Downloading -> onPause
         DownloadButtonState.Paused -> onResume
-        DownloadButtonState.Completed, DownloadButtonState.Failed -> ({ showMenu = true })
-        DownloadButtonState.Preparing, DownloadButtonState.Removing -> null
-    }
-    val onLongClick: (() -> Unit)? = if (download != null && buttonState != DownloadButtonState.Removing) {
-        { showMenu = true }
-    } else {
-        null
+        DownloadButtonState.Failed -> onRestart
+        DownloadButtonState.Preparing, DownloadButtonState.Completed, DownloadButtonState.Removing -> null
     }
     val clickLabel = when (buttonState) {
         DownloadButtonState.Idle -> stringResource(R.string.download_item, title)
         DownloadButtonState.Preparing -> stringResource(R.string.download_preparing_item, title)
         DownloadButtonState.Pending, DownloadButtonState.Downloading -> stringResource(R.string.download_pause_item, title)
         DownloadButtonState.Paused -> stringResource(R.string.download_resume_item, title)
-        DownloadButtonState.Completed, DownloadButtonState.Failed, DownloadButtonState.Removing -> {
-            stringResource(R.string.download_actions_item, title)
-        }
+        DownloadButtonState.Completed -> stringResource(R.string.download_completed_item, title)
+        DownloadButtonState.Failed -> stringResource(R.string.download_retry_item, title)
+        DownloadButtonState.Removing -> stringResource(R.string.download_removing_item, title)
     }
     val stateText = download?.statusText() ?: if (isPreparing) stringResource(R.string.download_state_preparing) else null
 
-    Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .size(ButtonSize)
-                .clip(CircleShape)
-                .combinedClickable(
-                    interactionSource = null,
-                    indication = ripple(bounded = false, radius = ButtonSize / 2),
-                    enabled = onClick != null || onLongClick != null,
-                    role = Role.Button,
-                    onLongClickLabel = stringResource(R.string.download_actions_item, title).takeIf { onLongClick != null },
-                    onLongClick = onLongClick,
-                    onClick = onClick ?: {},
-                )
-                .semantics {
-                    contentDescription = clickLabel
-                    stateText?.let { stateDescription = it }
-                },
-            contentAlignment = Alignment.Center,
-        ) {
-            AnimatedContent(
-                targetState = buttonState,
-                transitionSpec = { (fadeIn() + scaleIn(initialScale = 0.8f)) togetherWith fadeOut() },
-                // The states showing the ring share the same content, so that the ring isn't recreated when switching between them
-                contentKey = { state -> state.takeUnless { it.showsRing } },
-                label = "download_button",
-            ) { state ->
-                when (state) {
-                    DownloadButtonState.Idle -> DownloadIcon(Icons.Default.Download, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    DownloadButtonState.Completed -> DownloadIcon(Icons.Default.DownloadDone, tint = MaterialTheme.colorScheme.primary)
-                    DownloadButtonState.Failed -> DownloadIcon(Icons.Default.ErrorOutline, tint = MaterialTheme.colorScheme.error)
-                    DownloadButtonState.Preparing,
-                    DownloadButtonState.Pending,
-                    DownloadButtonState.Removing,
-                    DownloadButtonState.Downloading,
-                    DownloadButtonState.Paused -> ProgressRing(
-                        state = state,
-                        progress = if (state == DownloadButtonState.Downloading || state == DownloadButtonState.Paused) {
-                            progress?.let { { animatedProgress } }
-                        } else {
-                            null
-                        },
-                    )
-                }
-            }
-        }
-
-        if (download != null) {
-            DownloadActionsMenu(
-                download = download,
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-                onPause = onPause,
-                onResume = onResume,
-                onRestart = onRestart,
-                onRemove = onRemove,
+    Box(
+        modifier = modifier
+            .size(ButtonSize)
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = null,
+                indication = ripple(bounded = false, radius = ButtonSize / 2),
+                enabled = onClick != null,
+                role = Role.Button,
+                onClick = onClick ?: {},
             )
-        }
-    }
-}
-
-/**
- * Menu with the actions available for [download].
- *
- * @param download The [Download].
- * @param expanded Whether the menu is shown.
- * @param onDismissRequest Called when the menu should be dismissed, including after an action is selected.
- * @param onPause Called to pause [download].
- * @param onResume Called to resume [download].
- * @param onRestart Called to restart [download].
- * @param onRemove Called to cancel or remove [download].
- */
-@Composable
-@Suppress("LongParameterList")
-internal fun DownloadActionsMenu(
-    download: Download,
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onPause: () -> Unit,
-    onResume: () -> Unit,
-    onRestart: () -> Unit,
-    onRemove: () -> Unit,
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
+            .semantics {
+                contentDescription = clickLabel
+                stateText?.let { stateDescription = it }
+            },
+        contentAlignment = Alignment.Center,
     ) {
-        val actionItem: @Composable (Int, ImageVector, () -> Unit) -> Unit = { label, icon, action ->
-            DropdownMenuItem(
-                text = { Text(stringResource(label)) },
-                leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
-                onClick = {
-                    onDismissRequest()
-                    action()
-                },
-            )
-        }
-
-        when (download.state) {
-            Download.STATE_QUEUED,
-            Download.STATE_DOWNLOADING -> actionItem(R.string.download_pause, Icons.Default.Pause, onPause)
-
-            Download.STATE_STOPPED -> actionItem(R.string.download_resume, Icons.Default.Download, onResume)
-
-            else -> Unit
-        }
-
-        if (download.state != Download.STATE_REMOVING) {
-            actionItem(R.string.download_restart, Icons.Default.Refresh, onRestart)
-
-            val removeLabel = if (download.state == Download.STATE_COMPLETED) R.string.download_remove else R.string.download_cancel
-            actionItem(removeLabel, Icons.Default.Delete, onRemove)
+        AnimatedContent(
+            targetState = buttonState,
+            transitionSpec = { (fadeIn() + scaleIn(initialScale = 0.8f)) togetherWith fadeOut() },
+            // The states showing the ring share the same content, so that the ring isn't recreated when switching between them
+            contentKey = { state -> state.takeUnless { it.showsRing } },
+            label = "download_button",
+        ) { state ->
+            when (state) {
+                DownloadButtonState.Idle -> DownloadIcon(Icons.Default.Download, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                DownloadButtonState.Completed -> DownloadIcon(Icons.Default.DownloadDone, tint = MaterialTheme.colorScheme.primary)
+                DownloadButtonState.Failed -> DownloadIcon(Icons.Default.Refresh, tint = MaterialTheme.colorScheme.error)
+                DownloadButtonState.Preparing,
+                DownloadButtonState.Pending,
+                DownloadButtonState.Removing,
+                DownloadButtonState.Downloading,
+                DownloadButtonState.Paused -> ProgressRing(
+                    state = state,
+                    progress = if (state == DownloadButtonState.Downloading || state == DownloadButtonState.Paused) {
+                        progress?.let { { animatedProgress } }
+                    } else {
+                        null
+                    },
+                )
+            }
         }
     }
 }
@@ -337,7 +251,6 @@ private fun DownloadButtonPreview() {
                 onPause = {},
                 onResume = {},
                 onRestart = {},
-                onRemove = {},
             )
 
             DownloadButton(
@@ -348,7 +261,6 @@ private fun DownloadButtonPreview() {
                 onPause = {},
                 onResume = {},
                 onRestart = {},
-                onRemove = {},
             )
         }
     }

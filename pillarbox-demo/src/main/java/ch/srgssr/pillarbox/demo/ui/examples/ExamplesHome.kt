@@ -85,7 +85,6 @@ fun ExamplesHome() {
                 onPause = { download?.let(downloadsViewModel::pause) },
                 onResume = { download?.let(downloadsViewModel::resume) },
                 onRestart = { download?.let(downloadsViewModel::restart) },
-                onRemove = { download?.let(downloadsViewModel::remove) },
             )
         },
     )
@@ -184,7 +183,6 @@ private fun ListStreamPreview() {
                     onPause = {},
                     onResume = {},
                     onRestart = {},
-                    onRemove = {},
                 )
             },
         )

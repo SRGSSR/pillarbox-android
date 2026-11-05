@@ -19,6 +19,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.offline.DownloadProgress
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Requirements
@@ -261,11 +262,12 @@ class PillarboxDownloadManager private constructor(
                 }
             }
         }
-        // The current downloads contain the live progress of the downloads in progress.
+        // The current downloads contain the live progress of the downloads in progress. Their progress is updated in place, so a snapshot
+        // is taken: each emission then contains new instances, which are seen as changed by StateFlow and Compose.
         val currentDownloads = downloadManager.currentDownloads.associateBy { it.request.id }
 
         return storedDownloads
-            .map { currentDownloads[it.request.id] ?: it }
+            .map { currentDownloads[it.request.id]?.snapshot() ?: it }
             .sortedByDescending { it.startTimeMs }
     }
 
@@ -397,6 +399,18 @@ class PillarboxDownloadManager private constructor(
          * [Download.stopReason] of a download paused with [pause].
          */
         const val STOP_REASON_PAUSED = 1
+
+        /**
+         * Returns a copy of this [Download] whose progress doesn't change anymore.
+         */
+        private fun Download.snapshot(): Download {
+            val progress = DownloadProgress().also {
+                it.bytesDownloaded = bytesDownloaded
+                it.percentDownloaded = percentDownloaded
+            }
+
+            return Download(request, state, startTimeMs, updateTimeMs, contentLength, stopReason, failureReason, progress)
+        }
 
         private suspend fun DownloadHelper.prepareAndAwait() {
             suspendCancellableCoroutine { continuation ->
