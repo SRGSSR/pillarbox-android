@@ -42,6 +42,7 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Downloads media to play them offline, using Media3's [DownloadManager].
@@ -124,7 +125,7 @@ class PillarboxDownloadManager private constructor(
                 send(downloads)
 
                 if (downloads.any { it.state == Download.STATE_DOWNLOADING }) {
-                    withTimeoutOrNull(PROGRESS_UPDATE_INTERVAL_MS) { changes.receive() }
+                    withTimeoutOrNull(PROGRESS_UPDATE_INTERVAL_MS.milliseconds) { changes.receive() }
                 } else {
                     changes.receive()
                 }
