@@ -96,7 +96,7 @@ Pillarbox is also deployed to the [SRG SSR Maven repository](https://nxrm.rts.ch
 ```kotlin
 // If you declare your repositories in the `settings.gradle(.kts)` file
 repositories {
-    maven("https://nxrm.rts.ch/repository/maven-srgssr/") {
+    maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
         credentials {
             username = providers.gradleProperty("srg_maven_user").get()
             password = providers.gradleProperty("srg_maven_password").get()
@@ -106,7 +106,7 @@ repositories {
 
 // If you declare your repositories in the root `build.gradle(.kts)` file
 repositories {
-    maven("https://nxrm.rts.ch/repository/maven-srgssr/") {
+    maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
         credentials {
             username = project.findProperty("srg_maven_user")?.toString()
             password = project.findProperty("srg_maven_password")?.toString()
