@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.shared.ui
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
@@ -52,6 +53,11 @@ sealed class HomeDestination(
      * Settings home page
      */
     data object Settings : HomeDestination(NavigationRoutes.SettingsHome, R.string.settings, Icons.Default.Settings)
+
+    /**
+     * Downloads home page
+     */
+    data object Downloads : HomeDestination(NavigationRoutes.DownloadsHome, R.string.downloads, Icons.Default.Download)
 }
 
 /**
