@@ -42,9 +42,11 @@ object PlayerModule {
 
     /**
      * Provide a player that plays http(s) URLs of metadata following the Pillarbox standard metadata format, with a [StandardAssetLoader].
+     * The content is reloaded when it switches from live to VOD, to get its VOD metadata.
      */
     fun provideStandardPlayer(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(context = context) {
+            reloadOnLiveToVodTransition()
             +StandardAssetLoader(
                 playerDataLoader = UrlPlayerDataLoader(),
                 playerDataMapper = PlayerDataMapper.Default(),
