@@ -63,37 +63,39 @@ import kotlin.time.Duration.Companion.milliseconds
  * for the same directory. Creating it as a singleton is recommended.
  *
  * DRM protected content and live streams can't be downloaded.
- *
- * @property downloadDirectory The directory in which the downloads are stored.
  */
-@Suppress("LongParameterList", "TooManyFunctions")
-class PillarboxDownloadManager private constructor(
-    private val context: Context,
-    private val downloadServiceClass: Class<out DownloadService>,
-    private val assetLoaders: List<AssetLoader>,
-    val downloadDirectory: File,
-    private val dataSourceFactory: DataSource.Factory,
-    private val trackSelectionParameters: TrackSelectionParameters,
-    maxParallelDownloads: Int,
-    requirements: Requirements,
-) : DownloadedMediaProvider {
-    private val databaseProvider = StandaloneDatabaseProvider(context)
+@Suppress("TooManyFunctions")
+class PillarboxDownloadManager private constructor(builder: Builder) : DownloadedMediaProvider {
+    private val context = builder.context
+    private val downloadServiceClass = builder.downloadServiceClass
+    private val assetLoaders = builder.assetLoaders.toList()
     private val defaultAssetLoader = UrlAssetLoader(DefaultMediaSourceFactory(context))
+    private val dataSourceFactory = builder.dataSourceFactory
+        ?: DefaultDataSource.Factory(context, OkHttpDataSource.Factory(builder.okHttpClient ?: PillarboxOkHttp()))
+    private val trackSelectionParameters = builder.trackSelectionParameters
+    private val databaseProvider = StandaloneDatabaseProvider(context)
+    private val downloadExecutor = Executors.newFixedThreadPool(DOWNLOAD_THREAD_COUNT)
+
+    /**
+     * The directory in which the downloads are stored.
+     */
+    val downloadDirectory: File = builder.downloadDirectory
+        ?: File(context.getExternalFilesDir(null) ?: context.filesDir, DEFAULT_DOWNLOAD_DIRECTORY)
 
     override val cache: Cache = SimpleCache(File(downloadDirectory, MEDIA_DIRECTORY), NoOpCacheEvictor(), databaseProvider)
 
     /**
      * The underlying Media3 [DownloadManager]. It must be returned by your [DownloadService.getDownloadManager] implementation.
      */
-    val downloadManager = DownloadManager(
+    val media3DownloadManager = DownloadManager(
         context,
         databaseProvider,
         cache,
         dataSourceFactory,
-        Executors.newFixedThreadPool(DOWNLOAD_THREAD_COUNT),
+        downloadExecutor,
     ).apply {
-        this.maxParallelDownloads = maxParallelDownloads
-        this.requirements = requirements
+        maxParallelDownloads = builder.maxParallelDownloads
+        requirements = builder.requirements
     }
 
     /**
@@ -101,6 +103,9 @@ class PillarboxDownloadManager private constructor(
      *
      * The downloads are sorted by [start time][Download.startTimeMs], newest first. Pausing, resuming or completing a download doesn't change
      * its position, but restarting it may move it to the top.
+     *
+     * Each collector reads the downloads on its own. Share this flow, for example with `stateIn` in a `ViewModel`, rather than collecting it
+     * several times.
      */
     val downloads: Flow<List<Download>> = channelFlow {
         val changes = Channel<Unit>(Channel.CONFLATED)
@@ -118,7 +123,7 @@ class PillarboxDownloadManager private constructor(
             }
         }
 
-        downloadManager.addListener(listener)
+        media3DownloadManager.addListener(listener)
         try {
             while (true) {
                 val downloads = readDownloads()
@@ -131,7 +136,7 @@ class PillarboxDownloadManager private constructor(
                 }
             }
         } finally {
-            downloadManager.removeListener(listener)
+            media3DownloadManager.removeListener(listener)
         }
     }.flowOn(Dispatchers.Main)
 
@@ -152,22 +157,24 @@ class PillarboxDownloadManager private constructor(
      */
     fun getDownload(mediaItem: MediaItem): Download? {
         val id = getDownloadIdOrNull(mediaItem) ?: return null
-        return downloadManager.downloadIndex.getDownload(id)
+        return media3DownloadManager.downloadIndex.getDownload(id)
     }
 
     override fun getDownloadRequest(mediaItem: MediaItem): DownloadRequest? {
-        return getDownloadIdOrNull(mediaItem)
-            ?.let { downloadManager.downloadIndex.getDownload(it) }
+        return getDownload(mediaItem)
             ?.takeIf { it.state == Download.STATE_COMPLETED }
             ?.request
     }
 
     /**
-     * Downloads [mediaItem]. If it is already downloaded, the download is restarted.
+     * Downloads [mediaItem].
      *
      * The media is first loaded with the configured [AssetLoader]s, to get the stream to download. Then the tracks to download are selected,
      * and the download is added to the [DownloadService]. The title of the media and [customData] are stored with the download, and can be
      * read with [Download.title] and [Download.customData].
+     *
+     * If [mediaItem] is already downloaded, or is being downloaded, the download is updated instead, as Media3 does: it is queued again
+     * (and resumed if it was paused), the data already downloaded is kept, and the new tracks are added to the ones already selected.
      *
      * @param mediaItem The [MediaItem] to download.
      * @param trackSelectionParameters The [TrackSelectionParameters] used to select the tracks to download. By default, the ones set with
@@ -183,6 +190,7 @@ class PillarboxDownloadManager private constructor(
     ) {
         val id = getDownloadId(mediaItem)
         val assetLoader = assetLoaders.firstOrNull { it.canLoadAsset(mediaItem) } ?: defaultAssetLoader
+        // Asset loaders may block, for example while reading a local file
         val asset = withContext(Dispatchers.IO) { assetLoader.loadAsset(mediaItem) }
         val streamConfiguration = checkNotNull(asset.mediaSource.mediaItem.localConfiguration)
         if (streamConfiguration.drmConfiguration != null) {
@@ -231,14 +239,15 @@ class PillarboxDownloadManager private constructor(
     }
 
     /**
-     * Restarts the download with the given [id] from scratch.
+     * Queues the download with the given [id] again, for example after it failed. The data already downloaded is kept, only the missing data
+     * is downloaded. A paused download is resumed, and a download in progress continues.
      *
      * @param id The download identifier.
      */
     suspend fun restart(id: String) {
-        val download = withContext(Dispatchers.IO) { downloadManager.downloadIndex.getDownload(id) } ?: return
+        val download = withContext(Dispatchers.IO) { media3DownloadManager.downloadIndex.getDownload(id) } ?: return
 
-        // Adding a download that already exists restarts it
+        // Adding a download that already exists queues it again
         DownloadService.sendAddDownload(context, downloadServiceClass, download.request, false)
     }
 
@@ -251,14 +260,27 @@ class PillarboxDownloadManager private constructor(
         DownloadService.sendRemoveDownload(context, downloadServiceClass, id, false)
     }
 
+    /**
+     * Releases the resources of this manager: the downloads are stopped, and the download cache is closed. This manager, and any player
+     * using it as its [DownloadedMediaProvider], must not be used afterward.
+     *
+     * An application wide manager usually doesn't need to be released.
+     */
+    fun release() {
+        media3DownloadManager.release()
+        downloadExecutor.shutdown()
+        cache.release()
+        databaseProvider.close()
+    }
+
     private fun getDownloadIdOrNull(mediaItem: MediaItem): String? {
-        return mediaItem.mediaId.takeIf { it.isNotEmpty() && it != MediaItem.DEFAULT_MEDIA_ID }
+        return mediaItem.mediaId.takeIf { it != MediaItem.DEFAULT_MEDIA_ID }
             ?: mediaItem.localConfiguration?.uri?.toString()
     }
 
     private suspend fun readDownloads(): List<Download> {
         val storedDownloads = withContext(Dispatchers.IO) {
-            downloadManager.downloadIndex.getDownloads().use { cursor ->
+            media3DownloadManager.downloadIndex.getDownloads().use { cursor ->
                 buildList {
                     while (cursor.moveToNext()) {
                         add(cursor.download)
@@ -268,7 +290,7 @@ class PillarboxDownloadManager private constructor(
         }
         // The current downloads contain the live progress of the downloads in progress. Their progress is updated in place, so a snapshot
         // is taken: each emission then contains new instances, which are seen as changed by StateFlow and Compose.
-        val currentDownloads = downloadManager.currentDownloads.associateBy { it.request.id }
+        val currentDownloads = media3DownloadManager.currentDownloads.associateBy { it.request.id }
 
         return storedDownloads
             .map { currentDownloads[it.request.id]?.snapshot() ?: it }
@@ -282,15 +304,22 @@ class PillarboxDownloadManager private constructor(
      * @param downloadServiceClass The [DownloadService] declared in your application manifest, that uses the built
      * [PillarboxDownloadManager]. See [PillarboxDownloadService].
      */
-    class Builder(context: Context, private val downloadServiceClass: Class<out DownloadService>) {
-        private val context = context.applicationContext
-        private val assetLoaders = mutableListOf<AssetLoader>()
-        private var downloadDirectory: File = File(this.context.getExternalFilesDir(null) ?: this.context.filesDir, DEFAULT_DOWNLOAD_DIRECTORY)
-        private var okHttpClient: OkHttpClient = PillarboxOkHttp()
-        private var dataSourceFactory: DataSource.Factory? = null
-        private var maxParallelDownloads: Int = DownloadManager.DEFAULT_MAX_PARALLEL_DOWNLOADS
-        private var requirements: Requirements = DownloadManager.DEFAULT_REQUIREMENTS
-        private var trackSelectionParameters: TrackSelectionParameters = DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS
+    class Builder(context: Context, downloadServiceClass: Class<out DownloadService>) {
+        internal val context: Context = context.applicationContext
+        internal val downloadServiceClass: Class<out DownloadService> = downloadServiceClass
+        internal val assetLoaders = mutableListOf<AssetLoader>()
+        internal var downloadDirectory: File? = null
+            private set
+        internal var okHttpClient: OkHttpClient? = null
+            private set
+        internal var dataSourceFactory: DataSource.Factory? = null
+            private set
+        internal var maxParallelDownloads: Int = DownloadManager.DEFAULT_MAX_PARALLEL_DOWNLOADS
+            private set
+        internal var requirements: Requirements = DownloadManager.DEFAULT_REQUIREMENTS
+            private set
+        internal var trackSelectionParameters: TrackSelectionParameters = DownloadHelper.DEFAULT_TRACK_SELECTOR_PARAMETERS
+            private set
 
         /**
          * Adds an [AssetLoader] used to resolve the stream of the media to download. They are checked in the order they are
@@ -317,7 +346,7 @@ class PillarboxDownloadManager private constructor(
         }
 
         /**
-         * Sets the [OkHttpClient] used to download the media.
+         * Sets the [OkHttpClient] used to download the media. Ignored if a [DataSource.Factory] is set with [setDataSourceFactory].
          *
          * @param okHttpClient The [OkHttpClient].
          * @return this builder for convenience.
@@ -380,16 +409,7 @@ class PillarboxDownloadManager private constructor(
          * @return A new [PillarboxDownloadManager].
          */
         fun build(): PillarboxDownloadManager {
-            return PillarboxDownloadManager(
-                context = context,
-                downloadServiceClass = downloadServiceClass,
-                assetLoaders = assetLoaders.toList(),
-                downloadDirectory = downloadDirectory,
-                dataSourceFactory = dataSourceFactory ?: DefaultDataSource.Factory(context, OkHttpDataSource.Factory(okHttpClient)),
-                trackSelectionParameters = trackSelectionParameters,
-                maxParallelDownloads = maxParallelDownloads,
-                requirements = requirements,
-            )
+            return PillarboxDownloadManager(this)
         }
     }
 

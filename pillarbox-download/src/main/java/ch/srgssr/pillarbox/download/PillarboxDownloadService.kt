@@ -61,7 +61,7 @@ abstract class PillarboxDownloadService : DownloadService(
     protected open fun createNotificationContentIntent(): PendingIntent? = null
 
     final override fun getDownloadManager(): DownloadManager {
-        return pillarboxDownloadManager.downloadManager
+        return pillarboxDownloadManager.media3DownloadManager
     }
 
     /**

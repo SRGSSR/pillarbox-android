@@ -63,14 +63,14 @@ class PillarboxDownloadManagerTest {
 
     @AfterTest
     fun tearDown() {
-        release(downloadManager)
+        downloadManager.release()
         databaseProvider.close()
         Dispatchers.resetMain()
     }
 
     @Test
     fun `builder applies the configuration`() {
-        release(downloadManager)
+        downloadManager.release()
         val downloadDirectory = temporaryFolder.newFolder()
         val requirements = Requirements(Requirements.NETWORK_UNMETERED)
         downloadManager = PillarboxDownloadManager.Builder(context, TestDownloadService::class.java)
@@ -80,8 +80,8 @@ class PillarboxDownloadManagerTest {
             .build()
 
         assertEquals(downloadDirectory, downloadManager.downloadDirectory)
-        assertEquals(2, downloadManager.downloadManager.maxParallelDownloads)
-        assertEquals(requirements, downloadManager.downloadManager.requirements)
+        assertEquals(2, downloadManager.media3DownloadManager.maxParallelDownloads)
+        assertEquals(requirements, downloadManager.media3DownloadManager.requirements)
     }
 
     @Test
@@ -214,7 +214,7 @@ class PillarboxDownloadManagerTest {
 
     @Test
     fun `download uses the asset loaders to resolve the stream`() = runTest {
-        release(downloadManager)
+        downloadManager.release()
         // The asset loader resolves the media to a DRM protected stream, which proves it is used
         downloadManager = createDownloadManager(DrmAssetLoader(context))
 
@@ -226,11 +226,6 @@ class PillarboxDownloadManagerTest {
             .setDownloadDirectory(temporaryFolder.newFolder())
             .apply { assetLoaders.forEach(::addAssetLoader) }
             .build()
-    }
-
-    private fun release(downloadManager: PillarboxDownloadManager) {
-        downloadManager.downloadManager.release()
-        downloadManager.cache.release()
     }
 
     private fun addDownload(id: String, state: Int, startTimeMs: Long = 0L) {
