@@ -26,7 +26,6 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.robolectric)
-    testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
 }
