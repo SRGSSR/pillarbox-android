@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.download
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
@@ -23,6 +24,7 @@ object DemoDownloads {
     private const val MAX_VIDEO_WIDTH = 960
     private const val MAX_VIDEO_HEIGHT = 540
 
+    @SuppressLint("StaticFieldLeak")
     @Volatile
     private var downloadManager: PillarboxDownloadManager? = null
 
