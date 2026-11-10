@@ -21,8 +21,8 @@ import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
  * Provides the application wide [PillarboxDownloadManager].
  */
 object DemoDownloads {
-    private const val MAX_VIDEO_WIDTH = 960
-    private const val MAX_VIDEO_HEIGHT = 540
+    private const val MAX_VIDEO_WIDTH = 960 // 16:9 size at 540p (qHD)
+    private const val MAX_VIDEO_HEIGHT = 540 // 16:9 size at 540p (qHD)
 
     @SuppressLint("StaticFieldLeak")
     @Volatile
