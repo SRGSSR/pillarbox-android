@@ -59,6 +59,10 @@ class PillarboxDownloadManagerTest {
         databaseProvider = StandaloneDatabaseProvider(context)
         downloadIndex = DefaultDownloadIndex(databaseProvider)
         downloadManager = createDownloadManager()
+        // A download index creates its table on first access, dropping any existing one if its version isn't stored yet. The index of the
+        // download manager is first accessed on Media3's background thread, so it could drop the downloads added by the tests. Accessing it
+        // now creates the table before any download is added.
+        downloadManager.media3DownloadManager.downloadIndex.getDownload(MEDIA_ID)
     }
 
     @AfterTest
