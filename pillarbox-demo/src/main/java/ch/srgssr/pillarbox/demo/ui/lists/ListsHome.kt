@@ -39,6 +39,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSecti
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.downloads.DemoItemDownloadButton
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -55,6 +56,16 @@ fun NavGraphBuilder.listsNavGraph(
     forceSAM: Boolean,
     ilLocation: IlLocation?,
 ) {
+    val toDemoItem = { contentList: ContentList, media: Content.Media ->
+        DemoItem.URN(
+            title = media.title,
+            urn = media.urn,
+            host = ilHost,
+            forceSAM = forceSAM,
+            ilLocation = ilLocation,
+            languageTag = contentList.languageTag,
+        )
+    }
     val contentClick = { contentList: ContentList, content: Content ->
         when (content) {
             is Content.Show -> {
@@ -77,18 +88,7 @@ fun NavGraphBuilder.listsNavGraph(
                 navController.navigate(nextContentList)
             }
 
-            is Content.Media -> {
-                val item = DemoItem.URN(
-                    title = content.title,
-                    urn = content.urn,
-                    host = ilHost,
-                    forceSAM = forceSAM,
-                    ilLocation = ilLocation,
-                    languageTag = contentList.languageTag,
-                )
-
-                SimplePlayerActivity.startActivity(navController.context, item)
-            }
+            is Content.Media -> SimplePlayerActivity.startActivity(navController.context, toDemoItem(contentList, content))
 
             is Content.Channel -> {
                 val nextContentList = when (contentList) {
@@ -118,37 +118,38 @@ fun NavGraphBuilder.listsNavGraph(
         }
     }
 
-    addContentListRoute<ContentList.TVTopics>(trackerTitle = "tv-topics", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVTopics>(trackerTitle = "tv-topics", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.TVShows>(trackerTitle = "tv-shows", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVShows>(trackerTitle = "tv-shows", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.TVLatestMedias>(trackerTitle = "tv-latest-videos", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVLatestMedias>(trackerTitle = "tv-latest-videos", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.TVLivestreams>(trackerTitle = "tv-livestreams", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVLivestreams>(trackerTitle = "tv-livestreams", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.TVLiveCenter>(trackerTitle = "live-center", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVLiveCenter>(trackerTitle = "live-center", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.TVLiveWeb>(trackerTitle = "live-web", ilRepository, contentClick)
+    addContentListRoute<ContentList.TVLiveWeb>(trackerTitle = "live-web", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.RadioLiveStreams>(trackerTitle = "radio-livestreams", ilRepository, contentClick)
+    addContentListRoute<ContentList.RadioLiveStreams>(trackerTitle = "radio-livestreams", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.RadioLatestMedias>(trackerTitle = "latest-audios", ilRepository, contentClick)
+    addContentListRoute<ContentList.RadioLatestMedias>(trackerTitle = "latest-audios", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.RadioShows>(trackerTitle = "shows", ilRepository, contentClick)
+    addContentListRoute<ContentList.RadioShows>(trackerTitle = "shows", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.LatestMediaForShow>(trackerTitle = "latest-media-for-show", ilRepository, contentClick)
+    addContentListRoute<ContentList.LatestMediaForShow>(trackerTitle = "latest-media-for-show", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.LatestMediaForTopic>(trackerTitle = "latest-media-for-topic", ilRepository, contentClick)
+    addContentListRoute<ContentList.LatestMediaForTopic>(trackerTitle = "latest-media-for-topic", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.RadioShowsForChannel>(trackerTitle = "shows-for-channel", ilRepository, contentClick)
+    addContentListRoute<ContentList.RadioShowsForChannel>(trackerTitle = "shows-for-channel", ilRepository, contentClick, toDemoItem)
 
-    addContentListRoute<ContentList.RadioLatestMediasForChannel>(trackerTitle = "latest-audios-for-channel", ilRepository, contentClick)
+    addContentListRoute<ContentList.RadioLatestMediasForChannel>(trackerTitle = "latest-audios-for-channel", ilRepository, contentClick, toDemoItem)
 }
 
 private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute(
     trackerTitle: String,
     ilRepository: ILRepository,
     crossinline onClick: (contentList: T, content: Content) -> Unit,
+    crossinline toDemoItem: (contentList: T, media: Content.Media) -> DemoItem,
 ) {
     composable<T>(pageView = DemoPageView(trackerTitle, defaultListsLevels)) { navBackStackEntry ->
         val contentList = navBackStackEntry.toRoute<T>()
@@ -164,7 +165,12 @@ private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute
             items = viewModel.data.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxWidth(),
             languageTag = contentList.languageTag,
-            contentClick = { onClick(contentList, it) }
+            contentClick = { onClick(contentList, it) },
+            trailingContent = { content ->
+                if (content is Content.Media) {
+                    DemoItemDownloadButton(item = toDemoItem(contentList, content), title = content.title)
+                }
+            },
         )
     }
 }

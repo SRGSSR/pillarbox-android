@@ -4,11 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.examples
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -36,6 +30,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.examples.ExamplesViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.downloads.DemoItemDownloadButton
 import ch.srgssr.pillarbox.demo.ui.downloads.DownloadButton
 import ch.srgssr.pillarbox.demo.ui.downloads.DownloadsViewModel
 import ch.srgssr.pillarbox.demo.ui.downloads.statusText
@@ -55,38 +50,15 @@ fun ExamplesHome() {
     val context = LocalContext.current
     val playlists by examplesViewModel.contents.collectAsState()
     val downloadsById by downloadsViewModel.downloadsById.collectAsStateWithLifecycle()
-    val preparingIds by downloadsViewModel.preparingIds.collectAsStateWithLifecycle()
     val downloadIds = remember(playlists) {
         playlists.flatMap { it.items }.associateWith { downloadsViewModel.getDownloadId(it) }
     }
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     ListStreamView(
         playlists = playlists,
         onItemClicked = { SimplePlayerActivity.startActivity(context, it) },
         itemStatus = { item -> downloadIds[item]?.let { downloadsById[it] }?.statusText() },
-        downloadButton = { item, title ->
-            val downloadId = downloadIds[item]
-            val download = downloadId?.let { downloadsById[it] }
-
-            DownloadButton(
-                title = title,
-                download = download,
-                isPreparing = downloadId in preparingIds,
-                onDownload = {
-                    // The download progress is also displayed in a notification
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    }
-                    downloadsViewModel.download(item)
-                },
-                onPause = { download?.let(downloadsViewModel::pause) },
-                onResume = { download?.let(downloadsViewModel::resume) },
-                onRestart = { download?.let(downloadsViewModel::restart) },
-            )
-        },
+        downloadButton = { item, title -> DemoItemDownloadButton(item = item, title = title, downloadsViewModel = downloadsViewModel) },
     )
 }
 
