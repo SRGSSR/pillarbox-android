@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -191,7 +192,7 @@ private fun ProgressRing(
 
         val icon = when (state) {
             DownloadButtonState.Pending, DownloadButtonState.Downloading -> Icons.Default.Pause
-            DownloadButtonState.Paused -> Icons.Default.Download
+            DownloadButtonState.Paused -> Icons.Default.PlayArrow
             else -> null
         }
         if (icon != null) {
