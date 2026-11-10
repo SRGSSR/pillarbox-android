@@ -218,15 +218,18 @@ private enum class DownloadButtonState(val showsRing: Boolean) {
 
     companion object {
         fun from(download: Download?, isPreparing: Boolean): DownloadButtonState {
-            return when (download?.state) {
-                null -> if (isPreparing) Preparing else Idle
+            if (download == null) {
+                return if (isPreparing) Preparing else Idle
+            }
+
+            return when (download.state) {
                 Download.STATE_QUEUED -> if (download.percentDownloaded > 0f) Downloading else Pending
                 Download.STATE_DOWNLOADING -> Downloading
                 Download.STATE_STOPPED -> Paused
                 Download.STATE_COMPLETED -> Completed
                 Download.STATE_FAILED -> Failed
                 Download.STATE_REMOVING -> Removing
-                // Restarting
+                Download.STATE_RESTARTING -> Pending
                 else -> Pending
             }
         }
