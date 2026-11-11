@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.lists
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,6 +58,7 @@ import kotlin.time.Duration.Companion.seconds
  * @param modifier The [Modifier] to apply to the root of the list.
  * @param languageTag The IETF BCP47 language tag of the title.
  * @param contentClick The action to perform when clicking on an item.
+ * @param trailingContent The content displayed at the end of an item, for example a download button.
  */
 @Composable
 fun ListsSubSection(
@@ -64,7 +66,8 @@ fun ListsSubSection(
     items: LazyPagingItems<Content>,
     modifier: Modifier = Modifier,
     languageTag: String? = null,
-    contentClick: (Content) -> Unit
+    contentClick: (Content) -> Unit,
+    trailingContent: @Composable (Content) -> Unit = {},
 ) {
     when (val loadState = items.loadState.refresh) {
         is LoadState.Loading -> LoadingView(modifier = modifier)
@@ -112,8 +115,7 @@ fun ListsSubSection(
                             else -> RectangleShape
                         }
 
-                        ContentView(
-                            content = item,
+                        Row(
                             modifier = Modifier
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -128,9 +130,17 @@ fun ListsSubSection(
                                         columnSpan = 1,
                                     )
                                 },
-                            languageTag = languageTag,
-                            onClick = { contentClick(item) }
-                        )
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            ContentView(
+                                content = item,
+                                modifier = Modifier.weight(1f),
+                                languageTag = languageTag,
+                                onClick = { contentClick(item) }
+                            )
+
+                            trailingContent(item)
+                        }
 
                         if (index < items.itemCount - 1) {
                             HorizontalDivider()

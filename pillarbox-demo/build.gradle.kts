@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-demo-shared"))
+    implementation(project(":pillarbox-download"))
     implementation(project(":pillarbox-player"))
     implementation(project(":pillarbox-ui"))
 
@@ -70,6 +71,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.media3.cast)
     implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.datasource)
+    implementation(libs.androidx.media3.datasource.okhttp)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)

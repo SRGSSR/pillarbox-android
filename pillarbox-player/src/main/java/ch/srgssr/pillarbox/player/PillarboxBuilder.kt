@@ -27,6 +27,7 @@ import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerType
 import ch.srgssr.pillarbox.player.monitoring.NoOp
 import ch.srgssr.pillarbox.player.monitoring.Remote
 import ch.srgssr.pillarbox.player.monitoring.Remote.config
+import ch.srgssr.pillarbox.player.offline.DownloadedMediaProvider
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.source.SeekableLiveConfig
 import kotlinx.coroutines.CoroutineScope
@@ -70,6 +71,7 @@ abstract class PillarboxBuilder {
     private var preloadConfiguration: ExoPlayer.PreloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
     private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig()
     private var playerStuckDetectionTimeouts: PlayerStuckDetectionTimeouts = PlayerStuckDetectionTimeouts()
+    private var downloadedMediaProvider: DownloadedMediaProvider? = null
 
     /**
      * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
@@ -232,6 +234,18 @@ abstract class PillarboxBuilder {
         this.playerStuckDetectionTimeouts = playerStuckDetectionTimeout
     }
 
+    /**
+     * Sets the [DownloadedMediaProvider] used to play downloaded media offline.
+     *
+     * Every media item provided by [downloadedMediaProvider] is played from its cache instead of being loaded
+     * by the [AssetLoader]s.
+     *
+     * @param downloadedMediaProvider The [DownloadedMediaProvider], or `null` to disable offline playback.
+     */
+    fun downloadedMediaProvider(downloadedMediaProvider: DownloadedMediaProvider?) {
+        this.downloadedMediaProvider = downloadedMediaProvider
+    }
+
     internal fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -258,7 +272,11 @@ abstract class PillarboxBuilder {
         require(seekBackwardIncrement > ZERO) { "Seek backward increment needs to be greater than zero" }
         require(seekForwardIncrement > ZERO) { "Seek forward increment needs to be greater than zero" }
 
-        val mediaSourceFactory = PillarboxMediaSourceFactory(context, seekableLiveConfig)
+        val mediaSourceFactory = PillarboxMediaSourceFactory(
+            context = context,
+            seekableLiveConfig = seekableLiveConfig,
+            downloadedMediaProvider = downloadedMediaProvider,
+        )
         assetLoaders.forEach { assetLoader ->
             mediaSourceFactory.addAssetLoader(assetLoader)
         }
