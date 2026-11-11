@@ -70,6 +70,7 @@ abstract class PillarboxBuilder {
     private var preloadConfiguration: ExoPlayer.PreloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
     private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig()
     private var playerStuckDetectionTimeouts: PlayerStuckDetectionTimeouts = PlayerStuckDetectionTimeouts()
+    private var reloadOnLiveToVodTransition: Boolean = false
 
     /**
      * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
@@ -232,12 +233,26 @@ abstract class PillarboxBuilder {
         this.playerStuckDetectionTimeouts = playerStuckDetectionTimeout
     }
 
+    /**
+     * Sets whether the current [androidx.media3.common.MediaItem] is reloaded when it switches from live (or DVR) to VOD. Disabled by default.
+     *
+     * When the live ends, the [androidx.media3.common.MediaItem] is loaded again by its [AssetLoader], at the same position, to get its VOD
+     * metadata. The [androidx.media3.common.MediaMetadata] of the [androidx.media3.common.MediaItem] is not kept, so that the [AssetLoader] can
+     * provide the VOD one.
+     *
+     * @param reloadOnLiveToVodTransition `true` to reload the [androidx.media3.common.MediaItem] when its live ends.
+     */
+    fun reloadOnLiveToVodTransition(reloadOnLiveToVodTransition: Boolean = true) {
+        this.reloadOnLiveToVodTransition = reloadOnLiveToVodTransition
+    }
+
     internal fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
             coroutineContext = coroutineContext,
             exoPlayer = createExoPlayerBuilder(context).build(),
             monitoringMessageHandler = monitoring,
+            reloadOnLiveToVodTransition = reloadOnLiveToVodTransition,
         ).apply {
             preloadConfiguration = this@PillarboxBuilder.preloadConfiguration
         }

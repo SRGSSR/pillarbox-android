@@ -73,12 +73,14 @@ fun <Builder : PillarboxBuilder> PillarboxExoPlayer(
  * @param coroutineContext The [CoroutineContext].
  * @param exoPlayer The underlying player.
  * @param monitoringMessageHandler The class to handle each Monitoring message.
+ * @param reloadOnLiveToVodTransition Whether the current [MediaItem] is reloaded when it switches from live to VOD.
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,
     coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
     monitoringMessageHandler: MonitoringMessageHandler,
+    reloadOnLiveToVodTransition: Boolean = false,
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
@@ -132,6 +134,9 @@ class PillarboxExoPlayer internal constructor(
         blockedTimeRangeTracker.setPlayer(this)
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
+        if (reloadOnLiveToVodTransition) {
+            exoPlayer.addListener(LiveToVodReloader(this))
+        }
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
