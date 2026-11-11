@@ -292,7 +292,7 @@ abstract class PillarboxBuilder {
             .setStuckSuppressedDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckSuppressedDetectionTimeoutMs)
             .setStuckBufferingDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckBufferingDetectionTimeoutMs)
             .setStuckPlayingDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckPlayingDetectionTimeoutMs)
-            .setStuckPlayingNotEndingTimeoutMs(playerStuckDetectionTimeouts.stuckPlayingDetectionTimeoutMs)
+            .setStuckPlayingNotEndingTimeoutMs(playerStuckDetectionTimeouts.stuckPlayingNotEndingTimeoutMs)
             .setLoadControl(loadControl ?: PillarboxLoadControl())
             .setMediaSourceFactory(mediaSourceFactory)
             .setTrackSelector(PillarboxTrackSelector(context))
