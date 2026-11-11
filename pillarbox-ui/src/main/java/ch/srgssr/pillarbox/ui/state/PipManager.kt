@@ -232,7 +232,7 @@ private class PipManagerImpl(
     @RequiresApi(Build.VERSION_CODES.O)
     private fun pictureInPictureParams(): PictureInPictureParams {
         return PictureInPictureParams.Builder()
-            .setAspectRatio(ratio)
+            .setAspectRatio(ratio?.coerceInPictureInPictureRange())
             .setSourceRectHint(sourceRect)
             .apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -274,7 +274,17 @@ private class PipManagerImpl(
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
+    /**
+     * [PictureInPictureParams.Builder.setAspectRatio] only accepts ratios between 1:2.39 and 2.39:1, and throws an
+     * [IllegalArgumentException] otherwise. Clamp the ratio into that range
+     */
+    private fun Rational.coerceInPictureInPictureRange(): Rational {
+        return coerceIn(MIN_ASPECT_RATIO, MAX_ASPECT_RATIO)
+    }
+
     companion object {
         private const val TAG = "PipManager"
+        private val MIN_ASPECT_RATIO = Rational(100, 239)
+        private val MAX_ASPECT_RATIO = Rational(239, 100)
     }
 }
