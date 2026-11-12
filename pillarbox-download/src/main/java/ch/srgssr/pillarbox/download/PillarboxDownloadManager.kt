@@ -6,6 +6,8 @@ package ch.srgssr.pillarbox.download
 
 import android.content.Context
 import androidx.media3.common.C
+import androidx.media3.common.DrmInitData
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -16,6 +18,8 @@ import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.drm.DrmSessionEventListener
+import androidx.media3.exoplayer.drm.OfflineLicenseHelper
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadManager
@@ -28,6 +32,7 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.offline.DownloadedMediaProvider
+import ch.srgssr.pillarbox.player.offline.OfflineLicense
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +67,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * Only one instance should be created per [downloadDirectory] in the application, as Media3's [SimpleCache] doesn't allow multiple instances
  * for the same directory. Creating it as a singleton is recommended.
  *
- * DRM protected content and live streams can't be downloaded.
+ * Widevine protected content is supported: an offline license is downloaded with the media, and used to play it. Content protected with
+ * another DRM scheme and live streams can't be downloaded.
  */
 @Suppress("TooManyFunctions")
 class PillarboxDownloadManager private constructor(builder: Builder) : DownloadedMediaProvider {
@@ -176,12 +182,16 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
      * If [mediaItem] is already downloaded, or is being downloaded, the download is updated instead, as Media3 does: it is queued again
      * (and resumed if it was paused), the data already downloaded is kept, and the new tracks are added to the ones already selected.
      *
+     * If the media is protected with Widevine, its offline licenses are downloaded from the license server of the stream before the download
+     * is added, and are stored with the download: one for each key, if its tracks are encrypted with different keys. Downloading the media
+     * again downloads new licenses, for example to renew expired ones.
+     *
      * @param mediaItem The [MediaItem] to download.
      * @param trackSelectionParameters The [TrackSelectionParameters] used to select the tracks to download. By default, the ones set with
      * [Builder.setTrackSelectionParameters].
      * @param customData Application specific data to store with the download, for example the artwork URL of the media, or `null`.
-     * @throws DownloadNotSupportedException If the media is DRM protected or is a live stream.
-     * @throws IOException If the media can't be loaded.
+     * @throws DownloadNotSupportedException If the media is protected with another DRM scheme than Widevine, or is a live stream.
+     * @throws IOException If the media can't be loaded, or its offline license can't be downloaded.
      */
     suspend fun download(
         mediaItem: MediaItem,
@@ -193,31 +203,49 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
         // Asset loaders may block, for example while reading a local file
         val asset = withContext(Dispatchers.IO) { assetLoader.loadAsset(mediaItem) }
         val streamConfiguration = checkNotNull(asset.mediaSource.mediaItem.localConfiguration)
-        if (streamConfiguration.drmConfiguration != null) {
-            throw DownloadNotSupportedException("DRM protected content can't be downloaded")
-        }
+        val drmConfiguration = streamConfiguration.drmConfiguration
+        drmConfiguration?.let(::checkDrmConfigurationSupported)
 
         val title = (asset.mediaMetadata.title ?: mediaItem.mediaMetadata.title)?.toString()
         val streamMediaItem = MediaItem.Builder()
             .setUri(streamConfiguration.uri)
             .setMimeType(streamConfiguration.mimeType)
+            .setDrmConfiguration(drmConfiguration)
             .build()
 
-        val downloadRequest = withContext(Dispatchers.Main) {
+        val (downloadRequest, licenseFormats) = withContext(Dispatchers.Main) {
             val downloadHelper = DownloadHelper.Factory()
                 .setDataSourceFactory(dataSourceFactory)
                 .setRenderersFactory(DefaultRenderersFactory(context))
                 .setTrackSelectionParameters(trackSelectionParameters.withoutUnsupportedTrackTypes())
                 .create(streamMediaItem)
             try {
-                downloadHelper.prepareAndAwait()
-                downloadHelper.getDownloadRequest(id, DownloadData(title, customData).encode())
+                val tracksInfoAvailable = downloadHelper.prepareAndAwait()
+                val licenseFormats = if (drmConfiguration != null && tracksInfoAvailable) downloadHelper.createLicenseFormats() else emptyList()
+                downloadHelper.getDownloadRequest(id, null) to licenseFormats
             } finally {
                 downloadHelper.release()
             }
         }
 
-        DownloadService.sendAddDownload(context, downloadServiceClass, downloadRequest, false)
+        val offlineLicenses = if (drmConfiguration != null) {
+            withContext(Dispatchers.IO) { downloadLicenses(drmConfiguration, licenseFormats) }
+        } else {
+            emptyList()
+        }
+        val finalDownloadRequest = DownloadRequest.Builder(downloadRequest.id, downloadRequest.uri)
+            .setMimeType(downloadRequest.mimeType)
+            .setStreamKeys(downloadRequest.streamKeys)
+            .setCustomCacheKey(downloadRequest.customCacheKey)
+            .apply {
+                downloadRequest.byteRange?.let { setByteRange(it.offset, it.length) }
+                downloadRequest.timeRange?.let { setTimeRange(it.startPositionUs, it.durationUs) }
+            }
+            .setKeySetId(offlineLicenses.firstOrNull()?.keySetId)
+            .setData(DownloadData(title, customData, offlineLicenses).encode())
+            .build()
+
+        DownloadService.sendAddDownload(context, downloadServiceClass, finalDownloadRequest, false)
     }
 
     /**
@@ -271,6 +299,36 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
         downloadExecutor.shutdown()
         cache.release()
         databaseProvider.close()
+    }
+
+    override fun getOfflineLicenses(downloadRequest: DownloadRequest): List<OfflineLicense> {
+        return DownloadData.decode(downloadRequest.data)?.offlineLicenses
+            ?.takeIf { it.isNotEmpty() }
+            ?: super.getOfflineLicenses(downloadRequest)
+    }
+
+    /**
+     * Downloads a Widevine offline license for each of [formats], and returns them. This method blocks until the licenses are downloaded.
+     *
+     * @throws DownloadNotSupportedException If [formats] is empty, as the DRM initialization data of the content is unknown.
+     */
+    private fun downloadLicenses(drmConfiguration: MediaItem.DrmConfiguration, formats: List<Format>): List<OfflineLicense> {
+        if (formats.isEmpty()) {
+            throw DownloadNotSupportedException("The DRM initialization data of the content can't be found")
+        }
+        val offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(
+            drmConfiguration,
+            dataSourceFactory,
+            DrmSessionEventListener.EventDispatcher(),
+        )
+        return try {
+            formats.map { format ->
+                val psshData = checkNotNull(format.drmInitData).get(0).data
+                OfflineLicense(psshData = psshData, keySetId = offlineLicenseHelper.downloadLicense(format))
+            }
+        } finally {
+            offlineLicenseHelper.release()
+        }
     }
 
     private fun getDownloadIdOrNull(mediaItem: MediaItem): String? {
@@ -436,11 +494,29 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             return Download(request, state, startTimeMs, updateTimeMs, contentLength, stopReason, failureReason, progress)
         }
 
-        private suspend fun DownloadHelper.prepareAndAwait() {
-            suspendCancellableCoroutine { continuation ->
+        /**
+         * Checks that the content protected with [drmConfiguration] can be downloaded: only Widevine is supported, and the license URI must
+         * be known to download the offline license.
+         *
+         * @throws DownloadNotSupportedException If the content can't be downloaded.
+         */
+        private fun checkDrmConfigurationSupported(drmConfiguration: MediaItem.DrmConfiguration) {
+            if (drmConfiguration.scheme != C.WIDEVINE_UUID) {
+                throw DownloadNotSupportedException("Only Widevine protected content can be downloaded")
+            }
+            if (drmConfiguration.licenseUri == null) {
+                throw DownloadNotSupportedException("Widevine protected content without a license URI can't be downloaded")
+            }
+        }
+
+        /**
+         * Prepares this [DownloadHelper], and returns whether the tracks information is available.
+         */
+        private suspend fun DownloadHelper.prepareAndAwait(): Boolean {
+            return suspendCancellableCoroutine { continuation ->
                 prepare(object : DownloadHelper.Callback {
                     override fun onPrepared(helper: DownloadHelper, tracksInfoAvailable: Boolean) {
-                        continuation.resume(Unit)
+                        continuation.resume(tracksInfoAvailable)
                     }
 
                     override fun onPrepareError(helper: DownloadHelper, e: IOException) {
@@ -453,6 +529,32 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
                     }
                 })
             }
+        }
+
+        /**
+         * Returns the [Format]s used to download the offline licenses of the content, one for each distinct Widevine PSSH box of its tracks.
+         * This [DownloadHelper] must be prepared, with the tracks information available.
+         *
+         * The tracks of a content may be encrypted with different keys, for example audio and video, each listed in the PSSH box of its
+         * tracks. License servers may deliver a single key per license, so a license is downloaded for each PSSH box, as during streaming.
+         */
+        private fun DownloadHelper.createLicenseFormats(): List<Format> {
+            return (0 until periodCount).flatMap { periodIndex ->
+                val trackGroups = getTrackGroups(periodIndex)
+                (0 until trackGroups.length).flatMap { groupIndex ->
+                    val trackGroup = trackGroups[groupIndex]
+                    (0 until trackGroup.length).map(trackGroup::getFormat)
+                }
+            }.flatMap { format ->
+                val drmInitData = format.drmInitData ?: return@flatMap emptyList()
+                (0 until drmInitData.schemeDataCount).map(drmInitData::get)
+            }.filter { it.matches(C.WIDEVINE_UUID) && it.hasData() }
+                .distinctBy { it.data?.toList() }
+                .map { schemeData ->
+                    Format.Builder()
+                        .setDrmInitData(DrmInitData(schemeData))
+                        .build()
+                }
         }
 
         /**
@@ -470,7 +572,7 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
 }
 
 /**
- * Exception thrown when a media can't be downloaded, for example because it is DRM protected or a live stream.
+ * Exception thrown when a media can't be downloaded, for example because it is protected with an unsupported DRM scheme or is a live stream.
  *
  * @param message The detail message.
  * @param cause The cause.

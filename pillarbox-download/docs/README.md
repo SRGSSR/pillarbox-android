@@ -90,7 +90,7 @@ A media item is matched with its download by its media id, or by its URI if it h
 
 ```kotlin
 coroutineScope.launch {
-    downloadManager.download(mediaItem) // Throws DownloadNotSupportedException for DRM protected content and live streams
+    downloadManager.download(mediaItem) // Throws DownloadNotSupportedException for live streams and content protected with another DRM than Widevine
 }
 
 // Optionally, select the tracks of this download only, and store your own data with it
@@ -121,9 +121,23 @@ downloadManager.downloads.collect { downloads ->
 
 The downloads and their state are persisted, and survive application restarts. The title of the media and the custom data passed to `download()` are stored with a download.
 
+### DRM protected content
+
+Widevine protected content can be downloaded. When the stream resolved by the asset loader has a Widevine `DrmConfiguration`, `download()`
+first downloads offline licenses from its license server (using its `licenseUri` and `licenseRequestHeaders`), and stores them with the
+download. The player then uses these licenses to play the downloaded media, without network access.
+
+When the tracks are encrypted with different keys, for example audio and video, each track has its own PSSH box, and license servers may
+deliver a single key per license. A license is then downloaded for each PSSH box, as during streaming, and each track is played with the
+license of its PSSH box.
+
+The offline license has a limited duration, set by the license server. Once it has expired, the downloaded media can't be played anymore:
+call `download()` again for the same media item to download new licenses. The data already downloaded is kept.
+
 ## Limitations
 
-- DRM protected content and live streams can't be downloaded.
+- Live streams, and content protected with another DRM scheme than Widevine, can't be downloaded.
+- The Widevine offline licenses of a download are not released from the license server when the download is removed or downloaded again.
 - The metadata of the media (artwork, chapters, credits, blocked time ranges) is not stored: during offline playback, only the metadata of
   the played `MediaItem` is available.
 - Media item trackers (analytics) are not started during offline playback.

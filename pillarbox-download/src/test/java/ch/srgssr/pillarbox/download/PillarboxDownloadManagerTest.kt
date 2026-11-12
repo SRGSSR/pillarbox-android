@@ -206,7 +206,18 @@ class PillarboxDownloadManagerTest {
     }
 
     @Test
-    fun `download DRM protected content`() = runTest {
+    fun `download content protected with another DRM scheme than Widevine`() = runTest {
+        val mediaItem = MediaItem.Builder()
+            .setUri("https://example.com/media.mp4")
+            .setDrmConfiguration(MediaItem.DrmConfiguration.Builder(C.PLAYREADY_UUID).setLicenseUri(LICENSE_URI).build())
+            .build()
+
+        assertFailsWith<DownloadNotSupportedException> { downloadManager.download(mediaItem) }
+        assertNull(shadowOf(context).nextStartedService)
+    }
+
+    @Test
+    fun `download Widevine protected content without license URI`() = runTest {
         val mediaItem = MediaItem.Builder()
             .setUri("https://example.com/media.mp4")
             .setDrmConfiguration(MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID).build())
@@ -219,7 +230,7 @@ class PillarboxDownloadManagerTest {
     @Test
     fun `download uses the asset loaders to resolve the stream`() = runTest {
         downloadManager.release()
-        // The asset loader resolves the media to a DRM protected stream, which proves it is used
+        // The asset loader resolves the media to a stream protected with an unsupported DRM scheme, which proves it is used
         downloadManager = createDownloadManager(DrmAssetLoader(context))
 
         assertFailsWith<DownloadNotSupportedException> { downloadManager.download(mediaItem(DrmAssetLoader.MEDIA_ID)) }
@@ -254,7 +265,7 @@ class PillarboxDownloadManagerTest {
         override suspend fun loadAsset(mediaItem: MediaItem): Asset {
             val streamMediaItem = MediaItem.Builder()
                 .setUri("https://example.com/drm.mp4")
-                .setDrmConfiguration(MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID).build())
+                .setDrmConfiguration(MediaItem.DrmConfiguration.Builder(C.PLAYREADY_UUID).setLicenseUri(LICENSE_URI).build())
                 .build()
 
             return Asset(mediaSource = mediaSourceFactory.createMediaSource(streamMediaItem))
@@ -272,6 +283,7 @@ class PillarboxDownloadManagerTest {
 
     private companion object {
         private const val MEDIA_ID = "urn:rts:video:1234"
+        private const val LICENSE_URI = "https://example.com/license"
 
         private fun mediaItem(mediaId: String): MediaItem {
             return MediaItem.Builder()

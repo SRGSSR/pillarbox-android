@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.download
 
+import ch.srgssr.pillarbox.player.offline.OfflineLicense
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -58,6 +59,29 @@ class DownloadDataTest {
     }
 
     @Test
+    fun `encode and decode offline licenses`() {
+        val licenses = listOf(
+            OfflineLicense(psshData = byteArrayOf(1, 2), keySetId = byteArrayOf(3)),
+            OfflineLicense(psshData = null, keySetId = byteArrayOf(4, 5)),
+        )
+        val data = assertNotNull(DownloadData.decode(DownloadData("Title", null, licenses).encode()))
+
+        assertEquals("Title", data.title)
+        assertEquals(licenses, data.offlineLicenses)
+    }
+
+    @Test
+    fun `decode data of version 1`() {
+        // Version 1, with the title "T" and without custom data
+        val encoded = byteArrayOf(1, 1, 0, 1, 'T'.code.toByte(), -1, -1, -1, -1)
+        val data = assertNotNull(DownloadData.decode(encoded))
+
+        assertEquals("T", data.title)
+        assertNull(data.customData)
+        assertEquals(emptyList(), data.offlineLicenses)
+    }
+
+    @Test
     fun `decode empty data`() {
         assertNull(DownloadData.decode(ByteArray(0)))
     }
@@ -65,7 +89,7 @@ class DownloadDataTest {
     @Test
     fun `decode unknown version`() {
         val encoded = DownloadData("Title", null).encode()
-        encoded[0] = 2
+        encoded[0] = 3
 
         assertNull(DownloadData.decode(encoded))
     }

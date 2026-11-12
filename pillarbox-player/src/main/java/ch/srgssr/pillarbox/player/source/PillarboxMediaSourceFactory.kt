@@ -86,7 +86,7 @@ class PillarboxMediaSourceFactory(
             assetLoader.mediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
         }
         defaultAssetLoader.mediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
-        downloadedMediaAssetLoader?.mediaSourceFactory?.setDrmSessionManagerProvider(drmSessionManagerProvider)
+        downloadedMediaAssetLoader?.setDrmSessionManagerProvider(drmSessionManagerProvider)
         return this
     }
 

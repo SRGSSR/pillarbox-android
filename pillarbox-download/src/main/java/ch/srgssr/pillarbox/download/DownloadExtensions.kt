@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.download
 
 import androidx.media3.exoplayer.offline.Download
+import ch.srgssr.pillarbox.player.offline.OfflineLicense
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -32,23 +33,36 @@ val Download.isPaused: Boolean
 /**
  * The data stored by [PillarboxDownloadManager] in [DownloadRequest.data][androidx.media3.exoplayer.offline.DownloadRequest.data]. It starts
  * with a version, so that its format can evolve.
+ *
+ * @property title The title of the media, or `null`.
+ * @property customData The application specific data, or `null`.
+ * @property offlineLicenses The Widevine offline licenses of the media, empty if it is not DRM protected.
  */
-internal class DownloadData(val title: String?, val customData: ByteArray?) {
+internal class DownloadData(
+    val title: String?,
+    val customData: ByteArray?,
+    val offlineLicenses: List<OfflineLicense> = emptyList(),
+) {
     fun encode(): ByteArray {
         val bytes = ByteArrayOutputStream()
         DataOutputStream(bytes).use { output ->
             output.writeByte(VERSION)
             output.writeBoolean(title != null)
             title?.let(output::writeUTF)
-            output.writeInt(customData?.size ?: NO_CUSTOM_DATA)
-            customData?.let(output::write)
+            output.writeByteArray(customData)
+            output.writeInt(offlineLicenses.size)
+            offlineLicenses.forEach { license ->
+                output.writeByteArray(license.psshData)
+                output.writeByteArray(license.keySetId)
+            }
         }
         return bytes.toByteArray()
     }
 
     companion object {
-        private const val VERSION = 1
-        private const val NO_CUSTOM_DATA = -1
+        private const val VERSION_WITHOUT_LICENSES = 1
+        private const val VERSION = 2
+        private const val NULL_BYTE_ARRAY = -1
 
         /**
          * Decodes the data encoded with [encode], or returns `null` if it is empty or invalid.
@@ -63,11 +77,30 @@ internal class DownloadData(val title: String?, val customData: ByteArray?) {
         }
 
         private fun read(input: DataInputStream): DownloadData? {
-            if (input.readByte().toInt() != VERSION) return null
+            val version = input.readByte().toInt()
+            if (version != VERSION && version != VERSION_WITHOUT_LICENSES) return null
             val title = if (input.readBoolean()) input.readUTF() else null
-            val customDataSize = input.readInt()
-            val customData = if (customDataSize < 0) null else ByteArray(customDataSize).also(input::readFully)
-            return DownloadData(title, customData)
+            val customData = input.readByteArray()
+            val offlineLicenses = if (version == VERSION) {
+                List(input.readInt()) {
+                    val psshData = input.readByteArray()
+                    val keySetId = input.readByteArray() ?: throw IOException("Missing key set id")
+                    OfflineLicense(psshData, keySetId)
+                }
+            } else {
+                emptyList()
+            }
+            return DownloadData(title, customData, offlineLicenses)
+        }
+
+        private fun DataOutputStream.writeByteArray(bytes: ByteArray?) {
+            writeInt(bytes?.size ?: NULL_BYTE_ARRAY)
+            bytes?.let(::write)
+        }
+
+        private fun DataInputStream.readByteArray(): ByteArray? {
+            val size = readInt()
+            return if (size < 0) null else ByteArray(size).also(::readFully)
         }
     }
 }
