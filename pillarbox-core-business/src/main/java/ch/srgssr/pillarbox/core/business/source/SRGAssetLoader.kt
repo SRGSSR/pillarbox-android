@@ -35,6 +35,7 @@ import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import kotlinx.serialization.SerializationException
 import java.io.IOException
@@ -171,6 +172,31 @@ class SRGAssetLoader internal constructor(
                 credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
             ),
         )
+    }
+
+    /**
+     * Encodes the ComScore and CommandersAct data, so that the playback of the downloaded media is tracked.
+     *
+     * The data added with [SRGAssetLoaderConfig.trackerData] is not stored, as it can't be encoded.
+     */
+    override fun encodeOfflineTrackersData(trackersData: MediaItemTrackerData): ByteArray {
+        return OfflineTrackersData.from(
+            comScoreData = trackersData[ComScoreTracker::class.java]?.data as? ComScoreTracker.Data,
+            commandersActData = trackersData[CommandersActTracker::class.java]?.data as? CommandersActTracker.Data,
+        ).encode()
+    }
+
+    override fun decodeOfflineTrackersData(data: ByteArray): MediaItemTrackerData? {
+        val offlineTrackersData = OfflineTrackersData.decode(data) ?: return null
+        val trackerData = MutableMediaItemTrackerData()
+        trackerData[SRGEventLoggerTracker::class.java] = FactoryData(SRGEventLoggerTracker.Factory(), Unit)
+        offlineTrackersData.comScoreData?.let {
+            trackerData[ComScoreTracker::class.java] = FactoryData(comscoreTrackerFactory, it)
+        }
+        offlineTrackersData.commandersActData?.let {
+            trackerData[CommandersActTracker::class.java] = FactoryData(commanderActTrackerFactory, it)
+        }
+        return trackerData.toMediaItemTrackerData()
     }
 
     private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {

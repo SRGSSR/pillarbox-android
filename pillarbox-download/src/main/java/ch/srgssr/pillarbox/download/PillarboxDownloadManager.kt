@@ -166,12 +166,17 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             ?.request
     }
 
+    override fun getOfflineTrackersData(downloadRequest: DownloadRequest): ByteArray? {
+        return DownloadData.decode(downloadRequest.data)?.trackersData
+    }
+
     /**
      * Downloads [mediaItem].
      *
      * The media is first loaded with the configured [AssetLoader]s, to get the stream to download. Then the tracks to download are selected,
      * and the download is added to the [DownloadService]. The title of the media and [customData] are stored with the download, and can be
-     * read with [Download.title] and [Download.customData].
+     * read with [Download.title] and [Download.customData]. The trackers data encoded by [AssetLoader.encodeOfflineTrackersData] is also
+     * stored, so that the playback of the downloaded media is tracked.
      *
      * If [mediaItem] is already downloaded, or is being downloaded, the download is updated instead, as Media3 does: it is queued again
      * (and resumed if it was paused), the data already downloaded is kept, and the new tracks are added to the ones already selected.
@@ -198,6 +203,8 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
         }
 
         val title = (asset.mediaMetadata.title ?: mediaItem.mediaMetadata.title)?.toString()
+        // Stored with the download, so that the playback of the downloaded media can be tracked offline.
+        val trackersData = assetLoader.encodeOfflineTrackersData(asset.trackersData)
         val streamMediaItem = MediaItem.Builder()
             .setUri(streamConfiguration.uri)
             .setMimeType(streamConfiguration.mimeType)
@@ -211,7 +218,7 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
                 .create(streamMediaItem)
             try {
                 downloadHelper.prepareAndAwait()
-                downloadHelper.getDownloadRequest(id, DownloadData(title, customData).encode())
+                downloadHelper.getDownloadRequest(id, DownloadData(title, customData, trackersData).encode())
             } finally {
                 downloadHelper.release()
             }

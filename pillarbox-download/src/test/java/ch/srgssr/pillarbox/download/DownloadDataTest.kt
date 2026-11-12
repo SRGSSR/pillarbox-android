@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.download
 
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -58,6 +60,45 @@ class DownloadDataTest {
     }
 
     @Test
+    fun `encode and decode trackers data`() {
+        val customData = byteArrayOf(3, 4)
+        val trackersData = "trackers".encodeToByteArray()
+        val data = DownloadData.decode(DownloadData("Title", customData, trackersData).encode())
+
+        assertNotNull(data)
+        assertEquals("Title", data.title)
+        assertContentEquals(customData, data.customData)
+        assertContentEquals(trackersData, data.trackersData)
+    }
+
+    @Test
+    fun `encode and decode without trackers data`() {
+        val data = DownloadData.decode(DownloadData("Title", null).encode())
+
+        assertNotNull(data)
+        assertNull(data.trackersData)
+    }
+
+    @Test
+    fun `decode version 1`() {
+        val customData = byteArrayOf(1, 2, 3)
+        val bytes = ByteArrayOutputStream()
+        DataOutputStream(bytes).use { output ->
+            output.writeByte(1)
+            output.writeBoolean(true)
+            output.writeUTF("Title")
+            output.writeInt(customData.size)
+            output.write(customData)
+        }
+        val data = DownloadData.decode(bytes.toByteArray())
+
+        assertNotNull(data)
+        assertEquals("Title", data.title)
+        assertContentEquals(customData, data.customData)
+        assertNull(data.trackersData)
+    }
+
+    @Test
     fun `decode empty data`() {
         assertNull(DownloadData.decode(ByteArray(0)))
     }
@@ -65,14 +106,14 @@ class DownloadDataTest {
     @Test
     fun `decode unknown version`() {
         val encoded = DownloadData("Title", null).encode()
-        encoded[0] = 2
+        encoded[0] = 3
 
         assertNull(DownloadData.decode(encoded))
     }
 
     @Test
     fun `decode truncated data`() {
-        val encoded = DownloadData("Title", byteArrayOf(1, 2, 3)).encode()
+        val encoded = DownloadData("Title", byteArrayOf(1, 2, 3), byteArrayOf(4, 5)).encode()
 
         assertNull(DownloadData.decode(encoded.copyOf(encoded.size - 1)))
     }

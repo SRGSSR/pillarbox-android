@@ -54,11 +54,13 @@ class PillarboxMediaSourceFactory(
         )
     )
 
-    private val downloadedMediaAssetLoader = downloadedMediaProvider?.let {
-        DownloadedMediaAssetLoader(it, upstreamDataSourceFactory)
-    }
-
     private val listAssetLoader = mutableListOf<AssetLoader>()
+
+    private val downloadedMediaAssetLoader = downloadedMediaProvider?.let {
+        DownloadedMediaAssetLoader(it, upstreamDataSourceFactory) { mediaItem ->
+            listAssetLoader.firstOrNull { assetLoader -> assetLoader.canLoadAsset(mediaItem) }
+        }
+    }
 
     /**
      * Adds an [AssetLoader] at the specified index.

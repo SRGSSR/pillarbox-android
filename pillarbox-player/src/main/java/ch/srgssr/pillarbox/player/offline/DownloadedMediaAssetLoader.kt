@@ -7,19 +7,25 @@ package ch.srgssr.pillarbox.player.offline
 import androidx.media3.common.MediaItem
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 
 /**
  * [AssetLoader] playing the media provided by a [DownloadedMediaProvider] from its cache.
  *
  * @param downloadedMediaProvider The [DownloadedMediaProvider] providing the downloaded media.
  * @param upstreamDataSourceFactory The [DataSource.Factory] used if some data is missing from the cache.
+ * @param findAssetLoader Returns the [AssetLoader] able to load a [MediaItem] when it is not downloaded, or `null` if none. It decodes the
+ * trackers data stored with the download.
  */
 internal class DownloadedMediaAssetLoader(
     private val downloadedMediaProvider: DownloadedMediaProvider,
     upstreamDataSourceFactory: DataSource.Factory,
+    private val findAssetLoader: (MediaItem) -> AssetLoader? = { null },
 ) : AssetLoader(
     mediaSourceFactory = DefaultMediaSourceFactory(createReadOnlyCacheDataSourceFactory(downloadedMediaProvider, upstreamDataSourceFactory))
 ) {
@@ -36,8 +42,15 @@ internal class DownloadedMediaAssetLoader(
 
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(downloadedMediaItem),
+            trackersData = getTrackersData(mediaItem, downloadRequest),
             mediaMetadata = mediaItem.mediaMetadata,
         )
+    }
+
+    private fun getTrackersData(mediaItem: MediaItem, downloadRequest: DownloadRequest): MediaItemTrackerData {
+        return downloadedMediaProvider.getOfflineTrackersData(downloadRequest)
+            ?.let { data -> findAssetLoader(mediaItem)?.decodeOfflineTrackersData(data) }
+            ?: MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
     }
 }
 
