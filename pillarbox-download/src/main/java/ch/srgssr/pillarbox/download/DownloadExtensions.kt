@@ -32,23 +32,29 @@ val Download.isPaused: Boolean
 /**
  * The data stored by [PillarboxDownloadManager] in [DownloadRequest.data][androidx.media3.exoplayer.offline.DownloadRequest.data]. It starts
  * with a version, so that its format can evolve.
+ *
+ * @property title The title of the media.
+ * @property customData The application specific data.
+ * @property trackersData The trackers data encoded by
+ * [AssetLoader.encodeOfflineTrackersData][ch.srgssr.pillarbox.player.asset.AssetLoader.encodeOfflineTrackersData].
  */
-internal class DownloadData(val title: String?, val customData: ByteArray?) {
+internal class DownloadData(val title: String?, val customData: ByteArray?, val trackersData: ByteArray? = null) {
     fun encode(): ByteArray {
         val bytes = ByteArrayOutputStream()
         DataOutputStream(bytes).use { output ->
             output.writeByte(VERSION)
             output.writeBoolean(title != null)
             title?.let(output::writeUTF)
-            output.writeInt(customData?.size ?: NO_CUSTOM_DATA)
-            customData?.let(output::write)
+            output.writeByteArray(customData)
+            output.writeByteArray(trackersData)
         }
         return bytes.toByteArray()
     }
 
     companion object {
-        private const val VERSION = 1
-        private const val NO_CUSTOM_DATA = -1
+        private const val VERSION_1 = 1
+        private const val VERSION = 2
+        private const val NO_DATA = -1
 
         /**
          * Decodes the data encoded with [encode], or returns `null` if it is empty or invalid.
@@ -63,11 +69,23 @@ internal class DownloadData(val title: String?, val customData: ByteArray?) {
         }
 
         private fun read(input: DataInputStream): DownloadData? {
-            if (input.readByte().toInt() != VERSION) return null
+            val version = input.readByte().toInt()
+            if (version != VERSION && version != VERSION_1) return null
             val title = if (input.readBoolean()) input.readUTF() else null
-            val customDataSize = input.readInt()
-            val customData = if (customDataSize < 0) null else ByteArray(customDataSize).also(input::readFully)
-            return DownloadData(title, customData)
+            val customData = input.readByteArray()
+            // Version 1 didn't store trackers data.
+            val trackersData = if (version == VERSION_1) null else input.readByteArray()
+            return DownloadData(title, customData, trackersData)
+        }
+
+        private fun DataOutputStream.writeByteArray(bytes: ByteArray?) {
+            writeInt(bytes?.size ?: NO_DATA)
+            bytes?.let(::write)
+        }
+
+        private fun DataInputStream.readByteArray(): ByteArray? {
+            val size = readInt()
+            return if (size < 0) null else ByteArray(size).also(::readFully)
         }
     }
 }

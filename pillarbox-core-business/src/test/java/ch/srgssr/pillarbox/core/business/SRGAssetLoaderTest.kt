@@ -38,6 +38,8 @@ import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -229,6 +231,42 @@ class SRGAssetLoaderTest {
         assertTrue { trackerData.isNotEmpty() }
         assertFalse { trackerData.contains(ComScoreTracker::class.java) }
         assertTrue { trackerData.contains(CommandersActTracker::class.java) }
+    }
+
+    @Test
+    fun `offline trackers data are restored`() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_WITH_ANALYTICS))
+        val data = assetLoader.encodeOfflineTrackersData(asset.trackersData)
+        val trackersData = assetLoader.decodeOfflineTrackersData(data)
+
+        assertNotNull(trackersData)
+        assertEquals(asset.trackersData.keys, trackersData.keys)
+        assertEquals(asset.trackersData[ComScoreTracker::class.java]?.data, trackersData[ComScoreTracker::class.java]?.data)
+        assertEquals(asset.trackersData[CommandersActTracker::class.java]?.data, trackersData[CommandersActTracker::class.java]?.data)
+        assertEquals(
+            asset.trackersData[ComScoreTracker::class.java]?.factory,
+            trackersData[ComScoreTracker::class.java]?.factory,
+        )
+        assertEquals(
+            asset.trackersData[CommandersActTracker::class.java]?.factory,
+            trackersData[CommandersActTracker::class.java]?.factory,
+        )
+    }
+
+    @Test
+    fun `offline trackers data with comscore only`() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_WITH_COMSCORE))
+        val trackersData = assetLoader.decodeOfflineTrackersData(assetLoader.encodeOfflineTrackersData(asset.trackersData))
+
+        assertNotNull(trackersData)
+        assertTrue { trackersData.contains(ComScoreTracker::class.java) }
+        assertFalse { trackersData.contains(CommandersActTracker::class.java) }
+    }
+
+    @Test
+    fun `invalid offline trackers data`() {
+        assertNull(assetLoader.decodeOfflineTrackersData("invalid".encodeToByteArray()))
+        assertNull(assetLoader.decodeOfflineTrackersData(ByteArray(0)))
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {

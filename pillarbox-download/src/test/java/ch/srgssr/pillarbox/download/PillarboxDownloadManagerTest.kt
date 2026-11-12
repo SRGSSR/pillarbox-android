@@ -35,6 +35,7 @@ import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -131,6 +132,23 @@ class PillarboxDownloadManagerTest {
         addDownload(MEDIA_ID, Download.STATE_COMPLETED)
 
         assertEquals(MEDIA_ID, downloadManager.getDownloadRequest(mediaItem(MEDIA_ID))?.id)
+    }
+
+    @Test
+    fun `get offline trackers data`() {
+        val trackersData = "trackers".encodeToByteArray()
+        val request = DownloadRequest.Builder(MEDIA_ID, Uri.parse("https://example.com/$MEDIA_ID.m3u8"))
+            .setData(DownloadData("Title", null, trackersData).encode())
+            .build()
+
+        assertContentEquals(trackersData, downloadManager.getOfflineTrackersData(request))
+    }
+
+    @Test
+    fun `get offline trackers data without data`() {
+        val request = DownloadRequest.Builder(MEDIA_ID, Uri.parse("https://example.com/$MEDIA_ID.m3u8")).build()
+
+        assertNull(downloadManager.getOfflineTrackersData(request))
     }
 
     @Test

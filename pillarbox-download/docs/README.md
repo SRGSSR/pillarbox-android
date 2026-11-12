@@ -86,6 +86,12 @@ player.setMediaItem(SRGMediaItem("urn:rts:video:12345"))
 
 A media item is matched with its download by its media id, or by its URI if it has no media id.
 
+The analytics of the downloaded media are tracked during offline playback. When a media is downloaded, the `AssetLoader` that loads it
+encodes its trackers data with `AssetLoader.encodeOfflineTrackersData()`, and the result is stored with the download. When the downloaded
+media is played, the player's `AssetLoader` able to load the `MediaItem` decodes it with `AssetLoader.decodeOfflineTrackersData()`. The
+`SRGAssetLoader` stores the ComScore and CommandersAct data this way. Custom `AssetLoader`s can override both methods to track the playback
+of downloaded media too.
+
 ### Manage the downloads
 
 ```kotlin
@@ -126,4 +132,5 @@ The downloads and their state are persisted, and survive application restarts. T
 - DRM protected content and live streams can't be downloaded.
 - The metadata of the media (artwork, chapters, credits, blocked time ranges) is not stored: during offline playback, only the metadata of
   the played `MediaItem` is available.
-- Media item trackers (analytics) are not started during offline playback.
+- The trackers data added with `SRGAssetLoaderConfig.trackerData()` is not stored with the download, so these trackers are not started during
+  offline playback.
