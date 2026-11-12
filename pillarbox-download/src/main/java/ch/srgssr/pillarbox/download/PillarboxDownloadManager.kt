@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.download
 import android.content.Context
 import androidx.media3.common.C
 import androidx.media3.common.DrmInitData
+import androidx.media3.common.DrmInitData.SchemeData
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
@@ -213,7 +214,7 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             .setDrmConfiguration(drmConfiguration)
             .build()
 
-        val (downloadRequest, licenseFormats) = withContext(Dispatchers.Main) {
+        val downloadRequest = withContext(Dispatchers.Main) {
             val downloadHelper = DownloadHelper.Factory()
                 .setDataSourceFactory(dataSourceFactory)
                 .setRenderersFactory(DefaultRenderersFactory(context))
@@ -221,31 +222,18 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
                 .create(streamMediaItem)
             try {
                 val tracksInfoAvailable = downloadHelper.prepareAndAwait()
-                val licenseFormats = if (drmConfiguration != null && tracksInfoAvailable) downloadHelper.createLicenseFormats() else emptyList()
-                downloadHelper.getDownloadRequest(id, null) to licenseFormats
+                val offlineLicenses = drmConfiguration?.let {
+                    val psshBoxes = if (tracksInfoAvailable) downloadHelper.getWidevinePsshBoxes() else emptyList()
+                    withContext(Dispatchers.IO) { downloadLicenses(it, psshBoxes) }
+                }.orEmpty()
+                downloadHelper.getDownloadRequest(id, DownloadData(title, customData, offlineLicenses).encode())
+                    .copyWithKeySetId(offlineLicenses.firstOrNull()?.keySetId)
             } finally {
                 downloadHelper.release()
             }
         }
 
-        val offlineLicenses = if (drmConfiguration != null) {
-            withContext(Dispatchers.IO) { downloadLicenses(drmConfiguration, licenseFormats) }
-        } else {
-            emptyList()
-        }
-        val finalDownloadRequest = DownloadRequest.Builder(downloadRequest.id, downloadRequest.uri)
-            .setMimeType(downloadRequest.mimeType)
-            .setStreamKeys(downloadRequest.streamKeys)
-            .setCustomCacheKey(downloadRequest.customCacheKey)
-            .apply {
-                downloadRequest.byteRange?.let { setByteRange(it.offset, it.length) }
-                downloadRequest.timeRange?.let { setTimeRange(it.startPositionUs, it.durationUs) }
-            }
-            .setKeySetId(offlineLicenses.firstOrNull()?.keySetId)
-            .setData(DownloadData(title, customData, offlineLicenses).encode())
-            .build()
-
-        DownloadService.sendAddDownload(context, downloadServiceClass, finalDownloadRequest, false)
+        DownloadService.sendAddDownload(context, downloadServiceClass, downloadRequest, false)
     }
 
     /**
@@ -302,18 +290,16 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
     }
 
     override fun getOfflineLicenses(downloadRequest: DownloadRequest): List<OfflineLicense> {
-        return DownloadData.decode(downloadRequest.data)?.offlineLicenses
-            ?.takeIf { it.isNotEmpty() }
-            ?: super.getOfflineLicenses(downloadRequest)
+        return DownloadData.decode(downloadRequest.data)?.offlineLicenses.orEmpty()
     }
 
     /**
-     * Downloads a Widevine offline license for each of [formats], and returns them. This method blocks until the licenses are downloaded.
+     * Downloads a Widevine offline license for each of [psshBoxes], and returns them. This method blocks until the licenses are downloaded.
      *
-     * @throws DownloadNotSupportedException If [formats] is empty, as the DRM initialization data of the content is unknown.
+     * @throws DownloadNotSupportedException If [psshBoxes] is empty, as the DRM initialization data of the content is unknown.
      */
-    private fun downloadLicenses(drmConfiguration: MediaItem.DrmConfiguration, formats: List<Format>): List<OfflineLicense> {
-        if (formats.isEmpty()) {
+    private fun downloadLicenses(drmConfiguration: MediaItem.DrmConfiguration, psshBoxes: List<SchemeData>): List<OfflineLicense> {
+        if (psshBoxes.isEmpty()) {
             throw DownloadNotSupportedException("The DRM initialization data of the content can't be found")
         }
         val offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(
@@ -322,9 +308,9 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             DrmSessionEventListener.EventDispatcher(),
         )
         return try {
-            formats.map { format ->
-                val psshData = checkNotNull(format.drmInitData).get(0).data
-                OfflineLicense(psshData = psshData, keySetId = offlineLicenseHelper.downloadLicense(format))
+            psshBoxes.map { psshBox ->
+                val format = Format.Builder().setDrmInitData(DrmInitData(psshBox)).build()
+                OfflineLicense(psshData = psshBox.data, keySetId = offlineLicenseHelper.downloadLicense(format))
             }
         } finally {
             offlineLicenseHelper.release()
@@ -532,29 +518,22 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
         }
 
         /**
-         * Returns the [Format]s used to download the offline licenses of the content, one for each distinct Widevine PSSH box of its tracks.
-         * This [DownloadHelper] must be prepared, with the tracks information available.
+         * Returns the distinct Widevine PSSH boxes of the tracks of the content, one offline license being downloaded for each of them. This
+         * [DownloadHelper] must be prepared, with the tracks information available.
          *
          * The tracks of a content may be encrypted with different keys, for example audio and video, each listed in the PSSH box of its
          * tracks. License servers may deliver a single key per license, so a license is downloaded for each PSSH box, as during streaming.
          */
-        private fun DownloadHelper.createLicenseFormats(): List<Format> {
-            return (0 until periodCount).flatMap { periodIndex ->
-                val trackGroups = getTrackGroups(periodIndex)
-                (0 until trackGroups.length).flatMap { groupIndex ->
-                    val trackGroup = trackGroups[groupIndex]
-                    (0 until trackGroup.length).map(trackGroup::getFormat)
-                }
-            }.flatMap { format ->
-                val drmInitData = format.drmInitData ?: return@flatMap emptyList()
-                (0 until drmInitData.schemeDataCount).map(drmInitData::get)
-            }.filter { it.matches(C.WIDEVINE_UUID) && it.hasData() }
+        private fun DownloadHelper.getWidevinePsshBoxes(): List<SchemeData> {
+            return (0 until periodCount).asSequence()
+                .map(::getTrackGroups)
+                .flatMap { trackGroups -> (0 until trackGroups.length).map(trackGroups::get) }
+                .flatMap { trackGroup -> (0 until trackGroup.length).map(trackGroup::getFormat) }
+                .mapNotNull { format -> format.drmInitData }
+                .flatMap { drmInitData -> (0 until drmInitData.schemeDataCount).map(drmInitData::get) }
+                .filter { it.matches(C.WIDEVINE_UUID) && it.hasData() }
                 .distinctBy { it.data?.toList() }
-                .map { schemeData ->
-                    Format.Builder()
-                        .setDrmInitData(DrmInitData(schemeData))
-                        .build()
-                }
+                .toList()
         }
 
         /**

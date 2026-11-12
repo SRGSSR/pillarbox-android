@@ -76,20 +76,14 @@ internal class OfflineDrmSessionManager(private val licenses: List<OfflineLicens
      * tracks or a license decrypting all the tracks.
      */
     fun getLicenseIndex(format: Format): Int {
-        val drmInitData = format.drmInitData
-        val psshDatas = if (drmInitData == null) {
-            emptyList()
-        } else {
-            (0 until drmInitData.schemeDataCount)
-                .map(drmInitData::get)
-                .filter { it.matches(C.WIDEVINE_UUID) }
-                .mapNotNull { it.data }
-        }
-        val index = licenses.indexOfFirst { license ->
-            psshDatas.any { it.contentEquals(license.psshData) }
-        }
+        val drmInitData = format.drmInitData ?: return 0
+        val psshDatas = (0 until drmInitData.schemeDataCount)
+            .map(drmInitData::get)
+            .filter { it.matches(C.WIDEVINE_UUID) }
+            .mapNotNull { it.data }
 
-        return index.coerceAtLeast(0)
+        return licenses.indexOfFirst { license -> psshDatas.any { it.contentEquals(license.psshData) } }
+            .coerceAtLeast(0)
     }
 
     private fun managerFor(format: Format): DrmSessionManager {
