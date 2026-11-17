@@ -9,7 +9,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
-import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession.Callback
@@ -20,14 +19,18 @@ import com.google.common.util.concurrent.ListenableFuture
 
 internal open class MediaSessionCallbackImpl(
     val callback: Callback,
+    val customSessionCommands: List<SessionCommand>,
     val mediaSession: PillarboxMediaSession
 ) : MediaSession.Callback {
 
     override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
-        val availableSessionCommands = session.buildAvailableSessionCommands()
+        val availableSessionCommands = session.buildAvailableSessionCommands(customSessionCommands)
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands)
             .build()
+            .also {
+                callback.onConnect(this.mediaSession, controller)
+            }
     }
 
     override fun onCustomCommand(
@@ -36,7 +39,6 @@ internal open class MediaSessionCallbackImpl(
         customCommand: SessionCommand,
         args: Bundle
     ): ListenableFuture<SessionResult> {
-        // TODO maybe add a way integrators can add custom commands
         DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras} args = $args")
         val player = session.player
         if (player !is PillarboxPlayer) return Futures.immediateFailedFuture(UnsupportedOperationException())
@@ -70,8 +72,7 @@ internal open class MediaSessionCallbackImpl(
             }
 
             else -> {
-                DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")
-                Futures.immediateFuture(SessionResult(SessionError.ERROR_NOT_SUPPORTED))
+                callback.onCustomCommand(this.mediaSession, controller, customCommand, args)
             }
         }
     }

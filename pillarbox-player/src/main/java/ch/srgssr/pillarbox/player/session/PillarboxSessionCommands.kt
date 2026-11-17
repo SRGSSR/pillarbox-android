@@ -50,12 +50,13 @@ internal object PillarboxSessionCommands {
         COMMAND_TRACKING_ENABLED_CHANGED,
     )
 
-    fun MediaSession.buildAvailableSessionCommands(): SessionCommands {
+    fun MediaSession.buildAvailableSessionCommands(userCustomCommands: List<SessionCommand>): SessionCommands {
         val sessionCommandsBuilder = if (this is MediaLibraryService.MediaLibrarySession) {
             MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
         } else {
             MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
         }.apply {
+            addSessionCommands(userCustomCommands)
             val player = player
             if (player is PillarboxPlayer) {
                 val listCustomCommand = mutableListOf<SessionCommand>()
