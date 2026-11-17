@@ -11,6 +11,9 @@ import android.net.Uri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.BaseDataSource
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.exoplayer.offline.DefaultDownloadIndex
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
@@ -235,6 +238,18 @@ class PillarboxDownloadManagerTest {
     }
 
     @Test
+    fun `download live progressive stream`() = runTest {
+        downloadManager.release()
+        downloadManager = PillarboxDownloadManager.Builder(context, TestDownloadService::class.java)
+            .setDownloadDirectory(temporaryFolder.newFolder())
+            .setDataSourceFactory(LiveDataSource.Factory)
+            .build()
+
+        assertFailsWith<DownloadNotSupportedException> { downloadManager.download(MediaItem.fromUri("https://example.com/live.mp3")) }
+        assertNull(shadowOf(context).nextStartedService)
+    }
+
+    @Test
     fun `download uses the asset loaders to resolve the stream`() = runTest {
         downloadManager.release()
         // The asset loader resolves the media to a DRM protected stream, which proves it is used
@@ -280,6 +295,36 @@ class PillarboxDownloadManagerTest {
 
         companion object {
             const val MEDIA_ID = "urn:drm"
+        }
+    }
+
+    /**
+     * A [DataSource] for an endless stream, whose length is unknown, like an Icecast audio stream.
+     */
+    private class LiveDataSource : BaseDataSource(true) {
+        private var uri: Uri? = null
+
+        override fun open(dataSpec: DataSpec): Long {
+            uri = dataSpec.uri
+            return C.LENGTH_UNSET.toLong()
+        }
+
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+            return length
+        }
+
+        override fun getUri(): Uri? {
+            return uri
+        }
+
+        override fun close() {
+            uri = null
+        }
+
+        object Factory : DataSource.Factory {
+            override fun createDataSource(): DataSource {
+                return LiveDataSource()
+            }
         }
     }
 
