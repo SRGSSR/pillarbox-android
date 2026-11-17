@@ -71,6 +71,7 @@ include(
     ":pillarbox-demo",
     ":pillarbox-demo-shared",
     ":pillarbox-demo-tv",
+    ":pillarbox-download",
     ":pillarbox-player",
     ":pillarbox-player-testutils",
     ":pillarbox-ui",

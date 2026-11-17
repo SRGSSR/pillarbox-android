@@ -12,6 +12,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaSession
+import ch.srgssr.pillarbox.demo.download.DemoDownloads
 import ch.srgssr.pillarbox.demo.shared.data.DemoBrowser
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto.MediaBrowserActivity
@@ -34,7 +35,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
     override fun onCreate() {
         super.onCreate()
         demoBrowser = DemoBrowser()
-        val player = PlayerModule.provideDefaultPlayer(this).apply {
+        val player = PlayerModule.provideDefaultPlayer(this, DemoDownloads.getDownloadManager(this)).apply {
             setWakeMode(C.WAKE_MODE_NETWORK)
         }
         setPlayer(player = player, callback = DemoCallback(), sessionId = "AndroidAutoSession")

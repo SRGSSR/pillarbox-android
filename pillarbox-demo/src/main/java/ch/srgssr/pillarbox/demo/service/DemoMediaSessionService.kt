@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 import androidx.media3.common.C
+import ch.srgssr.pillarbox.demo.download.DemoDownloads
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
@@ -28,7 +29,7 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")
-        val player = PlayerModule.provideDefaultPlayer(this)
+        val player = PlayerModule.provideDefaultPlayer(this, DemoDownloads.getDownloadManager(this))
         player.setWakeMode(C.WAKE_MODE_NETWORK)
         player.setHandleAudioFocus(true)
         player.prepare()
