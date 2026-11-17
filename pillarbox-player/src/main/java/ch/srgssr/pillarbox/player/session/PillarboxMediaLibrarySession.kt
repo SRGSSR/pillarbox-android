@@ -13,6 +13,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
@@ -125,6 +126,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
         private var pendingIntent: PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(service)
         private var id: String? = null
         private var bitmapLoader: BitmapLoader? = null
+        private var customSessionCommands: List<SessionCommand> = emptyList()
 
         /**
          * Set session activity
@@ -160,6 +162,11 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             return this
         }
 
+        fun setCustomSessionCommand(customSessionCommands: List<SessionCommand>): Builder {
+            this.customSessionCommands = customSessionCommands
+            return this
+        }
+
         /**
          * Build
          *
@@ -167,7 +174,11 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
          */
         fun build(): PillarboxMediaLibrarySession {
             val pillarboxMediaSession = PillarboxMediaLibrarySession()
-            val media3Callback = MediaLibraryCallbackImpl(callback, pillarboxMediaSession)
+            val media3Callback = MediaLibraryCallbackImpl(
+                callback = callback,
+                customSessionCommands = customSessionCommands,
+                mediaSession = pillarboxMediaSession
+            )
             val mediaSessionBuilder = MediaLibrarySession.Builder(service, player, media3Callback)
             val mediaSession = mediaSessionBuilder.apply {
                 id?.let { setId(it) }
@@ -184,8 +195,10 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
 
     internal class MediaLibraryCallbackImpl(
         callback: Callback,
+        customSessionCommands: List<SessionCommand>,
         mediaSession: PillarboxMediaLibrarySession
-    ) : MediaSessionCallbackImpl(callback, mediaSession), MediaLibrarySession.Callback {
+    ) : MediaSessionCallbackImpl(callback = callback, customSessionCommands = customSessionCommands, mediaSession = mediaSession),
+        MediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
