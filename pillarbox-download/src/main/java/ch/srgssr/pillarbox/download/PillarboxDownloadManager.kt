@@ -5,11 +5,14 @@
 package ch.srgssr.pillarbox.download
 
 import android.content.Context
+import android.net.Uri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.util.Util
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.NoOpCacheEvictor
@@ -203,6 +206,10 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             .setMimeType(streamConfiguration.mimeType)
             .build()
 
+        if (isProgressive(streamConfiguration) && withContext(Dispatchers.IO) { isLiveProgressiveStream(streamConfiguration.uri) }) {
+            throw DownloadNotSupportedException("Live streams can't be downloaded")
+        }
+
         val downloadRequest = withContext(Dispatchers.Main) {
             val downloadHelper = DownloadHelper.Factory()
                 .setDataSourceFactory(dataSourceFactory)
@@ -218,6 +225,23 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
         }
 
         DownloadService.sendAddDownload(context, downloadServiceClass, downloadRequest, false)
+    }
+
+    /**
+     * Returns whether the progressive stream at [uri] is live, for example an Icecast audio stream. Such a stream has no known length, and
+     * would be downloaded until the connection closes.
+     *
+     * [DownloadHelper] doesn't detect it: it only checks the first timeline of a progressive source, which is never live, and ignores the
+     * update sent once the stream is opened. So the stream is opened here, the same way `ProgressiveMediaPeriod` decides whether it is live:
+     * its length is unknown.
+     */
+    private fun isLiveProgressiveStream(uri: Uri): Boolean {
+        val dataSource = dataSourceFactory.createDataSource()
+        return try {
+            dataSource.open(DataSpec(uri)) == C.LENGTH_UNSET.toLong()
+        } finally {
+            dataSource.close()
+        }
     }
 
     /**
@@ -434,6 +458,10 @@ class PillarboxDownloadManager private constructor(builder: Builder) : Downloade
             }
 
             return Download(request, state, startTimeMs, updateTimeMs, contentLength, stopReason, failureReason, progress)
+        }
+
+        private fun isProgressive(localConfiguration: MediaItem.LocalConfiguration): Boolean {
+            return Util.inferContentTypeForUriAndMimeType(localConfiguration.uri, localConfiguration.mimeType) == C.CONTENT_TYPE_OTHER
         }
 
         private suspend fun DownloadHelper.prepareAndAwait() {
