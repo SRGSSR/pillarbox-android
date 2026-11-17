@@ -51,6 +51,9 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
+    /**
+     * The [PillarboxMediaSession] created when calling [setPlayer].
+     */
     var mediaSession: PillarboxMediaSession? = null
         private set
 

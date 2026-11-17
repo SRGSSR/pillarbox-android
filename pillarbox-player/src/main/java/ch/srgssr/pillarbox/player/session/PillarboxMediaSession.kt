@@ -42,6 +42,9 @@ open class PillarboxMediaSession internal constructor() {
          */
         fun onConnect(session: PillarboxMediaSession, controller: MediaSession.ControllerInfo) = Unit
 
+        /**
+         * @see MediaSession.Callback.onCustomCommand
+         */
         fun onCustomCommand(
             session: PillarboxMediaSession,
             controller: MediaSession.ControllerInfo,
@@ -111,6 +114,11 @@ open class PillarboxMediaSession internal constructor() {
             return this
         }
 
+        /**
+         * Custom session commands to use with the [PillarboxMediaLibrarySession] and the [PillarboxMediaBrowser]
+         * @param customSessionCommands The list of [SessionCommand]
+         * @return this builder for convenience.
+         */
         fun setCustomSessionCommand(customSessionCommands: List<SessionCommand>): Builder {
             this.customSessionCommands = customSessionCommands
             return this
@@ -219,6 +227,9 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
+    /**
+     * Custom session commands to use with the [PillarboxMediaSession] and the [PillarboxMediaController]
+     */
     var customSessionCommands: List<SessionCommand> = emptyList()
         set(value) {
             if (value != field) {

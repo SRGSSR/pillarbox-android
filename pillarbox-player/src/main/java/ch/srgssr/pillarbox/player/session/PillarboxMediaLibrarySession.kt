@@ -162,6 +162,11 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             return this
         }
 
+        /**
+         * Custom session commands to use with the [PillarboxMediaLibrarySession] and the [PillarboxMediaBrowser]
+         * @param customSessionCommands The list of [SessionCommand]
+         * @return this builder for convenience.
+         */
         fun setCustomSessionCommand(customSessionCommands: List<SessionCommand>): Builder {
             this.customSessionCommands = customSessionCommands
             return this
