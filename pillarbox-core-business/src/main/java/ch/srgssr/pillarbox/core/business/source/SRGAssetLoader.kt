@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -12,6 +13,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
@@ -22,6 +24,7 @@ import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
@@ -127,14 +130,43 @@ class SRGAssetLoader internal constructor(
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        checkNotNull(mediaItem.localConfiguration)
-        val resultWithHeaders = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
-            when (it) {
-                is HttpResultException -> throw it
-                is SerializationException -> throw DataParsingException(it)
-                else -> throw IOException(it.message)
+        val content = loadContent(mediaItem)
+        val updateFlow: Flow<UpdatableMediaItem> = if (content.chapter.type == Type.SCHEDULED_LIVESTREAM) {
+            createUpdateFlow(mediaItem)
+        } else {
+            emptyFlow()
+        }
+
+        return Asset(
+            mediaSource = content.mediaSource,
+            trackersData = content.trackerData.toMediaItemTrackerData(),
+            mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
+                defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, content.chapter, content.mediaComposition)
+            }.build(),
+            responseHeaders = content.responseHeaders,
+            pillarboxMetadata = content.pillarboxMetadata,
+            updateFlow = updateFlow,
+        )
+    }
+
+    private fun createUpdateFlow(mediaItem: MediaItem): Flow<UpdatableMediaItem> {
+        return flow {
+            while (true) {
+                delay(30.seconds)
+                val content = loadContent(mediaItem)
+                emit(
+                    UpdatableMediaItem(
+                        pillarboxMetadata = content.pillarboxMetadata,
+                        mediaItem = content.mediaSource.mediaItem,
+                    )
+                )
             }
         }
+    }
+
+    private suspend fun loadContent(mediaItem: MediaItem): LoadedContent {
+        val localConfiguration = checkNotNull(mediaItem.localConfiguration)
+        val resultWithHeaders = fetchMediaComposition(localConfiguration.uri)
         val result = resultWithHeaders.mediaComposition
 
         val chapter = result.mainChapter
@@ -164,33 +196,40 @@ class SRGAssetLoader internal constructor(
         val mediaSource = chapter.spriteSheet?.let {
             MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
-        val ilHost = mediaItem.localConfiguration!!.uri.toIlUrl().host
-        val updateFlow: Flow<UpdatableMediaItem> = if (chapter.type == Type.SCHEDULED_LIVESTREAM) {
-            flow {
-                while (true) {
-                    delay(30.seconds)
-                    // redo
-                    emit(UpdatableMediaItem(PillarboxMetadata()))
-                }
-            }
-        } else {
-            emptyFlow<UpdatableMediaItem>()
-        }
-        return Asset(
-            mediaSource = mediaSource,
-            trackersData = trackerData.toMediaItemTrackerData(),
-            mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
-                defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
-            }.build(),
+        val ilHost = localConfiguration.uri.toIlUrl().host
+
+        return LoadedContent(
+            mediaComposition = result,
+            chapter = chapter,
             responseHeaders = resultWithHeaders.headers,
+            mediaSource = mediaSource,
+            trackerData = trackerData,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
                 chapters = ChapterAdapter.getChapters(result, ilHost),
                 credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
             ),
-            updateFlow = updateFlow,
         )
     }
+
+    private suspend fun fetchMediaComposition(uri: Uri): MediaCompositionResponse {
+        return mediaCompositionService.fetchMediaComposition(uri).getOrElse {
+            throw when (it) {
+                is HttpResultException -> it
+                is SerializationException -> DataParsingException(it)
+                else -> IOException(it.message)
+            }
+        }
+    }
+
+    private class LoadedContent(
+        val mediaComposition: MediaComposition,
+        val chapter: Chapter,
+        val responseHeaders: Map<String, List<String>>,
+        val mediaSource: MediaSource,
+        val trackerData: MutableMediaItemTrackerData,
+        val pillarboxMetadata: PillarboxMetadata,
+    )
 
     private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {
         val drm = resource.drmList?.find { it.type == Drm.Type.WIDEVINE }

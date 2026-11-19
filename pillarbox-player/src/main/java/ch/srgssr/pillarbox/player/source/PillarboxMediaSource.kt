@@ -23,9 +23,11 @@ import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import kotlin.time.TimeMark
@@ -54,6 +56,7 @@ class PillarboxMediaSource internal constructor(
     private var timeMarkLoadStart: TimeMark? = null
     private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
     private var pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+    private var updateFlow: Flow<UpdatableMediaItem>? = null
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -70,6 +73,7 @@ class PillarboxMediaSource internal constructor(
                 mediaSource = asset.mediaSource
                 mediaItemTrackerData = asset.trackersData
                 pillarboxMetadata = asset.pillarboxMetadata
+                updateFlow = asset.updateFlow
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .build()
@@ -144,9 +148,9 @@ class PillarboxMediaSource internal constructor(
         DebugLogger.debug(TAG, "createPeriod: $id")
         return PillarboxMediaPeriod(
             mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs),
-            mediaItemTrackerData,
-            pillarboxMetadata,
-            updateFlow
+            updateFlow = updateFlow,
+            mediaItemTrackerData = mediaItemTrackerData,
+            metadata = pillarboxMetadata,
         )
     }
 
