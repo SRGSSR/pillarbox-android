@@ -43,7 +43,6 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import java.io.IOException
@@ -131,10 +130,10 @@ class SRGAssetLoader internal constructor(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val content = loadContent(mediaItem)
-        val updateFlow: Flow<UpdatableMediaItem> = if (content.chapter.type == Type.SCHEDULED_LIVESTREAM) {
+        val updateFlow: Flow<UpdatableMediaItem>? = if (content.chapter.type == Type.SCHEDULED_LIVESTREAM) {
             createUpdateFlow(mediaItem)
         } else {
-            emptyFlow()
+            null
         }
 
         return Asset(
