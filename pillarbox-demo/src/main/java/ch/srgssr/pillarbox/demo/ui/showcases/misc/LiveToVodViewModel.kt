@@ -46,7 +46,6 @@ class LiveToVodViewModel(application: Application) : AndroidViewModel(applicatio
 
                 // When an HLS live ends (#EXT-X-ENDLIST), Media3 keeps window.isLive true, only window.isDynamic becomes false.
                 val isLive = window.isLive && window.isDynamic
-                Log.d("testmbo", "onTimelineChanged wasLive? $wasLive isLive: $isLive")
 
                 if (wasLive && !isLive) {
                     // Live to VOD transition

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 
 internal class PillarboxMediaPeriod(
     private val mediaPeriod: MediaPeriod,
-    @Suppress("UnusedPrivateProperty") // TODO MBO expose updateFlow as a track
     updateFlow: Flow<UpdatableMediaItem>?,
     mediaItemTrackerData: MediaItemTrackerData,
     metadata: PillarboxMetadata,
@@ -43,10 +42,9 @@ internal class PillarboxMediaPeriod(
         if (metadata != PillarboxMetadata.EMPTY) {
             add(PillarboxMetadataTrackGroup.createTrackGroup(metadata))
         }
-        // TODO MBO
-        // updateFlow?.let {
-        //   add(NewTrackFlow)
-        // }
+        updateFlow?.let {
+            add(PillarboxMetadataTrackGroup.createUpdateTrackGroup(it))
+        }
     }.toTypedArray()
 
     @Suppress("SpreadOperator")
