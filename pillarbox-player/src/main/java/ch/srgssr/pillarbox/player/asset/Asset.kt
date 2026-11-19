@@ -4,10 +4,12 @@
  */
 package ch.srgssr.pillarbox.player.asset
 
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Represents an asset, which contains the necessary components for playback.
@@ -24,4 +26,10 @@ data class Asset(
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY,
     val responseHeaders: Map<String, List<String>> = emptyMap(),
+    val updateFlow: Flow<UpdatableMediaItem>? = null,
+)
+
+data class UpdatableMediaItem(
+    val pillarboxMetadata: PillarboxMetadata,
+    val mediaMediaItem: MediaItem,
 )
