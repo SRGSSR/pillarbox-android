@@ -142,7 +142,12 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, pillarboxMetadata)
+        return PillarboxMediaPeriod(
+            mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs),
+            mediaItemTrackerData,
+            pillarboxMetadata,
+            updateFlow
+        )
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {

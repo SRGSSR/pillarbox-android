@@ -23,6 +23,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
@@ -32,13 +33,19 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Creates an [SRGAssetLoader] instance using a DSL-style configuration.
@@ -158,6 +165,17 @@ class SRGAssetLoader internal constructor(
             MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
         val ilHost = mediaItem.localConfiguration!!.uri.toIlUrl().host
+        val updateFlow: Flow<UpdatableMediaItem> = if (chapter.type == Type.SCHEDULED_LIVESTREAM) {
+            flow {
+                while (true) {
+                    delay(30.seconds)
+                    // redo
+                    emit(UpdatableMediaItem(PillarboxMetadata()))
+                }
+            }
+        } else {
+            emptyFlow<UpdatableMediaItem>()
+        }
         return Asset(
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
@@ -170,6 +188,7 @@ class SRGAssetLoader internal constructor(
                 chapters = ChapterAdapter.getChapters(result, ilHost),
                 credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
             ),
+            updateFlow = updateFlow,
         )
     }
 
