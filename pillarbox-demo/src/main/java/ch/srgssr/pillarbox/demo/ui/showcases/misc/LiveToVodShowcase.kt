@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.R
@@ -40,11 +42,20 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 fun LiveToVodShowCase(liveToVodViewModel: LiveToVodViewModel = viewModel()) {
     val player = liveToVodViewModel.player
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.medium)) {
-        PlayerView(
-            player = player,
-            modifier = Modifier
+        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val playerModifier = if (isLandscape) {
+            Modifier
+                .weight(1f)
+                .aspectRatio(16 / 9f)
+                .align(Alignment.CenterHorizontally)
+        } else {
+            Modifier
                 .fillMaxWidth()
                 .aspectRatio(16 / 9f)
+        }
+        PlayerView(
+            player = player,
+            modifier = playerModifier,
         )
         Row(
             modifier = Modifier
