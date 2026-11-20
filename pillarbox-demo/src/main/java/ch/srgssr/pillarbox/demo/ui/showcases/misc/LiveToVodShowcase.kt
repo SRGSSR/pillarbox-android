@@ -31,6 +31,9 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  * Use case: the user watches a live sport event with a delay (they paused it or went back in time). When the event ends, the stream becomes a
  * VOD. The content is then reloaded at the same position, to get its VOD metadata (for example, without commercials).
  *
+ * The content is [LiveToVodViewModel.URN_TEST], whose media composition is served by a local test server on port 8080
+ * (see [LiveToVodViewModel.METADATA_HOST]). On a device or emulator, forward the port first with `adb reverse tcp:8080 tcp:8080`.
+ *
  * @param liveToVodViewModel The [LiveToVodViewModel].
  */
 @Composable

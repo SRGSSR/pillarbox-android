@@ -5,13 +5,14 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import android.app.Application
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
-import androidx.media3.common.Timeline
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
@@ -22,72 +23,61 @@ class LiveToVodViewModel(application: Application) : AndroidViewModel(applicatio
     /**
      * The player.
      */
-    val player: PillarboxPlayer = PlayerModule.provideStandardPlayer(application)
+    val player: PillarboxPlayer = PillarboxExoPlayer(application) {
+        srgAssetLoader(application) {
+            mediaCompositionService(LocalMediaCompositionService())
+        }
+    }
 
-    private val content = DemoItem.URL(
-        uri = URL_TEST,
+    private val content = DemoItem.URN(
+        urn = URN_TEST,
         title = "Live to VOD transition",
     )
 
-    private val window = Timeline.Window()
-
-    // Whether the content was live at the last timeline update, see onTimelineChanged.
-    private var wasLive = false
-
     init {
         restart()
-
-        val listener = object : PillarboxPlayer.Listener {
-            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                if (timeline.isEmpty) return
-                timeline.getWindow(player.currentMediaItemIndex, window)
-                // A placeholder window is used while the content loads, it doesn't know yet whether the content is live.
-                if (window.isPlaceholder) return
-
-                // When an HLS live ends (#EXT-X-ENDLIST), Media3 keeps window.isLive true, only window.isDynamic becomes false.
-                val isLive = window.isLive && window.isDynamic
-
-                if (wasLive && !isLive) {
-                    // Live to VOD transition
-                    Log.d("testmbo", "TESTMBO - LIVE TO VOD transistion")
-                    reload()
-                } else {
-                    wasLive = isLive
-                }
-            }
-        }
-
-        player.addListener(listener)
     }
 
     /**
      * Play the content from the start.
      */
     fun restart() {
-        wasLive = false
         player.setMediaItem(content.toMediaItem())
         player.prepare()
         player.play()
-    }
-
-    /**
-     * Load [content] again, to get its VOD metadata, keeping the current position and play/pause state.
-     */
-    private fun reload() {
-        wasLive = false
-        player.setMediaItem(content.toMediaItem(), player.currentPosition)
-        player.prepare()
     }
 
     override fun onCleared() {
         player.release()
     }
 
+    /**
+     * A [MediaCompositionService] that loads the media composition from a local test server instead of the integration layer,
+     * by replacing the host of the integration layer URL with [METADATA_HOST].
+     */
+    private class LocalMediaCompositionService(
+        private val httpMediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+    ) : MediaCompositionService {
+        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
+            val host = METADATA_HOST.toUri()
+            val localUri = uri.buildUpon()
+                .scheme(host.scheme)
+                .encodedAuthority(host.encodedAuthority)
+                .build()
+            return httpMediaCompositionService.fetchMediaComposition(localUri)
+        }
+    }
+
     companion object {
         /**
-         * The URL of the metadata of the content to play, in the Pillarbox standard metadata format, served by a local test server.
-         * 10.0.2.2 is the address of the host machine from the Android emulator.
+         * The URN of the content to play.
          */
-        const val URL_TEST = "http://10.0.2.2:8080/metadata"
+        const val URN_TEST = "urn:rts:video:1967124"
+
+        /**
+         * The host of the local test server serving the media composition.
+         */
+        const val METADATA_HOST = "http://10.0.2.2:8080"
+        // const val URL_TEST = "http://10.0.2.2:8080/metadata"
     }
 }
