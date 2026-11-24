@@ -26,12 +26,14 @@ object PillarboxMetadataTrackGroup {
     const val TRACK_TYPE_PILLARBOX_METADATA = TRACK_TYPE_PILLARBOX_TRACKERS + 1
 
     /**
-     * This MIME type is used to identify assets containing a [Flow] of [PillarboxUpdate].
+     * This MIME type is used to identify assets containing a [Flow] of updates, built from
+     * [Asset.updateFlow][ch.srgssr.pillarbox.player.asset.Asset.updateFlow].
      */
     const val PILLARBOX_ASSET_UPDATE_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-asset-update"
 
     /**
-     * This track type is used to identify tracks containing a [Flow] of [PillarboxUpdate].
+     * This track type is used to identify tracks containing a [Flow] of updates, built from
+     * [Asset.updateFlow][ch.srgssr.pillarbox.player.asset.Asset.updateFlow].
      */
     const val TRACK_TYPE_PILLARBOX_UPDATE = TRACK_TYPE_PILLARBOX_METADATA + 1
 

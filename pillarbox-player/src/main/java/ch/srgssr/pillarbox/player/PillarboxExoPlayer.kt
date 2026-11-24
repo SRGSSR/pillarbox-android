@@ -294,7 +294,7 @@ class PillarboxExoPlayer internal constructor(
         pendingReloadUnixTimeMs = if (isAtLiveEdge) C.TIME_UNSET else getUnixTimeMs(currentPosition, window)
         Log.d(
             DebugTag,
-            "FULL reload of ${mediaItem.mediaId}: stream URL changed to . " +
+            "FULL reload of ${mediaItem.mediaId}: stream URL changed. " +
                 "isAtLiveEdge = $isAtLiveEdge, positionMs = $positionMs, unixTimeMs = $pendingReloadUnixTimeMs",
         )
         val mediaItems = List(mediaItemCount) { getMediaItemAt(it) }

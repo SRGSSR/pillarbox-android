@@ -42,6 +42,7 @@ import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -84,6 +85,9 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
 
 /**
  * An [AssetLoader] responsible for loading SRG assets.
+ *
+ * For scheduled livestreams, the [Asset.updateFlow] reloads the media composition every 30 seconds while the item is playing, so that changes of the
+ * blocked segments, chapters, metadata or stream URL are applied to the item being played.
  *
  * To create an instance of this class, use the [SRGAssetLoader] builder function:
  *
@@ -148,23 +152,29 @@ class SRGAssetLoader internal constructor(
         )
     }
 
+    /**
+     * Creates a cold [Flow] that reloads the media composition of [mediaItem] every 30 seconds, and emits the resulting [UpdatableMediaItem].
+     * A failed reload is logged and skipped, so the flow keeps going until its collector is cancelled.
+     */
     @Suppress("TooGenericExceptionCaught")
     private fun createUpdateFlow(mediaItem: MediaItem): Flow<UpdatableMediaItem> {
         return flow {
             while (true) {
                 delay(30.seconds)
-                try {
+                val update = try {
                     val content = loadContent(mediaItem)
-                    emit(
-                        UpdatableMediaItem(
-                            pillarboxMetadata = content.pillarboxMetadata,
-                            mediaItem = content.mediaSource.mediaItem,
-                            mediaMetadata = createMediaMetadata(mediaItem, content),
-                        )
+                    UpdatableMediaItem(
+                        pillarboxMetadata = content.pillarboxMetadata,
+                        mediaItem = content.mediaSource.mediaItem,
+                        mediaMetadata = createMediaMetadata(mediaItem, content),
                     )
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     DebugLogger.error("SRGAssetLoader", "Error while refreshing Media Composition", e)
+                    null
                 }
+                update?.let { emit(it) }
             }
         }
     }
