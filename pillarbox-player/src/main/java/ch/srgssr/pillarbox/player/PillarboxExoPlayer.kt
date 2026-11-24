@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Handler
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -286,14 +285,13 @@ class PillarboxExoPlayer internal constructor(
      * stays at its live edge.
      */
     private fun reloadCurrentMediaItem() {
-        // TODO MBO use getUnixTimeMs()
         val mediaItem = currentMediaItem ?: return
         val window = currentTimeline.getWindow(currentMediaItemIndex, Timeline.Window())
         val isAtLiveEdge = window.isLive && window.isAtDefaultPosition(currentPosition)
         val positionMs = if (isAtLiveEdge) C.TIME_UNSET else currentPosition
         pendingReloadUnixTimeMs = if (isAtLiveEdge) C.TIME_UNSET else getUnixTimeMs(currentPosition, window)
-        Log.d(
-            DebugTag,
+        DebugLogger.debug(
+            TAG,
             "FULL reload of ${mediaItem.mediaId}: stream URL changed. " +
                 "isAtLiveEdge = $isAtLiveEdge, positionMs = $positionMs, unixTimeMs = $pendingReloadUnixTimeMs",
         )
@@ -309,8 +307,8 @@ class PillarboxExoPlayer internal constructor(
     private fun updateCurrentMediaMetadata(mediaMetadata: MediaMetadata): Boolean {
         val mediaItem = currentMediaItem
         if (mediaItem == null || mediaMetadata == MediaMetadata.EMPTY || mediaItem.mediaMetadata == mediaMetadata) return false
-        Log.d(
-            DebugTag,
+        DebugLogger.debug(
+            TAG,
             "PARTIAL reload of ${mediaItem.mediaId}: media metadata changed, " +
                 "title '${mediaItem.mediaMetadata.title}' -> '${mediaMetadata.title}'",
         )
@@ -324,8 +322,8 @@ class PillarboxExoPlayer internal constructor(
     private fun applyPartialUpdate(update: PillarboxUpdate) {
         val pillarboxMetadataChanged = update.pillarboxMetadata != currentPillarboxMetadata
         if (pillarboxMetadataChanged) {
-            Log.d(
-                DebugTag,
+            DebugLogger.debug(
+                TAG,
                 "PARTIAL reload of ${currentMediaItem?.mediaId}: Pillarbox metadata changed, " +
                     "blocked segments = ${update.pillarboxMetadata.blockedTimeRanges}",
             )
@@ -333,7 +331,7 @@ class PillarboxExoPlayer internal constructor(
         }
         val mediaMetadataChanged = updateCurrentMediaMetadata(update.mediaMetadata)
         if (!pillarboxMetadataChanged && !mediaMetadataChanged) {
-            Log.d(DebugTag, "No reload of ${currentMediaItem?.mediaId}: nothing changed")
+            DebugLogger.debug(TAG, "No reload of ${currentMediaItem?.mediaId}: nothing changed")
         }
     }
 
@@ -384,10 +382,10 @@ class PillarboxExoPlayer internal constructor(
             val unixTimeMs = pendingReloadUnixTimeMs
             pendingReloadUnixTimeMs = C.TIME_UNSET
             if (window.windowStartTimeMs != C.TIME_UNSET && unixTimeMs in window.windowStartTimeMs..window.windowStartTimeMs + window.durationMs) {
-                Log.d(DebugTag, "FULL reload done: seeking to unixTimeMs = $unixTimeMs")
+                DebugLogger.debug(TAG, "FULL reload done: seeking to unixTimeMs = $unixTimeMs")
                 seekToUnixTimeMs(unixTimeMs, window)
             } else {
-                Log.d(DebugTag, "FULL reload done: unixTimeMs = $unixTimeMs is not in the new stream, keeping position $currentPosition")
+                DebugLogger.debug(TAG, "FULL reload done: unixTimeMs = $unixTimeMs is not in the new stream, keeping position $currentPosition")
             }
         }
 
@@ -460,5 +458,3 @@ fun Player.runOnApplicationLooper(task: () -> Unit) {
         task()
     }
 }
-
-private const val DebugTag = "testmbo"
