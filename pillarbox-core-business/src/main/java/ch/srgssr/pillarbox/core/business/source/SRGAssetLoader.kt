@@ -41,6 +41,7 @@ import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -147,18 +148,23 @@ class SRGAssetLoader internal constructor(
         )
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun createUpdateFlow(mediaItem: MediaItem): Flow<UpdatableMediaItem> {
         return flow {
             while (true) {
                 delay(30.seconds)
-                val content = loadContent(mediaItem)
-                emit(
-                    UpdatableMediaItem(
-                        pillarboxMetadata = content.pillarboxMetadata,
-                        mediaItem = content.mediaSource.mediaItem,
-                        mediaMetadata = createMediaMetadata(mediaItem, content),
+                try {
+                    val content = loadContent(mediaItem)
+                    emit(
+                        UpdatableMediaItem(
+                            pillarboxMetadata = content.pillarboxMetadata,
+                            mediaItem = content.mediaSource.mediaItem,
+                            mediaMetadata = createMediaMetadata(mediaItem, content),
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    DebugLogger.error("SRGAssetLoader", "Error while refreshing Media Composition", e)
+                }
             }
         }
     }
@@ -169,7 +175,6 @@ class SRGAssetLoader internal constructor(
         }.build()
     }
 
-    // TODO MBO try/catch? when reload, exit if exception
     private suspend fun loadContent(mediaItem: MediaItem): LoadedContent {
         val localConfiguration = checkNotNull(mediaItem.localConfiguration)
         val resultWithHeaders = fetchMediaComposition(localConfiguration.uri)
