@@ -8,7 +8,6 @@ import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.TRACK_TYPE_PILLARBOX_TRACKERS
 import kotlinx.coroutines.flow.Flow
 
@@ -27,12 +26,12 @@ object PillarboxMetadataTrackGroup {
     const val TRACK_TYPE_PILLARBOX_METADATA = TRACK_TYPE_PILLARBOX_TRACKERS + 1
 
     /**
-     * This MIME type is used to identify assets containing a [Flow] of [UpdatableMediaItem].
+     * This MIME type is used to identify assets containing a [Flow] of [PillarboxUpdate].
      */
     const val PILLARBOX_ASSET_UPDATE_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-asset-update"
 
     /**
-     * This track type is used to identify tracks containing a [Flow] of [UpdatableMediaItem].
+     * This track type is used to identify tracks containing a [Flow] of [PillarboxUpdate].
      */
     const val TRACK_TYPE_PILLARBOX_UPDATE = TRACK_TYPE_PILLARBOX_METADATA + 1
 
@@ -59,9 +58,9 @@ object PillarboxMetadataTrackGroup {
     }
 
     /**
-     * Creates a [TrackGroup] for a [Flow] of [UpdatableMediaItem].
+     * Creates a [TrackGroup] for a [Flow] of [PillarboxUpdate].
      */
-    fun createUpdateTrackGroup(updateFlow: Flow<UpdatableMediaItem>): TrackGroup {
+    internal fun createUpdateTrackGroup(updateFlow: Flow<PillarboxUpdate>): TrackGroup {
         return TrackGroup(
             Format.Builder()
                 .setContainerMimeType(PILLARBOX_ASSET_UPDATE_MIME_TYPE)

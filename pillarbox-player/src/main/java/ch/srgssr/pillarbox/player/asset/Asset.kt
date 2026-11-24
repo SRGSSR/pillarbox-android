@@ -34,10 +34,15 @@ data class Asset(
 /**
  * Represents an update of an [Asset] while it is playing.
  *
+ * Any change is applied to the item being played: a new [MediaMetadata] or [PillarboxMetadata] is applied immediately, and a new stream URL
+ * reloads the item.
+ *
  * @property pillarboxMetadata The updated [PillarboxMetadata].
- * @property mediaItem The updated [MediaItem].
+ * @property mediaItem The [MediaItem] of the updated stream. Its URI is compared with the URI of the stream being played.
+ * @property mediaMetadata The updated [MediaMetadata].
  */
 data class UpdatableMediaItem(
     val pillarboxMetadata: PillarboxMetadata,
     val mediaItem: MediaItem,
+    val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
 )

@@ -140,9 +140,7 @@ class SRGAssetLoader internal constructor(
         return Asset(
             mediaSource = content.mediaSource,
             trackersData = content.trackerData.toMediaItemTrackerData(),
-            mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
-                defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, content.chapter, content.mediaComposition)
-            }.build(),
+            mediaMetadata = createMediaMetadata(mediaItem, content),
             responseHeaders = content.responseHeaders,
             pillarboxMetadata = content.pillarboxMetadata,
             updateFlow = updateFlow,
@@ -158,12 +156,20 @@ class SRGAssetLoader internal constructor(
                     UpdatableMediaItem(
                         pillarboxMetadata = content.pillarboxMetadata,
                         mediaItem = content.mediaSource.mediaItem,
+                        mediaMetadata = createMediaMetadata(mediaItem, content),
                     )
                 )
             }
         }
     }
 
+    private suspend fun createMediaMetadata(mediaItem: MediaItem, content: LoadedContent): MediaMetadata {
+        return mediaItem.mediaMetadata.buildUpon().apply {
+            defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, content.chapter, content.mediaComposition)
+        }.build()
+    }
+
+    // TODO MBO try/catch? when reload, exit if exception
     private suspend fun loadContent(mediaItem: MediaItem): LoadedContent {
         val localConfiguration = checkNotNull(mediaItem.localConfiguration)
         val resultWithHeaders = fetchMediaComposition(localConfiguration.uri)

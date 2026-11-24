@@ -12,14 +12,13 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import kotlinx.coroutines.flow.Flow
 
 internal class PillarboxMediaPeriod(
     private val mediaPeriod: MediaPeriod,
-    updateFlow: Flow<UpdatableMediaItem>?,
+    updateFlow: Flow<PillarboxUpdate>?,
     mediaItemTrackerData: MediaItemTrackerData,
     metadata: PillarboxMetadata,
 ) : MediaPeriod by mediaPeriod {

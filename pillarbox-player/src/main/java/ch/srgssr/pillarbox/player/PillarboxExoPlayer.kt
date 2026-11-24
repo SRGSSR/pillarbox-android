@@ -6,11 +6,15 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Handler
+import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.ListenerSet
@@ -20,15 +24,17 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.getWindowUid
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
+import ch.srgssr.pillarbox.player.extension.seekToUnixTimeMs
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
+import ch.srgssr.pillarbox.player.source.PillarboxUpdate
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -130,6 +136,7 @@ class PillarboxExoPlayer internal constructor(
     private val updateFlowContext = coroutineContext
     private val updateFlowScope = CoroutineScope(SupervisorJob() + Handler(applicationLooper).asCoroutineDispatcher("pillarbox-update"))
     private var updateFlowJob: Job? = null
+    private var pendingReloadUnixTimeMs: Long = C.TIME_UNSET
 
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
@@ -272,6 +279,64 @@ class PillarboxExoPlayer internal constructor(
         remoteReceiver = isRemoteReceiver
     }
 
+    /**
+     * Reloads the current media item, so that its media source loads the new stream URL.
+     *
+     * The playback resumes at the same unix time when the stream provides it, otherwise at the same position. A live stream played at its live edge
+     * stays at its live edge.
+     */
+    private fun reloadCurrentMediaItem() {
+        // TODO use getUnixTimeMs()
+        val mediaItem = currentMediaItem ?: return
+        val window = currentTimeline.getWindow(currentMediaItemIndex, Timeline.Window())
+        val isAtLiveEdge = window.isLive && window.isAtDefaultPosition(currentPosition)
+        val positionMs = if (isAtLiveEdge) C.TIME_UNSET else currentPosition
+        pendingReloadUnixTimeMs = if (isAtLiveEdge) C.TIME_UNSET else getUnixTimeMs(currentPosition, window)
+        Log.d(
+            DebugTag,
+            "FULL reload of ${mediaItem.mediaId}: stream URL changed to . " +
+                "isAtLiveEdge = $isAtLiveEdge, positionMs = $positionMs, unixTimeMs = $pendingReloadUnixTimeMs",
+        )
+        val mediaItems = List(mediaItemCount) { getMediaItemAt(it) }
+        setMediaItems(mediaItems, currentMediaItemIndex, positionMs)
+    }
+
+    /**
+     * Replaces the [MediaMetadata] of the current media item with [mediaMetadata], without reloading it.
+     *
+     * @return Whether the [MediaMetadata] changed.
+     */
+    private fun updateCurrentMediaMetadata(mediaMetadata: MediaMetadata): Boolean {
+        val mediaItem = currentMediaItem
+        if (mediaItem == null || mediaMetadata == MediaMetadata.EMPTY || mediaItem.mediaMetadata == mediaMetadata) return false
+        Log.d(
+            DebugTag,
+            "PARTIAL reload of ${mediaItem.mediaId}: media metadata changed, " +
+                "title '${mediaItem.mediaMetadata.title}' -> '${mediaMetadata.title}'",
+        )
+        replaceMediaItem(currentMediaItemIndex, mediaItem.buildUpon().setMediaMetadata(mediaMetadata).build())
+        return true
+    }
+
+    /**
+     * Applies [update] to the current media item without reloading it.
+     */
+    private fun applyPartialUpdate(update: PillarboxUpdate) {
+        val pillarboxMetadataChanged = update.pillarboxMetadata != currentPillarboxMetadata
+        if (pillarboxMetadataChanged) {
+            Log.d(
+                DebugTag,
+                "PARTIAL reload of ${currentMediaItem?.mediaId}: Pillarbox metadata changed, " +
+                    "blocked segments = ${update.pillarboxMetadata.blockedTimeRanges}",
+            )
+            currentPillarboxMetadata = update.pillarboxMetadata
+        }
+        val mediaMetadataChanged = updateCurrentMediaMetadata(update.mediaMetadata)
+        if (!pillarboxMetadataChanged && !mediaMetadataChanged) {
+            Log.d(DebugTag, "No reload of ${currentMediaItem?.mediaId}: nothing changed")
+        }
+    }
+
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
@@ -295,14 +360,34 @@ class PillarboxExoPlayer internal constructor(
             val updateFlow = tracks.groups
                 .firstOrNull { it.type == PillarboxMetadataTrackGroup.TRACK_TYPE_PILLARBOX_UPDATE }
                 ?.getTrackFormat(0)
-                ?.customData as? Flow<UpdatableMediaItem>
+                ?.customData as? Flow<PillarboxUpdate>
             updateFlowJob = updateFlow?.let { flow ->
                 updateFlowScope.launch {
                     flow
                         .flowOn(updateFlowContext)
                         .catch { DebugLogger.error(TAG, "Error while collecting the update flow", it) }
-                        .collect { currentPillarboxMetadata = it.pillarboxMetadata }
+                        .collect { update ->
+                            if (update.reloadRequired) {
+                                reloadCurrentMediaItem()
+                            } else {
+                                applyPartialUpdate(update)
+                            }
+                        }
                 }
+            }
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if (pendingReloadUnixTimeMs == C.TIME_UNSET || timeline.isEmpty) return
+            timeline.getWindow(currentMediaItemIndex, window)
+            if (window.isPlaceholder) return
+            val unixTimeMs = pendingReloadUnixTimeMs
+            pendingReloadUnixTimeMs = C.TIME_UNSET
+            if (window.windowStartTimeMs != C.TIME_UNSET && unixTimeMs in window.windowStartTimeMs..window.windowStartTimeMs + window.durationMs) {
+                Log.d(DebugTag, "FULL reload done: seeking to unixTimeMs = $unixTimeMs")
+                seekToUnixTimeMs(unixTimeMs, window)
+            } else {
+                Log.d(DebugTag, "FULL reload done: unixTimeMs = $unixTimeMs is not in the new stream, keeping position $currentPosition")
             }
         }
 
@@ -375,3 +460,5 @@ fun Player.runOnApplicationLooper(task: () -> Unit) {
         task()
     }
 }
+
+private const val DebugTag = "testmbo"
