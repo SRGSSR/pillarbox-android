@@ -286,7 +286,7 @@ class PillarboxExoPlayer internal constructor(
      * stays at its live edge.
      */
     private fun reloadCurrentMediaItem() {
-        // TODO use getUnixTimeMs()
+        // TODO MBO use getUnixTimeMs()
         val mediaItem = currentMediaItem ?: return
         val window = currentTimeline.getWindow(currentMediaItemIndex, Timeline.Window())
         val isAtLiveEdge = window.isLive && window.isAtDefaultPosition(currentPosition)

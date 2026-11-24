@@ -18,9 +18,9 @@ import kotlinx.coroutines.flow.Flow
 
 internal class PillarboxMediaPeriod(
     private val mediaPeriod: MediaPeriod,
-    updateFlow: Flow<PillarboxUpdate>?,
     mediaItemTrackerData: MediaItemTrackerData,
     metadata: PillarboxMetadata,
+    updateFlow: Flow<PillarboxUpdate>? = null,
 ) : MediaPeriod by mediaPeriod {
     private val pillarboxTracks = buildList {
         if (mediaItemTrackerData.isNotEmpty()) {
@@ -35,9 +35,6 @@ internal class PillarboxMediaPeriod(
                 )
             )
         }
-        // track pillarbox-tracking Data
-        // track pillarbox-metadata Data
-        // track pillarbox-updatable-metadata flow
         if (metadata != PillarboxMetadata.EMPTY) {
             add(PillarboxMetadataTrackGroup.createTrackGroup(metadata))
         }
