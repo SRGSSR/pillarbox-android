@@ -28,7 +28,6 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import kotlin.time.TimeMark
@@ -147,10 +146,9 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        val playingMediaItemUri = mediaSource.mediaItem.localConfiguration?.uri
         return PillarboxMediaPeriod(
             mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs),
-            updateFlow = updateFlow?.map { PillarboxUpdate.from(it, playingMediaItemUri) },
+            updateFlow = updateFlow,
             mediaItemTrackerData = mediaItemTrackerData,
             metadata = pillarboxMetadata,
         )

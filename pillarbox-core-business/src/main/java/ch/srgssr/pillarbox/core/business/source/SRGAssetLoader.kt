@@ -87,7 +87,7 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  * An [AssetLoader] responsible for loading SRG assets.
  *
  * For scheduled livestreams, the [Asset.updateFlow] reloads the media composition every 30 seconds while the item is playing, so that changes of the
- * blocked segments, chapters, metadata or stream URL are applied to the item being played.
+ * blocked segments, chapters, credits and metadata are applied to the item being played. The stream URL is not updated.
  *
  * To create an instance of this class, use the [SRGAssetLoader] builder function:
  *
@@ -165,7 +165,6 @@ class SRGAssetLoader internal constructor(
                     val content = loadContent(mediaItem)
                     UpdatableMediaItem(
                         pillarboxMetadata = content.pillarboxMetadata,
-                        mediaItem = content.mediaSource.mediaItem,
                         mediaMetadata = createMediaMetadata(mediaItem, content),
                     )
                 } catch (e: CancellationException) {

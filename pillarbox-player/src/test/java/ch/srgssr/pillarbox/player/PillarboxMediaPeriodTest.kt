@@ -11,11 +11,11 @@ import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.test.utils.FakeMediaPeriod
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaPeriod
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
 import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
-import ch.srgssr.pillarbox.player.source.PillarboxUpdate
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.FakeMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -114,7 +114,7 @@ class PillarboxMediaPeriodTest {
 
     @Test
     fun `test track group with update flow`() {
-        val updateFlow = emptyFlow<PillarboxUpdate>()
+        val updateFlow = emptyFlow<UpdatableMediaItem>()
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             updateFlow = updateFlow,

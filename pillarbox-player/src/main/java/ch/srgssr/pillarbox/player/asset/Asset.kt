@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.asset
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -32,17 +31,14 @@ data class Asset(
 )
 
 /**
- * Represents an update of an [Asset] while it is playing.
+ * Represents an update of the metadata of an [Asset] while it is playing.
  *
- * Any change is applied to the item being played: a new [MediaMetadata] or [PillarboxMetadata] is applied immediately, and a new stream URL
- * reloads the item.
+ * The update is applied immediately to the item being played, without reloading it. The stream being played never changes.
  *
  * @property pillarboxMetadata The updated [PillarboxMetadata].
- * @property mediaItem The [MediaItem] of the updated stream. Its URI is compared with the URI of the stream being played.
  * @property mediaMetadata The updated [MediaMetadata]. [MediaMetadata.EMPTY] keeps the current [MediaMetadata].
  */
 data class UpdatableMediaItem(
     val pillarboxMetadata: PillarboxMetadata,
-    val mediaItem: MediaItem,
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
 )

@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Looper
-import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -49,6 +48,9 @@ class PillarboxExoPlayerUpdateTest {
             disableMonitoring()
             addAssetLoader(assetLoader)
         }
+        player.setMediaItem(MEDIA_ITEM)
+        player.prepare()
+        advance(player).untilState(Player.STATE_READY)
     }
 
     @AfterTest
@@ -59,10 +61,9 @@ class PillarboxExoPlayerUpdateTest {
 
     @Test
     fun `update with new pillarbox metadata is applied without reloading`() {
-        prepare(MEDIA_ITEM)
         val pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = listOf(BlockedTimeRange(start = 1_000L, end = 2_000L)))
 
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = pillarboxMetadata, mediaItem = streamItem(STREAM_URL_LIVE)))
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = pillarboxMetadata))
 
         assertEquals(pillarboxMetadata, player.currentPillarboxMetadata)
         assertEquals(1, assetLoader.loadCount)
@@ -70,16 +71,9 @@ class PillarboxExoPlayerUpdateTest {
 
     @Test
     fun `update with new media metadata is applied without reloading`() {
-        prepare(MEDIA_ITEM)
         val mediaMetadata = MediaMetadata.Builder().setTitle("New title").build()
 
-        emitUpdate(
-            UpdatableMediaItem(
-                pillarboxMetadata = PillarboxMetadata.EMPTY,
-                mediaItem = streamItem(STREAM_URL_LIVE),
-                mediaMetadata = mediaMetadata,
-            )
-        )
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaMetadata = mediaMetadata))
 
         assertEquals("New title", player.currentMediaItem?.mediaMetadata?.title)
         assertEquals("New title", player.mediaMetadata.title)
@@ -87,11 +81,18 @@ class PillarboxExoPlayerUpdateTest {
     }
 
     @Test
+    fun `update with empty media metadata keeps the current media metadata`() {
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaMetadata = MediaMetadata.EMPTY))
+
+        assertEquals(MEDIA_ITEM.mediaMetadata.title, player.currentMediaItem?.mediaMetadata?.title)
+        assertEquals(1, assetLoader.loadCount)
+    }
+
+    @Test
     fun `update without changes does nothing`() {
-        prepare(MEDIA_ITEM)
         val mediaItem = player.currentMediaItem
 
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_LIVE)))
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaMetadata = MEDIA_ITEM.mediaMetadata))
 
         assertEquals(mediaItem, player.currentMediaItem)
         assertEquals(PillarboxMetadata.EMPTY, player.currentPillarboxMetadata)
@@ -99,84 +100,18 @@ class PillarboxExoPlayerUpdateTest {
     }
 
     @Test
-    fun `update with a new stream URL reloads the item`() {
-        prepare(MEDIA_ITEM)
-
-        assetLoader.streamUrl = STREAM_URL_VOD
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_VOD)))
-        advance(player).untilState(Player.STATE_READY)
-
-        assertEquals(2, assetLoader.loadCount)
-        assertEquals(MEDIA_ITEM.mediaId, player.currentMediaItem?.mediaId)
-        assertEquals(0, player.currentMediaItemIndex)
-    }
-
-    @Test
-    fun `update with a new stream URL keeps the playlist and the current item`() {
-        val otherMediaItem = MediaItem.Builder().setMediaId("other").setUri("pillarbox://other").build()
-        player.setMediaItems(listOf(otherMediaItem, MEDIA_ITEM), 1, C.TIME_UNSET)
-        player.prepare()
-        advance(player).untilState(Player.STATE_READY)
-
-        assetLoader.streamUrl = STREAM_URL_VOD
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_VOD)))
-        advance(player).untilState(Player.STATE_READY)
-
-        assertEquals(2, player.mediaItemCount)
-        assertEquals(otherMediaItem.mediaId, player.getMediaItemAt(0).mediaId)
-        assertEquals(1, player.currentMediaItemIndex)
-        assertEquals(MEDIA_ITEM.mediaId, player.currentMediaItem?.mediaId)
-    }
-
-    @Test
-    fun `update with a new stream URL resumes at the same unix time`() {
-        prepare(MEDIA_ITEM)
+    fun `updates keep the stream and the position`() {
         player.seekTo(SEEK_POSITION_MS)
         advance(player).untilPendingCommandsAreFullyHandled()
-        val unixTimeMs = WINDOW_START_TIME_LIVE_MS + SEEK_POSITION_MS
+        val pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = listOf(BlockedTimeRange(start = 1_000L, end = 2_000L)))
+        val mediaMetadata = MediaMetadata.Builder().setTitle("New title").build()
 
-        assetLoader.streamUrl = STREAM_URL_VOD
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_VOD)))
-        advance(player).untilState(Player.STATE_READY)
-        advance(player).untilPendingCommandsAreFullyHandled()
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = pillarboxMetadata))
+        emitUpdate(UpdatableMediaItem(pillarboxMetadata = pillarboxMetadata, mediaMetadata = mediaMetadata))
 
-        assertEquals(2, assetLoader.loadCount)
-        assertEquals(unixTimeMs - WINDOW_START_TIME_VOD_MS, player.currentPosition)
-    }
-
-    @Test
-    fun `update with a new stream URL keeps the position when the unix time is not in the new stream`() {
-        prepare(MEDIA_ITEM)
-        player.seekTo(SEEK_POSITION_MS)
-        advance(player).untilPendingCommandsAreFullyHandled()
-
-        assetLoader.streamUrl = STREAM_URL_OTHER_DAY
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_OTHER_DAY)))
-        advance(player).untilState(Player.STATE_READY)
-        advance(player).untilPendingCommandsAreFullyHandled()
-
-        assertEquals(2, assetLoader.loadCount)
+        assertEquals(1, assetLoader.loadCount)
+        assertEquals(MEDIA_ITEM.mediaId, player.currentMediaItem?.mediaId)
         assertEquals(SEEK_POSITION_MS, player.currentPosition)
-    }
-
-    @Test
-    fun `update with a new stream URL stays at the live edge`() {
-        prepare(MEDIA_ITEM)
-        assertEquals(DEFAULT_POSITION.inWholeMilliseconds, player.currentPosition)
-
-        assetLoader.streamUrl = STREAM_URL_VOD
-        emitUpdate(UpdatableMediaItem(pillarboxMetadata = PillarboxMetadata.EMPTY, mediaItem = streamItem(STREAM_URL_VOD)))
-        advance(player).untilState(Player.STATE_READY)
-        advance(player).untilPendingCommandsAreFullyHandled()
-
-        assertEquals(2, assetLoader.loadCount)
-        assertEquals(DEFAULT_POSITION.inWholeMilliseconds, player.currentPosition)
-    }
-
-    private fun prepare(mediaItem: MediaItem) {
-        player.setMediaItem(mediaItem)
-        player.prepare()
-        advance(player).untilState(Player.STATE_READY)
     }
 
     /**
@@ -192,13 +127,10 @@ class PillarboxExoPlayerUpdateTest {
     }
 
     /**
-     * An [AssetLoader] that plays fake streams, identified by [streamUrl], and whose updates are emitted by [updates].
+     * An [AssetLoader] that plays a fake stream, and whose updates are emitted by [updates].
      */
     private class UpdatableAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
         val updates = MutableSharedFlow<UpdatableMediaItem>(extraBufferCapacity = 1)
-
-        @Volatile
-        var streamUrl = STREAM_URL_LIVE
 
         @Volatile
         var loadCount = 0
@@ -208,43 +140,22 @@ class PillarboxExoPlayerUpdateTest {
 
         override suspend fun loadAsset(mediaItem: MediaItem): Asset {
             loadCount++
+            val window = FakeTimeline.TimelineWindowDefinition.Builder()
+                .setMediaItem(MediaItem.fromUri(STREAM_URL))
+                .setDurationUs(WINDOW_DURATION.inWholeMicroseconds)
+                .build()
             return Asset(
-                mediaSource = createFakeMediaSource(streamUrl),
+                mediaSource = FakeMediaSource(FakeTimeline(window), VIDEO_FORMAT),
                 mediaMetadata = mediaItem.mediaMetadata,
                 updateFlow = updates,
             )
         }
-
-        private fun createFakeMediaSource(streamUrl: String): FakeMediaSource {
-            val windowStartTimeMs = when (streamUrl) {
-                STREAM_URL_LIVE -> WINDOW_START_TIME_LIVE_MS
-                STREAM_URL_VOD -> WINDOW_START_TIME_VOD_MS
-                else -> WINDOW_START_TIME_OTHER_DAY_MS
-            }
-            // FakeTimeline only provides the window start time of live windows.
-            val window = FakeTimeline.TimelineWindowDefinition.Builder()
-                .setMediaItem(streamItem(streamUrl))
-                .setLive(true)
-                .setDynamic(true)
-                .setDurationUs(WINDOW_DURATION.inWholeMicroseconds)
-                .setDefaultPositionUs(DEFAULT_POSITION.inWholeMicroseconds)
-                .setWindowStartTimeUs(windowStartTimeMs * 1_000L)
-                .build()
-            return FakeMediaSource(FakeTimeline(window), VIDEO_FORMAT)
-        }
     }
 
     private companion object {
-        private const val STREAM_URL_LIVE = "https://example.com/live/master.m3u8"
-        private const val STREAM_URL_VOD = "https://example.com/vod/master.m3u8"
-        private const val STREAM_URL_OTHER_DAY = "https://example.com/other/master.m3u8"
-
-        private val WINDOW_DURATION = 60.seconds
-        private val DEFAULT_POSITION = 50.seconds
-        private const val WINDOW_START_TIME_LIVE_MS = 1_700_000_000_000L
-        private const val WINDOW_START_TIME_VOD_MS = WINDOW_START_TIME_LIVE_MS + 5_000L
-        private const val WINDOW_START_TIME_OTHER_DAY_MS = WINDOW_START_TIME_LIVE_MS + 86_400_000L
+        private const val STREAM_URL = "https://example.com/live/master.m3u8"
         private const val SEEK_POSITION_MS = 20_000L
+        private val WINDOW_DURATION = 60.seconds
 
         private val MEDIA_ITEM = MediaItem.Builder()
             .setMediaId("media:1")
@@ -255,7 +166,5 @@ class PillarboxExoPlayerUpdateTest {
         private val VIDEO_FORMAT = Format.Builder()
             .setSampleMimeType(MimeTypes.VIDEO_H264)
             .build()
-
-        private fun streamItem(streamUrl: String): MediaItem = MediaItem.fromUri(streamUrl)
     }
 }

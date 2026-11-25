@@ -8,6 +8,7 @@ import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.TRACK_TYPE_PILLARBOX_TRACKERS
 import kotlinx.coroutines.flow.Flow
 
@@ -60,9 +61,9 @@ object PillarboxMetadataTrackGroup {
     }
 
     /**
-     * Creates a [TrackGroup] for a [Flow] of [PillarboxUpdate].
+     * Creates a [TrackGroup] for a [Flow] of [UpdatableMediaItem].
      */
-    internal fun createUpdateTrackGroup(updateFlow: Flow<PillarboxUpdate>): TrackGroup {
+    internal fun createUpdateTrackGroup(updateFlow: Flow<UpdatableMediaItem>): TrackGroup {
         return TrackGroup(
             Format.Builder()
                 .setContainerMimeType(PILLARBOX_ASSET_UPDATE_MIME_TYPE)
