@@ -14,6 +14,9 @@ import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
+import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionError
+import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
@@ -32,6 +35,22 @@ open class PillarboxMediaSession internal constructor() {
      * Callback
      */
     interface Callback {
+
+        /**
+         * @see MediaSession.Callback.onConnect
+         * @return initial custom [SessionCommand]
+         */
+        fun onConnect(session: PillarboxMediaSession, controller: MediaSession.ControllerInfo) = Unit
+
+        /**
+         * @see MediaSession.Callback.onCustomCommand
+         */
+        fun onCustomCommand(
+            session: PillarboxMediaSession,
+            controller: MediaSession.ControllerInfo,
+            customCommand: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> = Futures.immediateFuture(SessionResult(SessionError.ERROR_NOT_SUPPORTED))
 
         /**
          * @see MediaSession.Callback.onSetMediaItems
@@ -80,6 +99,7 @@ open class PillarboxMediaSession internal constructor() {
         private val mediaSessionBuilder = MediaSession.Builder(context, player)
         private var callback: Callback = Callback.Default
         private var bitmapLoader: BitmapLoader? = null
+        private var customSessionCommands: List<SessionCommand> = emptyList()
 
         /**
          * Sets a [PendingIntent] to launch an [Activity][android.app.Activity] for the [MediaSession].
@@ -91,6 +111,16 @@ open class PillarboxMediaSession internal constructor() {
          */
         fun setSessionActivity(pendingIntent: PendingIntent): Builder {
             mediaSessionBuilder.setSessionActivity(pendingIntent)
+            return this
+        }
+
+        /**
+         * Custom session commands to use with the [PillarboxMediaLibrarySession] and the [PillarboxMediaBrowser]
+         * @param customSessionCommands The list of [SessionCommand]
+         * @return this builder for convenience.
+         */
+        fun setCustomSessionCommand(customSessionCommands: List<SessionCommand>): Builder {
+            this.customSessionCommands = customSessionCommands
             return this
         }
 
@@ -138,7 +168,11 @@ open class PillarboxMediaSession internal constructor() {
          */
         fun build(): PillarboxMediaSession {
             val pillarboxMediaSession = PillarboxMediaSession()
-            val media3SessionCallback = MediaSessionCallbackImpl(callback, pillarboxMediaSession)
+            val media3SessionCallback = MediaSessionCallbackImpl(
+                callback = callback,
+                customSessionCommands = customSessionCommands,
+                mediaSession = pillarboxMediaSession
+            )
             val mediaSession = mediaSessionBuilder.apply {
                 setCallback(media3SessionCallback)
                 bitmapLoader?.let {
@@ -185,17 +219,22 @@ open class PillarboxMediaSession internal constructor() {
                 player.setImageOutput(null)
                 player.removeListener(listener)
                 _mediaSession.player = value
-                _mediaSession.connectedControllers.forEach {
-                    _mediaSession.setAvailableCommands(
-                        it,
-                        _mediaSession.buildAvailableSessionCommands(),
-                        MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS
-                    )
-                }
+                updateAvailableCommands()
                 value.addListener(listener)
                 if (value.isImageOutputAvailable && connectedControllersWithImageOutput.isNotEmpty()) {
                     value.setImageOutput(imageOutput)
                 }
+            }
+        }
+
+    /**
+     * Custom session commands to use with the [PillarboxMediaSession] and the [PillarboxMediaController]
+     */
+    var customSessionCommands: List<SessionCommand> = emptyList()
+        set(value) {
+            if (value != field) {
+                field = value
+                updateAvailableCommands()
             }
         }
 
@@ -205,12 +244,29 @@ open class PillarboxMediaSession internal constructor() {
     }
 
     /**
+     * @see [MediaSession.broadcastCustomCommand]
+     */
+    fun broadcastCustomCommand(customCommand: SessionCommand, args: Bundle) {
+        _mediaSession.broadcastCustomCommand(customCommand, args)
+    }
+
+    /**
      * Release the underlying [MediaSession]
      */
     fun release() {
         player.setImageOutput(null)
         player.removeListener(listener)
         _mediaSession.release()
+    }
+
+    private fun updateAvailableCommands() {
+        _mediaSession.connectedControllers.forEach {
+            _mediaSession.setAvailableCommands(
+                it,
+                _mediaSession.buildAvailableSessionCommands(customSessionCommands),
+                MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS
+            )
+        }
     }
 
     private inner class ComponentListener : PillarboxPlayer.Listener {

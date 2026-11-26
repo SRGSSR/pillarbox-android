@@ -51,7 +51,11 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
-    private var mediaSession: PillarboxMediaSession? = null
+    /**
+     * The [PillarboxMediaSession] created when calling [setPlayer].
+     */
+    var mediaSession: PillarboxMediaSession? = null
+        private set
 
     /**
      * Set player to use with this Service.
@@ -119,8 +123,6 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
         mediaSession = null
     }
 
-    // Return a MediaSession to link with the MediaController that is making
-    // this request.
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
         return mediaSession?.mediaSession
     }

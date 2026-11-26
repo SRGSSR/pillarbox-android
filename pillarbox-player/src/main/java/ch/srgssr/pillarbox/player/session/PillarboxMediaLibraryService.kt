@@ -55,7 +55,11 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * ```
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
-    private var mediaSession: PillarboxMediaLibrarySession? = null
+    /**
+     * The [PillarboxMediaLibrarySession] created when calling [setPlayer].
+     */
+    var mediaSession: PillarboxMediaLibrarySession? = null
+        private set
 
     /**
      * Set player to use with this Service.
