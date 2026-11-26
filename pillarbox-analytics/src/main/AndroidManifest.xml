@@ -2,4 +2,11 @@
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<manifest />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ACCESS_WIFI_STATE (merged in from the comScore and TagCommander SDKs) implies a hard
+         requirement on wifi hardware, which makes Google Play hide the app from devices without it -->
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+</manifest>
