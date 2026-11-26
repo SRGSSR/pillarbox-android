@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Handler
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -73,9 +72,7 @@ fun <Builder : PillarboxBuilder> PillarboxExoPlayer(
     type: PlayerConfig<Builder>,
     builder: Builder.() -> Unit = {},
 ): PillarboxExoPlayer {
-    return type.create()
-        .apply(builder)
-        .create(context)
+    return type.create().apply(builder).create(context)
 }
 
 /**
@@ -279,16 +276,10 @@ class PillarboxExoPlayer internal constructor(
      *
      * @return Whether the [MediaMetadata] changed.
      */
-    private fun updateCurrentMediaMetadata(mediaMetadata: MediaMetadata): Boolean {
+    private fun updateCurrentMediaMetadata(mediaMetadata: MediaMetadata) {
         val mediaItem = currentMediaItem
-        if (mediaItem == null || mediaMetadata == MediaMetadata.EMPTY || mediaItem.mediaMetadata == mediaMetadata) return false
-        Log.d(
-            DebugTag,
-            "Update of ${mediaItem.mediaId}: media metadata changed, " +
-                "title '${mediaItem.mediaMetadata.title}' -> '${mediaMetadata.title}'",
-        )
+        if (mediaItem == null || mediaMetadata == MediaMetadata.EMPTY || mediaItem.mediaMetadata == mediaMetadata) return
         replaceMediaItem(currentMediaItemIndex, mediaItem.buildUpon().setMediaMetadata(mediaMetadata).build())
-        return true
     }
 
     /**
@@ -297,17 +288,9 @@ class PillarboxExoPlayer internal constructor(
     private fun applyUpdate(update: UpdatableMediaItem) {
         val pillarboxMetadataChanged = update.pillarboxMetadata != currentPillarboxMetadata
         if (pillarboxMetadataChanged) {
-            Log.d(
-                DebugTag,
-                "Update of ${currentMediaItem?.mediaId}: Pillarbox metadata changed, " +
-                    "blocked segments = ${update.pillarboxMetadata.blockedTimeRanges}",
-            )
             currentPillarboxMetadata = update.pillarboxMetadata
         }
-        val mediaMetadataChanged = updateCurrentMediaMetadata(update.mediaMetadata)
-        if (!pillarboxMetadataChanged && !mediaMetadataChanged) {
-            Log.d(DebugTag, "No update of ${currentMediaItem?.mediaId}: nothing changed")
-        }
+        updateCurrentMediaMetadata(update.mediaMetadata)
     }
 
     private inner class ComponentListener : Player.Listener {
@@ -338,7 +321,7 @@ class PillarboxExoPlayer internal constructor(
                 updateFlowScope.launch {
                     flow
                         .flowOn(updateFlowContext)
-                        .catch { DebugLogger.error(TAG, "Error while collecting the update flow", it) }
+                        .catch { DebugLogger.error(TAG, "Error while the update flow", it) }
                         .collect(::applyUpdate)
                 }
             }
@@ -413,5 +396,3 @@ fun Player.runOnApplicationLooper(task: () -> Unit) {
         task()
     }
 }
-
-private const val DebugTag = "testmbo"

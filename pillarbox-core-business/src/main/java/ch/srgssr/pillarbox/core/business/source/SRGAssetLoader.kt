@@ -136,7 +136,7 @@ class SRGAssetLoader internal constructor(
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val content = loadContent(mediaItem)
         val updateFlow: Flow<UpdatableMediaItem>? =
-            if (content.chapter.type == Type.SCHEDULED_LIVESTREAM || content.chapter.type == Type.LIVESTREAM) { // TODO remove live stream
+            if (content.chapter.type == Type.SCHEDULED_LIVESTREAM) {
                 createUpdateFlow(mediaItem)
             } else {
                 null
