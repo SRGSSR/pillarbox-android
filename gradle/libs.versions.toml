@@ -2,7 +2,7 @@
 android-gradle-plugin = "9.5.1"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.11.0"
-androidx-compose = "2026.09.00"
+androidx-compose = "2026.11.01"
 androidx-collection-jvm = "1.7.0"
 androidx-core = "1.19.1"
 androidx-datastore = "1.3.0"
