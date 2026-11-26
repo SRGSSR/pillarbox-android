@@ -15,33 +15,48 @@ import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
+import ch.srgssr.pillarbox.player.offline.DownloadedMediaAssetLoader
+import ch.srgssr.pillarbox.player.offline.DownloadedMediaProvider
+import ch.srgssr.pillarbox.player.offline.createReadOnlyCacheDataSourceFactory
 import kotlin.time.TimeSource
 
 /**
  * A factory for creating [PillarboxMediaSource] instances.
  *
- * This factory selects the first suitable [AssetLoader] to use for a given [MediaItem] by checking if [AssetLoader.canLoadAsset] returns `true`.
+ * If a [DownloadedMediaProvider] is set and the [MediaItem] has been downloaded, the media is played from the download cache.
+ * Otherwise, this factory selects the first suitable [AssetLoader] to use for a given [MediaItem] by checking if [AssetLoader.canLoadAsset]
+ * returns `true`.
  *
  * @param context The [Context] used to create the default [AssetLoader].
  * @param seekableLiveConfig The [SeekableLiveConfig] used to determine if the player can seek when playing live stream.
  * @param timeSource The [TimeSource] used for the created [MediaSource].
+ * @param downloadedMediaProvider The [DownloadedMediaProvider] providing the downloaded media, or `null` to disable offline playback.
  */
 class PillarboxMediaSourceFactory(
     context: Context,
     private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig(),
-    private val timeSource: TimeSource = TimeSource.Monotonic
+    private val timeSource: TimeSource = TimeSource.Monotonic,
+    downloadedMediaProvider: DownloadedMediaProvider? = null,
 ) : MediaSource.Factory {
+    private val upstreamDataSourceFactory = DefaultDataSource.Factory(
+        context,
+        OkHttpDataSource.Factory(PillarboxOkHttp()),
+    )
+
     /**
      * The default [AssetLoader] used to load assets when no other [AssetLoader] is able to handle the request.
+     *
+     * When a [DownloadedMediaProvider] is set, it reads the data from the download cache when available.
      */
     val defaultAssetLoader = UrlAssetLoader(
         DefaultMediaSourceFactory(
-            DefaultDataSource.Factory(
-                context,
-                OkHttpDataSource.Factory(PillarboxOkHttp())
-            )
+            downloadedMediaProvider?.let { createReadOnlyCacheDataSourceFactory(it, upstreamDataSourceFactory) } ?: upstreamDataSourceFactory
         )
     )
+
+    private val downloadedMediaAssetLoader = downloadedMediaProvider?.let {
+        DownloadedMediaAssetLoader(it, upstreamDataSourceFactory)
+    }
 
     private val listAssetLoader = mutableListOf<AssetLoader>()
 
@@ -71,6 +86,7 @@ class PillarboxMediaSourceFactory(
             assetLoader.mediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
         }
         defaultAssetLoader.mediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
+        downloadedMediaAssetLoader?.mediaSourceFactory?.setDrmSessionManagerProvider(drmSessionManagerProvider)
         return this
     }
 
@@ -79,6 +95,7 @@ class PillarboxMediaSourceFactory(
             assetLoader.mediaSourceFactory.setLoadErrorHandlingPolicy(loadErrorHandlingPolicy)
         }
         defaultAssetLoader.mediaSourceFactory.setLoadErrorHandlingPolicy(loadErrorHandlingPolicy)
+        downloadedMediaAssetLoader?.mediaSourceFactory?.setLoadErrorHandlingPolicy(loadErrorHandlingPolicy)
         return this
     }
 
@@ -88,7 +105,9 @@ class PillarboxMediaSourceFactory(
 
     override fun createMediaSource(mediaItem: MediaItem): MediaSource {
         checkNotNull(mediaItem.localConfiguration)
-        val assetLoader = listAssetLoader.firstOrNull { it.canLoadAsset(mediaItem) } ?: defaultAssetLoader
+        val assetLoader = downloadedMediaAssetLoader?.takeIf { it.canLoadAsset(mediaItem) }
+            ?: listAssetLoader.firstOrNull { it.canLoadAsset(mediaItem) }
+            ?: defaultAssetLoader
         return PillarboxMediaSource(
             mediaItem = mediaItem,
             assetLoader = assetLoader,

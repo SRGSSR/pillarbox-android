@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PreloadConfiguration
+import ch.srgssr.pillarbox.player.offline.DownloadedMediaProvider
 import okhttp3.Interceptor
 import okhttp3.Response
 import kotlin.time.Duration.Companion.seconds
@@ -27,12 +28,16 @@ import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
 object PlayerModule {
     /**
      * Provide default player that allow to play urls and urns content from the SRG
+     *
+     * @param context The [Context].
+     * @param downloadedMediaProvider The [DownloadedMediaProvider] used to play downloaded media offline, if any.
      */
-    fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
+    fun provideDefaultPlayer(context: Context, downloadedMediaProvider: DownloadedMediaProvider? = null): PillarboxExoPlayer {
         return PillarboxExoPlayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
             preloadConfiguration(PreloadConfiguration(10.seconds))
+            downloadedMediaProvider(downloadedMediaProvider)
         }
     }
 

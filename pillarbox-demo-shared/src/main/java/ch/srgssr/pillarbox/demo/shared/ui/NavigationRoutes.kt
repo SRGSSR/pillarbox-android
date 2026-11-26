@@ -76,6 +76,9 @@ sealed interface NavigationRoutes {
     data object SettingsHome : NavigationRoutes
 
     @Serializable
+    data object DownloadsHome : NavigationRoutes
+
+    @Serializable
     data object CountdownShowcase : NavigationRoutes
 
     @Serializable
