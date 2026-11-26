@@ -18,7 +18,6 @@ android {
 dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-player"))
-    implementation(project(":pillarbox-standard-asset-loader"))
     api(project(":pillarbox-ui"))
 
     implementation(libs.androidx.annotation)
@@ -50,7 +49,6 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     api(libs.srg.data)
     api(libs.srg.dataprovider.paging)
