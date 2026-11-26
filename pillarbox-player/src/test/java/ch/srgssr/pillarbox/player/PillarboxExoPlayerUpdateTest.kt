@@ -22,13 +22,17 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,6 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 class PillarboxExoPlayerUpdateTest {
     private lateinit var assetLoader: UpdatableAssetLoader
     private lateinit var player: PillarboxExoPlayer
+    private var released = false
 
     @BeforeTest
     fun setup() {
@@ -55,7 +60,9 @@ class PillarboxExoPlayerUpdateTest {
 
     @AfterTest
     fun tearDown() {
-        player.release()
+        if (!released) {
+            player.release()
+        }
         shadowOf(Looper.getMainLooper()).idle()
     }
 
@@ -114,6 +121,44 @@ class PillarboxExoPlayerUpdateTest {
         assertEquals(SEEK_POSITION_MS, player.currentPosition)
     }
 
+    @Test
+    fun `update flow is no longer collected when the media item changes`() {
+        shadowOf(Looper.getMainLooper()).idle()
+        assertTrue(assetLoader.updates.subscriptionCount.value > 0)
+
+        assetLoader.updateFlow = null
+        player.setMediaItem(OTHER_MEDIA_ITEM)
+        advance(player).untilState(Player.STATE_READY)
+        shadowOf(Looper.getMainLooper()).idle()
+
+        assertEquals(0, assetLoader.updates.subscriptionCount.value)
+    }
+
+    @Test
+    fun `update flow is no longer collected when the player is released`() {
+        shadowOf(Looper.getMainLooper()).idle()
+        assertTrue(assetLoader.updates.subscriptionCount.value > 0)
+
+        player.release()
+        released = true
+        shadowOf(Looper.getMainLooper()).idle()
+
+        assertEquals(0, assetLoader.updates.subscriptionCount.value)
+    }
+
+    @Test
+    fun `error in the update flow does not affect the playback`() {
+        assetLoader.updateFlow = flow { throw IOException("Update error") }
+        player.setMediaItem(OTHER_MEDIA_ITEM)
+        advance(player).untilState(Player.STATE_READY)
+        shadowOf(Looper.getMainLooper()).idle()
+        advance(player).untilPendingCommandsAreFullyHandled()
+
+        assertNull(player.playerError)
+        assertEquals(Player.STATE_READY, player.playbackState)
+        assertEquals(OTHER_MEDIA_ITEM.mediaId, player.currentMediaItem?.mediaId)
+    }
+
     /**
      * Emits [update] once the player collects the update flow, then waits until the player handled it.
      */
@@ -127,10 +172,13 @@ class PillarboxExoPlayerUpdateTest {
     }
 
     /**
-     * An [AssetLoader] that plays a fake stream, and whose updates are emitted by [updates].
+     * An [AssetLoader] that plays a fake stream, and whose updates are emitted by [updateFlow], [updates] by default.
      */
     private class UpdatableAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
         val updates = MutableSharedFlow<UpdatableMediaItem>(extraBufferCapacity = 1)
+
+        @Volatile
+        var updateFlow: Flow<UpdatableMediaItem>? = updates
 
         @Volatile
         var loadCount = 0
@@ -147,7 +195,7 @@ class PillarboxExoPlayerUpdateTest {
             return Asset(
                 mediaSource = FakeMediaSource(FakeTimeline(window), VIDEO_FORMAT),
                 mediaMetadata = mediaItem.mediaMetadata,
-                updateFlow = updates,
+                updateFlow = updateFlow,
             )
         }
     }
@@ -161,6 +209,11 @@ class PillarboxExoPlayerUpdateTest {
             .setMediaId("media:1")
             .setUri("pillarbox://media/1")
             .setMediaMetadata(MediaMetadata.Builder().setTitle("Title").build())
+            .build()
+
+        private val OTHER_MEDIA_ITEM = MediaItem.Builder()
+            .setMediaId("media:2")
+            .setUri("pillarbox://media/2")
             .build()
 
         private val VIDEO_FORMAT = Format.Builder()

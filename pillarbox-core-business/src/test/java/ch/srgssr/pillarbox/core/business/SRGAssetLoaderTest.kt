@@ -39,6 +39,7 @@ import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
+import java.io.IOException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -269,6 +270,34 @@ class SRGAssetLoaderTest {
         updateFlow.take(2).collect()
 
         assertEquals(60_000L, currentTime - startTime)
+    }
+
+    @Test
+    fun `update flow skips a failed refresh`() = runTest {
+        var fetchCount = 0
+        val failingFirstRefreshService = object : MediaCompositionService {
+            override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
+                fetchCount++
+                // The first call loads the asset, the second one is the first refresh
+                return if (fetchCount == 2) {
+                    Result.failure(IOException("Network error"))
+                } else {
+                    mediaCompositionService.fetchMediaComposition(uri)
+                }
+            }
+        }
+        val assetLoader = SRGAssetLoader(ApplicationProvider.getApplicationContext()) {
+            mediaCompositionService(failingFirstRefreshService)
+        }
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_SCHEDULED_LIVESTREAM))
+        val updateFlow = assertNotNull(asset.updateFlow)
+        val startTime = currentTime
+
+        val update = updateFlow.first()
+
+        assertEquals(60_000L, currentTime - startTime)
+        assertEquals(3, fetchCount)
+        assertEquals(asset.pillarboxMetadata, update.pillarboxMetadata)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {

@@ -19,7 +19,8 @@ import kotlinx.coroutines.flow.Flow
  * @property pillarboxMetadata A [PillarboxMetadata] instance containing additional information about the asset.
  * @property responseHeaders A [Map<String, List<String>>] The response headers associated with the asset load, or an empty map if unavailable.
  * @property updateFlow An optional [Flow] of [UpdatableMediaItem] emitting updates of the asset, or `null` if the asset never changes. The player
- * collects it only while the asset is the current item, and cancels the collection when the tracks change.
+ * collects it only while the asset is the current item, and starts a new collection each time the tracks change, so it should be a cold [Flow].
+ * Errors thrown by the flow are logged and stop the updates, without affecting the playback.
  */
 data class Asset(
     val mediaSource: MediaSource,
