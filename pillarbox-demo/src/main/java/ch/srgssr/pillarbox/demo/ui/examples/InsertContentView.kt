@@ -81,8 +81,8 @@ private data class InsertContentData(
                 licenseUri = licenseUrl,
             )
 
+            // No title, so that the title of the media composition is used
             isValidUrn -> DemoItem.URN(
-                title = uri,
                 urn = uri,
                 host = checkNotNull(environmentConfig).host,
                 forceSAM = environmentConfig.forceSAM,
