@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -12,6 +13,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
@@ -22,7 +24,9 @@ import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionResponse
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
@@ -32,13 +36,20 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import ch.srgssr.pillarbox.player.utils.DebugLogger
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Creates an [SRGAssetLoader] instance using a DSL-style configuration.
@@ -74,6 +85,9 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
 
 /**
  * An [AssetLoader] responsible for loading SRG assets.
+ *
+ * For scheduled livestreams, the [Asset.updateFlow] reloads the media composition every 30 seconds while the item is playing, so that changes of the
+ * blocked segments, chapters, credits and metadata are applied to the item being played. The stream URL is not updated.
  *
  * To create an instance of this class, use the [SRGAssetLoader] builder function:
  *
@@ -120,14 +134,59 @@ class SRGAssetLoader internal constructor(
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        checkNotNull(mediaItem.localConfiguration)
-        val resultWithHeaders = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
-            when (it) {
-                is HttpResultException -> throw it
-                is SerializationException -> throw DataParsingException(it)
-                else -> throw IOException(it.message)
+        val content = loadContent(mediaItem)
+        val updateFlow: Flow<UpdatableMediaItem>? =
+            if (content.chapter.type == Type.SCHEDULED_LIVESTREAM) {
+                createUpdateFlow(mediaItem)
+            } else {
+                null
+            }
+
+        return Asset(
+            mediaSource = content.mediaSource,
+            trackersData = content.trackerData.toMediaItemTrackerData(),
+            mediaMetadata = createMediaMetadata(mediaItem, content),
+            responseHeaders = content.responseHeaders,
+            pillarboxMetadata = content.pillarboxMetadata,
+            updateFlow = updateFlow,
+        )
+    }
+
+    /**
+     * Creates a cold [Flow] that reloads the media composition of [mediaItem] every 30 seconds, and emits the resulting [UpdatableMediaItem].
+     * A failed reload is logged and skipped, so the flow keeps going until its collector is cancelled.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private fun createUpdateFlow(mediaItem: MediaItem): Flow<UpdatableMediaItem> {
+        return flow {
+            while (true) {
+                delay(30.seconds)
+                val update = try {
+                    val content = loadContent(mediaItem)
+                    UpdatableMediaItem(
+                        pillarboxMetadata = content.pillarboxMetadata,
+                        mediaMetadata = createMediaMetadata(mediaItem, content),
+                    )
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    DebugLogger.error("SRGAssetLoader", "Error while refreshing Media Composition", e)
+                    null
+                }
+                update?.let { emit(it) }
             }
         }
+    }
+
+    private suspend fun createMediaMetadata(mediaItem: MediaItem, content: LoadedContent): MediaMetadata {
+        return mediaItem.mediaMetadata.buildUpon().apply {
+            defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, content.chapter, content.mediaComposition)
+        }.build()
+    }
+
+    private suspend fun loadContent(mediaItem: MediaItem): LoadedContent {
+        val localConfiguration = checkNotNull(mediaItem.localConfiguration)
+        val resultWithHeaders = fetchMediaComposition(localConfiguration.uri)
         val result = resultWithHeaders.mediaComposition
 
         val chapter = result.mainChapter
@@ -157,14 +216,14 @@ class SRGAssetLoader internal constructor(
         val mediaSource = chapter.spriteSheet?.let {
             MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
-        val ilHost = mediaItem.localConfiguration!!.uri.toIlUrl().host
-        return Asset(
-            mediaSource = mediaSource,
-            trackersData = trackerData.toMediaItemTrackerData(),
-            mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
-                defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
-            }.build(),
+        val ilHost = localConfiguration.uri.toIlUrl().host
+
+        return LoadedContent(
+            mediaComposition = result,
+            chapter = chapter,
             responseHeaders = resultWithHeaders.headers,
+            mediaSource = mediaSource,
+            trackerData = trackerData,
             pillarboxMetadata = PillarboxMetadata(
                 blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
                 chapters = ChapterAdapter.getChapters(result, ilHost),
@@ -172,6 +231,25 @@ class SRGAssetLoader internal constructor(
             ),
         )
     }
+
+    private suspend fun fetchMediaComposition(uri: Uri): MediaCompositionResponse {
+        return mediaCompositionService.fetchMediaComposition(uri).getOrElse {
+            throw when (it) {
+                is HttpResultException -> it
+                is SerializationException -> DataParsingException(it)
+                else -> IOException(it.message)
+            }
+        }
+    }
+
+    private class LoadedContent(
+        val mediaComposition: MediaComposition,
+        val chapter: Chapter,
+        val responseHeaders: Map<String, List<String>>,
+        val mediaSource: MediaSource,
+        val trackerData: MutableMediaItemTrackerData,
+        val pillarboxMetadata: PillarboxMetadata,
+    )
 
     private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {
         val drm = resource.drmList?.find { it.type == Drm.Type.WIDEVINE }

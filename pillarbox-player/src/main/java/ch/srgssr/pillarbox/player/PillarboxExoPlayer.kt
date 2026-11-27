@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Handler
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -20,6 +21,7 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.getWindowUid
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -32,8 +34,17 @@ import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
+import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 
@@ -61,9 +72,7 @@ fun <Builder : PillarboxBuilder> PillarboxExoPlayer(
     type: PlayerConfig<Builder>,
     builder: Builder.() -> Unit = {},
 ): PillarboxExoPlayer {
-    return type.create()
-        .apply(builder)
-        .create(context)
+    return type.create().apply(builder).create(context)
 }
 
 /**
@@ -116,6 +125,10 @@ class PillarboxExoPlayer internal constructor(
     private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyChapterChanged, this::notifyCreditChanged)
 
     private var remoteReceiver = false
+
+    private val updateFlowContext = coroutineContext
+    private val updateFlowScope = CoroutineScope(SupervisorJob() + Handler(applicationLooper).asCoroutineDispatcher("pillarbox-update"))
+    private var updateFlowJob: Job? = null
 
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
@@ -201,6 +214,7 @@ class PillarboxExoPlayer internal constructor(
         mediaMetadataTracker.release()
         blockedTimeRangeTracker.release()
         analyticsTracker.release()
+        updateFlowScope.cancel()
     }
 
     /**
@@ -257,6 +271,28 @@ class PillarboxExoPlayer internal constructor(
         remoteReceiver = isRemoteReceiver
     }
 
+    /**
+     * Replaces the [MediaMetadata] of the current media item with [mediaMetadata], without reloading it.
+     *
+     * @return Whether the [MediaMetadata] changed.
+     */
+    private fun updateCurrentMediaMetadata(mediaMetadata: MediaMetadata) {
+        val mediaItem = currentMediaItem
+        if (mediaItem == null || mediaMetadata == MediaMetadata.EMPTY || mediaItem.mediaMetadata == mediaMetadata) return
+        replaceMediaItem(currentMediaItemIndex, mediaItem.buildUpon().setMediaMetadata(mediaMetadata).build())
+    }
+
+    /**
+     * Applies [update] to the current media item without reloading it. The stream being played is never changed.
+     */
+    private fun applyUpdate(update: UpdatableMediaItem) {
+        val pillarboxMetadataChanged = update.pillarboxMetadata != currentPillarboxMetadata
+        if (pillarboxMetadataChanged) {
+            currentPillarboxMetadata = update.pillarboxMetadata
+        }
+        updateCurrentMediaMetadata(update.mediaMetadata)
+    }
+
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
@@ -273,6 +309,21 @@ class PillarboxExoPlayer internal constructor(
                 currentPillarboxMetadata = format.customData as? PillarboxMetadata ?: PillarboxMetadata.EMPTY
             } else {
                 currentPillarboxMetadata = PillarboxMetadata.EMPTY
+            }
+
+            updateFlowJob?.cancel()
+            @Suppress("UNCHECKED_CAST")
+            val updateFlow = tracks.groups
+                .firstOrNull { it.type == PillarboxMetadataTrackGroup.TRACK_TYPE_PILLARBOX_UPDATE }
+                ?.getTrackFormat(0)
+                ?.customData as? Flow<UpdatableMediaItem>
+            updateFlowJob = updateFlow?.let { flow ->
+                updateFlowScope.launch {
+                    flow
+                        .flowOn(updateFlowContext)
+                        .catch { DebugLogger.error(TAG, "Error while the update flow", it) }
+                        .collect(::applyUpdate)
+                }
             }
         }
 
@@ -329,6 +380,7 @@ internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
 }
 
 private const val NormalSpeed = 1.0f
+private const val TAG = "PillarboxExoPlayer"
 
 /**
  * Run the task in the same thread as [Player.getApplicationLooper] if it is necessary.

@@ -32,12 +32,19 @@ import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
+import java.io.IOException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -231,6 +238,68 @@ class SRGAssetLoaderTest {
         assertTrue { trackerData.contains(CommandersActTracker::class.java) }
     }
 
+    @Test
+    fun `asset without update flow when not a scheduled livestream`() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE))
+
+        assertNull(asset.updateFlow)
+    }
+
+    @Test
+    fun `asset with update flow for a scheduled livestream`() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_SCHEDULED_LIVESTREAM))
+        val updateFlow = assertNotNull(asset.updateFlow)
+
+        val update = updateFlow.first()
+
+        assertEquals(asset.pillarboxMetadata, update.pillarboxMetadata)
+        assertEquals(asset.mediaMetadata, update.mediaMetadata)
+        assertEquals(
+            listOf(SegmentAdapter.getBlockedTimeRange(DummyMediaCompositionProvider.BLOCKED_SEGMENT)),
+            update.pillarboxMetadata.blockedTimeRanges,
+        )
+        assertEquals("Scheduled livestream", update.mediaMetadata.title)
+    }
+
+    @Test
+    fun `update flow emits every 30 seconds`() = runTest {
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_SCHEDULED_LIVESTREAM))
+        val updateFlow = assertNotNull(asset.updateFlow)
+        val startTime = currentTime
+
+        updateFlow.take(2).collect()
+
+        assertEquals(60_000L, currentTime - startTime)
+    }
+
+    @Test
+    fun `update flow skips a failed refresh`() = runTest {
+        var fetchCount = 0
+        val failingFirstRefreshService = object : MediaCompositionService {
+            override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
+                fetchCount++
+                // The first call loads the asset, the second one is the first refresh
+                return if (fetchCount == 2) {
+                    Result.failure(IOException("Network error"))
+                } else {
+                    mediaCompositionService.fetchMediaComposition(uri)
+                }
+            }
+        }
+        val assetLoader = SRGAssetLoader(ApplicationProvider.getApplicationContext()) {
+            mediaCompositionService(failingFirstRefreshService)
+        }
+        val asset = assetLoader.loadAsset(SRGMediaItem(DummyMediaCompositionProvider.URN_SCHEDULED_LIVESTREAM))
+        val updateFlow = assertNotNull(asset.updateFlow)
+        val startTime = currentTime
+
+        val update = updateFlow.first()
+
+        assertEquals(60_000L, currentTime - startTime)
+        assertEquals(3, fetchCount)
+        assertEquals(asset.pillarboxMetadata, update.pillarboxMetadata)
+    }
+
     internal class DummyMediaCompositionProvider : MediaCompositionService {
 
         override suspend fun fetchMediaComposition(uri: Uri): Result<MediaCompositionResponse> {
@@ -349,6 +418,19 @@ class SRGAssetLoaderTest {
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
 
+                URN_SCHEDULED_LIVESTREAM -> {
+                    val chapter = Chapter(
+                        urn = urn,
+                        title = "Scheduled livestream",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        mediaType = MediaType.VIDEO,
+                        type = Type.SCHEDULED_LIVESTREAM,
+                        listSegment = listOf(BLOCKED_SEGMENT),
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                }
+
                 else -> Result.failure(IllegalArgumentException("No resource found"))
             }
         }
@@ -366,6 +448,7 @@ class SRGAssetLoaderTest {
             const val URN_WITH_ANALYTICS = "urn:rts:video:analytics"
             const val URN_WITH_COMSCORE = "urn:rts:video:comscore"
             const val URN_WITH_COMMANDERS_ACT = "urn:rts:audio:commandersact"
+            const val URN_SCHEDULED_LIVESTREAM = "urn:rts:video:scheduled_livestream"
             val SEGMENT_1 = Segment(
                 urn = "s1",
                 title = "title",

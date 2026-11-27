@@ -11,6 +11,7 @@ import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.test.utils.FakeMediaPeriod
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.UpdatableMediaItem
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaPeriod
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
@@ -23,6 +24,7 @@ import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.emptyFlow
 import org.junit.runner.RunWith
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -111,8 +113,31 @@ class PillarboxMediaPeriodTest {
     }
 
     @Test
+    fun `test track group with update flow`() {
+        val updateFlow = emptyFlow<UpdatableMediaItem>()
+        val mediaPeriod = PillarboxMediaPeriod(
+            mediaPeriod = mediaPeriod,
+            updateFlow = updateFlow,
+            mediaItemTrackerData = trackerData,
+            metadata = pillarboxMetadata,
+        )
+        val expectedTrackGroup = TrackGroupArray(
+            TrackGroup(format),
+            trackTrackers,
+            trackBlockedTimeRanges,
+            PillarboxMetadataTrackGroup.createUpdateTrackGroup(updateFlow),
+        )
+        mediaPeriod.prepare(mockk(relaxed = true), 0)
+        assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
+    }
+
+    @Test
     fun `test MediaPeriod Callback is forwarded`() {
-        val mediaPeriod = PillarboxMediaPeriod(mediaPeriod = mediaPeriod, emptyTrackerData, PillarboxMetadata.EMPTY)
+        val mediaPeriod = PillarboxMediaPeriod(
+            mediaPeriod = mediaPeriod,
+            mediaItemTrackerData = emptyTrackerData,
+            metadata = PillarboxMetadata.EMPTY,
+        )
         val callback = mockk<MediaPeriod.Callback>(relaxed = true)
         mediaPeriod.prepare(callback, 0)
 
