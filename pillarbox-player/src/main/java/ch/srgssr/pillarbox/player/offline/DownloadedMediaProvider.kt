@@ -27,4 +27,17 @@ interface DownloadedMediaProvider {
      * @param mediaItem The [MediaItem] to look up.
      */
     fun getDownloadRequest(mediaItem: MediaItem): DownloadRequest?
+
+    /**
+     * Returns the trackers data stored with [downloadRequest], as encoded by
+     * [AssetLoader.encodeOfflineTrackersData][ch.srgssr.pillarbox.player.asset.AssetLoader.encodeOfflineTrackersData], or `null` if none.
+     *
+     * The data is decoded by the [AssetLoader][ch.srgssr.pillarbox.player.asset.AssetLoader] able to load the played [MediaItem], so that
+     * the playback of the downloaded media is tracked.
+     *
+     * The default implementation returns `null`: the playback of downloaded media is not tracked.
+     *
+     * @param downloadRequest The [DownloadRequest] returned by [getDownloadRequest].
+     */
+    fun getOfflineTrackersData(downloadRequest: DownloadRequest): ByteArray? = null
 }
